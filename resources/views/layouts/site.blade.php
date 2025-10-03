@@ -29,6 +29,8 @@
     <img alt="whatsapp" class="w-6 h-6" src="https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/whatsapp.svg">
   </a>
 
+   @include('partials.footer')
+
   @stack('scripts')
 </body>
 </html>

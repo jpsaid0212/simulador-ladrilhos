@@ -39,7 +39,7 @@
   }
 @endphp
 
-<section class="border-b border-neutral-200">
+<section>
   <div class="max-w-6xl mx-auto px-4 py-12 md:py-16">
     <div class="space-y-8 md:space-y-12">
       @foreach ($images as $img)
@@ -54,25 +54,7 @@
   </div>
 </section>
 
-<section>
-  <div class="max-w-6xl mx-auto px-4 py-14 md:py-20">
-    <div class="grid md:grid-cols-2 gap-8 md:gap-12 items-center">
-      <div>
-        <h3 class="text-[22px] md:text-[26px] leading-tight mb-3">quer um desenho exclusivo?</h3>
-        <p class="text-[17px] text-neutral-700">
-          Desenvolvemos padrões inéditos, ajustamos escala e paleta e simulamos no seu ambiente.
-        </p>
-      </div>
-      <div class="flex md:justify-end">
-        <div class="inline-flex items-center gap-3">
-          <a href="{{ route('crie') }}" class="underline text-[17px]">crie seu ladrilho</a>
-          <span class="text-neutral-400">/</span>
-          <a href="https://wa.me/5511934563752" target="_blank" rel="noopener" class="underline text-[17px]">whatsapp</a>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
+{{-- REMOVIDO: bloco "quer um desenho exclusivo?" com links "crie seu ladrilho / whatsapp" --}}
 
 @if($hasMatch)
   <div id="lightbox" class="fixed inset-0 z-[999] bg-white">
