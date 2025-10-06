@@ -1,17 +1,96 @@
+{{-- resources/views/crie-seu-ladrilho.blade.php --}}
 @extends('layouts.site')
 @section('title','Studio Latitude — crie seu ladrilho')
 
 @section('content')
-<section class="max-w-6xl mx-auto px-4 py-10 space-y-6">
-  <h1 class="text-2xl md:text-3xl font-semibold">crie seu ladrilho</h1>
-  <p class="text-slate-700 max-w-3xl">
-    Envie um e-mail ou WhatsApp com o design desejado para analisarmos a viabilidade de criar o molde.
-    Formatos sob medida: 10x10, 10x20, 15x15, 20x20.
-  </p>
-  <div class="flex gap-3">
-    <a class="px-4 py-2 rounded border" href="mailto:ladrilho@studiolatitude.page">enviar e-mail</a>
-    <a class="px-4 py-2 rounded bg-slate-900 text-white" href="https://wa.me/5511934563752" target="_blank">whatsapp</a>
-    <a class="px-4 py-2 rounded border" href="{{ route('simulador.index') }}">abrir simulador</a>
+<section class="max-w-6xl mx-auto px-4 py-12">
+  {{-- Topo: texto à esquerda / imagens à direita --}}
+  <div class="grid md:grid-cols-2 gap-10 items-start">
+    {{-- Coluna de texto (esquerda) --}}
+    <article class="space-y-5 text-[15px] leading-relaxed text-slate-700">
+      <h1 class="text-xl md:text-2xl font-semibold text-[#caa13b]">Serviços adicionais</h1>
+
+      <p>
+        Além dos ladrilhos exclusivos encontrados em nosso catálogo, também oferecemos
+        serviço de design sob medida onde você nos envia o <span class="font-semibold">design</span> desejado
+        para o ladrilho e nós confeccionaremos o molde (este usado para confecção do ladrilho).
+        O custo do projeto já cobre o serviço de customização/criação do desenho em software 3D
+        bem como a impressão de molde em 3D.
+      </p>
+
+      <p>
+        Nos envie um e-mail ou whatsapp com o design desejado para
+        análisarmos a possibilidade de criar o molde com o seu design.
+      </p>
+
+      <p class="text-sky-700/90">
+        <span class="font-semibold">Nota:</span> Os desenhos se tornam propriedade do Studio Latitude,
+        podendo ser replicados em outros projetos.
+      </p>
+
+      <div class="pt-2">
+        <p class="font-medium">É possível criar o design sob medida nos seguintes formatos:</p>
+        <ul class="list-disc ml-5 mt-2">
+          <li class="font-semibold">10x10 &ndash; 10x20 &ndash; 15x15 &ndash; 20x20</li>
+        </ul>
+      </div>
+
+      {{-- Linha pontilhada + preço --}}
+      <div class="pt-4">
+        <p class="mb-2">Outros serviços adicionais:</p>
+        <div class="flex items-baseline">
+          <span>Paginação digital na planta</span>
+          <span class="mx-3 grow border-b border-dotted border-slate-400"></span>
+          <span class="whitespace-nowrap font-medium">R$ 900,00</span>
+        </div>
+      </div>
+    </article>
+
+    {{-- Coluna de imagens (direita): duas imagens empilhadas e limitadas de altura --}}
+    <aside class="w-full md:max-w-[420px] md:ml-auto space-y-6">
+      <div class="w-full h-[220px] sm:h-[260px] md:h-[280px] lg:h-[300px]">
+        <img
+          src="{{ asset('img/crie-seu-ladrilho/crie-seu-ladrilho1.png') }}"
+          alt="Design autoral & customizável"
+          class="w-full h-full object-contain"
+          loading="lazy"
+        />
+      </div>
+      <div class="w-full h-[180px] sm:h-[220px] md:h-[240px] lg:h-[260px]">
+        <img
+          src="{{ asset('img/crie-seu-ladrilho/crie-seu-ladrilho2.png') }}"
+          alt="Exemplo ilustrativo"
+          class="w-full h-full object-contain"
+          loading="lazy"
+        />
+      </div>
+    </aside>
   </div>
+
+  {{-- Faixa inferior: duas imagens lado a lado --}}
+<div class="mt-10 grid md:grid-cols-2 gap-6 items-start">
+  <figure class="w-full h-auto text-center">
+  <div class="h-[380px] sm:h-[420px] md:h-[440px]">
+    <img
+      src="{{ asset('img/crie-seu-ladrilho/paginacao-natalia2.jpg') }}"
+      alt="Ladrilho final"
+      class="w-full h-full object-contain"
+      loading="lazy"
+    />
+  </div>
+  <figcaption class="mt-2 text-[14px] text-slate-500 italic">
+    Projeto de paginação do modelo "Janelas" em planta-baixa do cliente
+  </figcaption>
+</figure>
+  <div class="w-full h-[280px] sm:h-[320px] md:h-[300px]">
+    <img
+      src="{{ asset('img/crie-seu-ladrilho/crie-seu-ladrilho3.jpg') }}"
+      alt="Paginação em planta-baixa"
+      class="w-full h-full object-contain"
+      loading="lazy"
+    />
+  </div>
+
+</div>
 </section>
 @endsection
