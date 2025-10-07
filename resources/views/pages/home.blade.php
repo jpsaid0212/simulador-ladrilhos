@@ -18,14 +18,27 @@
       width: 100vw !important;
       height: 100vh !important;
       object-fit: cover !important;
+      object-position: center !important;
     }
   </style>
 @endpush
 
 @section('content')
 @php
+  /* Coloque suas 12 imagens dentro de public/img/nossos_ladrilhos/ */
   $images = [
-    'amazoniavistodecima.avif',
+    'home1.jpg',
+    'home2.jpg',
+    'home3.jpg',
+    'home4.jpg',
+    'home5.jpg',
+    'home6.jpg',
+    'home7.jpg',
+    'home8.jpg',
+    'home9.jpg',
+    'home10.jpg',
+    'home11.jpg',
+    'home12.jpg',
   ];
 
   $current = request('img');
@@ -43,10 +56,15 @@
   <div class="max-w-6xl mx-auto px-4 py-12 md:py-16">
     <div class="space-y-8 md:space-y-12">
       @foreach ($images as $img)
-        <figure class="border border-neutral-200 bg-white overflow-hidden">
-          <a href="{{ request()->fullUrlWithQuery(['img' => $img]) }}" class="block focus:outline-none focus:ring-2 focus:ring-sky-400">
-            <img src="{{ asset('nossos_ladrilhos/'.$img) }}" alt="projeto"
-                 class="w-full h-[520px] md:h-[720px] object-cover" loading="lazy">
+        {{-- figure sem overflow/borda para não dar impressão de "corte" --}}
+        <figure class="bg-transparent">
+          <a href="{{ request()->fullUrlWithQuery(['img' => $img]) }}"
+             class="block focus:outline-none focus:ring-2 focus:ring-sky-400">
+            <img
+              src="{{ asset('img/nossos_ladrilhos/'.$img) }}"
+              alt="ladrilho"
+              class="block mx-auto w-full h-[520px] md:h-[720px] object-contain object-center"
+              loading="lazy">
           </a>
         </figure>
       @endforeach
@@ -54,36 +72,31 @@
   </div>
 </section>
 
-{{-- REMOVIDO: bloco "quer um desenho exclusivo?" com links "crie seu ladrilho / whatsapp" --}}
-
+{{-- Lightbox --}}
 @if($hasMatch)
   <div id="lightbox" class="fixed inset-0 z-[999] bg-white">
-    {{-- fundo clicável para fechar (fica atrás dos controles) --}}
-    <button class="absolute inset-0 z-0 w-full h-full cursor-zoom-out" onclick="history.back()" aria-label="Fechar"></button>
+    <button class="absolute inset-0 z-0 w-full h-full cursor-zoom-out"
+            onclick="window.location.href='{{ url('ladrilhos') }}'" aria-label="Fechar"></button>
 
     <div class="relative z-10 h-full flex flex-col">
-      {{-- Top bar --}}
       <div class="flex justify-between items-center pt-6 px-4">
         <div class="flex gap-3">
-          {{-- Tela cheia --}}
           <button onclick="toggleFullscreen()"
                   class="btn-chrome w-10 h-10 flex items-center justify-center rounded-full text-xl"
                   aria-label="Tela cheia" title="Tela cheia">⛶</button>
-          {{-- Compartilhar --}}
           <button onclick="shareImage('{{ asset('nossos_ladrilhos/'.$current) }}')"
                   class="btn-chrome w-10 h-10 flex items-center justify-center rounded-full text-xl"
                   aria-label="Compartilhar" title="Compartilhar">↗</button>
         </div>
 
-        {{-- Fechar --}}
-        <button onclick="history.back()"
+        {{-- BOTÃO FECHAR --}}
+        <button onclick="window.location.href='{{ url('/') }}'"
                 class="btn-chrome w-10 h-10 flex items-center justify-center rounded-full text-xl"
                 aria-label="Fechar" title="Fechar">✕</button>
       </div>
 
-      {{-- Imagem + setas --}}
       <div class="relative flex-1 pb-6 flex items-center justify-center">
-        <img src="{{ asset('nossos_ladrilhos/'.$current) }}" alt="projeto em destaque"
+        <img src="{{ asset('img/nossos_ladrilhos/'.$current) }}" alt="projeto em destaque"
              class="lb-img w-[96vw] md:w-[92vw] h-auto max-h-[90vh] object-contain">
 
         <a href="{{ request()->fullUrlWithQuery(['img' => $prev]) }}"
@@ -99,40 +112,26 @@
 
   @push('scripts')
     <script>
-      // ESC fecha
-      document.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape') history.back();
-      });
+      document.addEventListener('keydown', (e) => { if (e.key === 'Escape') history.back(); });
 
-      // alterna fullscreen do documento
       function toggleFullscreen() {
         const el = document.documentElement;
-        if (!document.fullscreenElement) {
-          if (el.requestFullscreen) el.requestFullscreen();
-        } else {
-          if (document.exitFullscreen) document.exitFullscreen();
-        }
+        if (!document.fullscreenElement) { el.requestFullscreen?.(); }
+        else { document.exitFullscreen?.(); }
       }
 
-      // adiciona/remove classe quando entra/sai do FS
       document.addEventListener('fullscreenchange', () => {
         const lb = document.getElementById('lightbox');
         if (!lb) return;
-        if (document.fullscreenElement) {
-          lb.classList.add('is-fs');
-        } else {
-          lb.classList.remove('is-fs');
-        }
+        lb.classList.toggle('is-fs', !!document.fullscreenElement);
       });
 
-      // Compartilhar (Web Share API com fallback)
       function shareImage(url) {
-        const shareUrl = url;
         if (navigator.share) {
-          navigator.share({ title: 'Studio Latitude — ladrilho', url: shareUrl }).catch(()=>{});
+          navigator.share({ title: 'Studio Latitude — ladrilho', url }).catch(()=>{});
         } else {
-          navigator.clipboard?.writeText(shareUrl);
-          alert('Link copiado: ' + shareUrl);
+          navigator.clipboard?.writeText(url);
+          alert('Link copiado: ' + url);
         }
       }
     </script>
