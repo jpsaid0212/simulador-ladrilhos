@@ -9,8 +9,7 @@ Route::get('/',                  [SiteController::class, 'home'])->name('home');
 Route::get('/cores',             [SiteController::class, 'cores'])->name('cores');
 Route::get('/sobre',             [SiteController::class, 'sobre'])->name('sobre');
 Route::get('/crie-seu-ladrilho', [SiteController::class, 'crie'])->name('crie');
-Route::get('/projetos',          [SiteController::class, 'projetos'])->name('projetos');
-Route::get('/blocos-3d',         [SiteController::class, 'blocos3d'])->name('blocos3d');
+Route::view('/projetos-blocos-3d', 'pages.projetos-blocos3d')->name('blocos3d');
 Route::get('/contato',           [SiteController::class, 'contato'])->name('contato');
 
 Route::get('/simulador', [SimulatorController::class, 'index'])->name('simulador.index');

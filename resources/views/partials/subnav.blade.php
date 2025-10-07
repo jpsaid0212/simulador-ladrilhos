@@ -1,5 +1,11 @@
 {{-- resources/views/partials/subnav.blade.php --}}
 @php
+
+  use Illuminate\Support\Facades\Route;
+
+  $homeUrl     = Route::has('home')     ? route('home')     : url('/');
+  $blocos3dUrl = Route::has('blocos3d') ? route('blocos3d') : url('/projetos-blocos-3d');
+  
   $tabs = [
     ['label' => 'nossos ladrilhos', 'url' => route('home') ?? url('/')],
     ['label' => 'exclusivos',       'url' => url('/exclusivos')],
@@ -8,7 +14,7 @@
     ['label' => 'cores',            'url' => url('/cores')],
     ['label' => 'sobre',            'url' => url('/sobre')],
     ['label' => 'crie seu ladrilho','url' => url('/crie-seu-ladrilho')],
-    ['label' => 'projetos / blocos 3D', 'url' => url('/projetos-3d')],
+    ['label' => 'projetos / blocos 3D', 'url' => $blocos3dUrl],
     ['label' => 'contato',          'url' => url('/contato')],
   ];
 
