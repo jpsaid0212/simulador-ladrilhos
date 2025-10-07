@@ -87,14 +87,24 @@
       </p>
     </div>
 
-    {{-- 4 imagens à direita --}}
+    {{-- 4 imagens estáticas à direita (mesma posição/tamanho) --}}
     <aside class="lg:col-span-5 space-y-3">
-      @for ($i = 0; $i < 4; $i++)
+      @php
+        $imgsSobre = [
+          ['src' => asset('img/sobre/sobre1.jpeg'), 'alt' => 'Studio Latitude — paleta de cores 1'],
+          ['src' => asset('img/sobre/sobre2.jpeg'), 'alt' => 'Studio Latitude — paleta de cores 2'],
+          ['src' => asset('img/sobre/sobre3.png'), 'alt' => 'Studio Latitude — paleta de cores 3'],
+          ['src' => asset('img/sobre/sobre4.jpg'), 'alt' => 'Studio Latitude — paleta de cores 4'],
+        ];
+      @endphp
+
+      @foreach ($imgsSobre as $fig)
         <img
-          src="{{ asset('img/cores/tabela-cores.avif') }}"
-          alt="Studio Latitude — imagem {{ $i + 1 }}"
+          src="{{ $fig['src'] }}"
+          alt="{{ $fig['alt'] }}"
+          loading="lazy"
           class="w-full h-[220px] md:h-[240px] object-cover">
-      @endfor
+      @endforeach
     </aside>
   </div>
 
@@ -106,8 +116,8 @@
         controls
         playsinline
         preload="metadata"
-        poster="{{ asset('img/cores/tabela-cores.avif') }}">
-        <source src="{{ asset('video/sobre.mp4') }}" type="video/mp4">
+        
+        <source src="{{ asset('img/sobre/Studio_horizontal.mp4') }}" type="video/mp4">
       </video>
     </div>
   </div>
