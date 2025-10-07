@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>@yield('title', 'Studio Latitude')</title>
   @vite('resources/css/app.css')
+  <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
   @stack('head')
 </head>
 <body class="antialiased text-neutral-900 bg-white">

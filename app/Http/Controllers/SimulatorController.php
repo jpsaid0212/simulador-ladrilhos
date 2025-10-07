@@ -18,4 +18,9 @@ class SimulatorController extends Controller
 
         return view('simulator.index', compact('swatches', 'examples'));
     }
+
+    public function ambiente()
+    {
+        return view('simulator.ambiente');
+    }
 }

@@ -1,9 +1,10 @@
-@extends('layouts.app')
+@extends('layouts.site')
 
-@section('title','Simulador de Ladrilhos')
+@section('title', 'Studio Latitude — Simulador de Ladrilhos')
 
 @section('content')
-<div class="max-w-6xl mx-auto px-4 py-8" x-data="simuladorDP()" x-init="init()">
+<section class="max-w-6xl mx-auto px-4 py-12">
+<div x-data="simuladorDP()" x-init="init()">
 
   <div class="bg-orange-50 border border-orange-100 rounded-xl px-4 py-3 text-sm text-slate-700">
     <p class="font-semibold mb-1">Monte seu Ladrilho Personalizado:</p>
@@ -163,7 +164,6 @@
 
   <canvas id="canvasLadrilho" class="hidden"></canvas>
   <canvas id="canvasTapete" class="hidden"></canvas>
-</div>
 
 <script>
 function simuladorDP(){
@@ -433,4 +433,6 @@ function simuladorDP(){
   }
 }
 </script>
+</div>
+</section>
 @endsection

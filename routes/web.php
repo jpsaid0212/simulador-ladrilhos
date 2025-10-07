@@ -13,6 +13,7 @@ Route::view('/projetos-blocos-3d', 'pages.projetos-blocos3d')->name('blocos3d');
 Route::get('/contato',           [SiteController::class, 'contato'])->name('contato');
 
 Route::get('/simulador', [SimulatorController::class, 'index'])->name('simulador.index');
+Route::get('/simulador/ambiente', [SimulatorController::class, 'ambiente'])->name('simulador.ambiente');
 
 // CATEGORIAS  -> CatalogoController@category
 Route::get('/exclusivos',  [CatalogoController::class, 'category'])->defaults('slug','exclusivos')->name('cat.exclusivos');
