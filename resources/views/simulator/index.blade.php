@@ -8,15 +8,18 @@
 
   <!-- aviso / instruções -->
   <div class="bg-orange-50 border border-orange-100 rounded-xl px-4 py-3 text-sm text-slate-700">
-    <p class="font-semibold mb-1">Monte seu Ladrilho Personalizado:</p>
-    <ol class="list-decimal ml-5 space-y-1">
-      <li>Escolha o que deseja simular.</li>
-      <li>Clique na peça desejada.</li>
-      <li>Clique na paleta de cores e depois vá clicando na peça grande.</li>
-      <li>Clique em <b>Atualizar Tapete</b> para ver o tapete montado.</li>
-      <li>Para baixar clique em <b>Baixar imagem</b> do ladrilho ou do tapete.</li>
-    </ol>
-  </div>
+  <p class="font-semibold mb-1">Monte seu Ladrilho Personalizado:</p>
+  <ol class="list-decimal ml-5 space-y-1">
+    <li>Selecione um <b>modelo</b> no seletor acima.</li>
+    <li>Escolha uma <b>cor na paleta</b>  e <b>clique nas áreas do ladrilho</b> para pintar.</li>
+    <li>No painel <b>Opções de visualização</b> , defina <b>Colunas</b>, <b>Linhas</b> e a <b>Cor do rejunte</b> e clique em <b>Visualizar</b> para montar o tapete.</li>
+    <li>Para salvar ou imprimir o ladrilho atual, clique em <b>Salvar PDF ou imprimir</b>.</li>
+    <li>Se quiser recomeçar a pintura do ladrilho (modelos editáveis), use <b>Resetar ladrilho</b>.</li>
+  </ol>
+  <p class="mt-2 text-[12px] text-slate-600">
+    Dica: as <b>cores usadas</b> aparecem abaixo do ladrilho e também são listadas no PDF.
+  </p>
+</div>
 
   <!-- SELECTOR com miniatura -->
   <div class="mt-10 max-w-xl mx-auto">
@@ -104,35 +107,55 @@
         </template>
       </div>
 
-      <!-- MODELO + CORES USADAS -->
-      <div class="mt-6 w-full">
-        <p class="uppercase tracking-[0.25em] text-[12px] text-slate-700">
-          STUDIO LATITUDE - Modelo:
-          <span class="normal-case tracking-normal font-medium" x-text="tile?.nome || '—'"></span>
-        </p>
+      <div class="flex flex-col items-center">
+        <!-- wrapper com mesma largura do card -->
+        <div class="w-[340px] sm:w-[420px] mx-auto">
+          <!-- MODELO + CORES USADAS -->
+          <div class="mt-6">
+            <p class="uppercase tracking-[0.25em] text-[12px] text-slate-700">
+              STUDIO LATITUDE - Modelo:
+              <span class="normal-case tracking-normal font-medium" x-text="tile?.nome || '—'"></span>
+            </p>
 
-        <div class="mt-3 flex items-center gap-4">
-          <template x-for="c in coresUsadas()" :key="c">
-            <div class="flex flex-col items-center">
-              <span class="h-10 w-10 rounded-sm border border-slate-300" :style="`background:${c}`"></span>
-              <span class="mt-1 text-[11px] text-slate-600" x-text="nomeDaCor(c)"></span>
+            <div class="mt-3 flex items-center gap-4">
+              <template x-for="c in coresUsadas()" :key="c">
+                <div class="flex flex-col items-center">
+                  <span class="h-10 w-10 rounded-sm border border-slate-300" :style="`background:${c}`"></span>
+                  <span class="mt-1 text-[11px] text-slate-600" x-text="nomeDaCor(c)"></span>
+                </div>
+              </template>
             </div>
-          </template>
+          </div>
+
+          <!-- BOTÕES -->
+          <div class="mt-5 flex items-center justify-between gap-4">
+            <button
+              @click="baixarLadrilhoPDF()"
+              type="button"
+              class="uppercase tracking-wider text-[11px] font-semibold text-white
+                     bg-[#d9c3a3] hover:bg-[#cfb893] active:bg-[#c6ae89]
+                     border border-[#d1c2a6] shadow-sm
+                     px-6 py-3 rounded-sm flex-1 text-center">
+              salvar pdf ou imprimir
+            </button>
+
+            <button
+              x-show="tile.type==='raster'"
+              @click="resetRaster()"
+              type="button"
+              class="text-[12px] text-slate-600 hover:text-slate-800
+                     underline decoration-slate-300 hover:decoration-slate-500 underline-offset-2">
+              Resetar ladrilho
+            </button>
+          </div>
         </div>
       </div>
 
-      <div class="mt-3 flex items-center gap-3">
-        <button @click="baixarLadrilhoPDF()" class="px-3 py-2 border rounded-md">Baixar PDF</button>
-        <template x-if="tile.type==='raster'">
-          <button @click="resetRaster()" class="px-3 py-2 border rounded-md">Resetar ladrilho</button>
-        </template>
-        <span class="text-sm text-slate-500">Clique na cor e depois nas áreas do ladrilho</span>
-      </div>
     </div>
 
-    <!-- DIREITA: paleta com NOMES + controles -->
+    <!-- DIREITA: paleta com nomes + controles -->
     <div>
-      <p class="text-slate-600 mb-2 text-sm">3 - Selecione as cores</p>
+      <p class="text-slate-600 mb-2 text-sm"></p>
 
       <div class="rounded-xl border border-slate-200 bg-white p-4">
         <div class="grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-5 gap-x-6 gap-y-6">
@@ -148,47 +171,66 @@
           </template>
         </div>
       </div>
+    </div>
+  </div>
 
-      <!-- controles -->
-      <div class="mt-6">
-        <div class="mb-4">
-          <label class="block text-sm text-slate-600 mb-1">Selecione a Cor do Rejunte</label>
-          <select x-model="groutColor" class="border rounded-md px-3 py-2 w-full">
-            <template x-for="opt in rejunteOpcoes" :key="opt.hex">
-              <option :value="opt.hex" x-text="opt.nome"></option>
-            </template>
-          </select>
+  <!-- TAPETE (estilo Ladrilar) -->
+  <div class="mt-12 lg:grid lg:grid-cols-[minmax(0,1fr)_340px] lg:gap-10">
+    <!-- ESQUERDA: tapete grande -->
+    <div class="flex justify-center">
+      <div class="border-2 border-slate-300 p-2 rounded-sm bg-white shadow-sm">
+        <div :style="estiloTapete()" id="tapete">
+          <template x-for="i in rows*cols" :key="i">
+            <div :style="estiloPeca()"></div>
+          </template>
+        </div>
+      </div>
+    </div>
+
+    <!-- DIREITA: painel de opções do tapete -->
+    <aside class="mt-8 lg:mt-0">
+      <div class="border-t-2 border-amber-200 mb-4"></div>
+      <h3 class="uppercase text-[12px] font-semibold tracking-wider text-slate-700 mb-4">
+        Opções de visualização
+      </h3>
+
+      <div class="space-y-5">
+        <div class="grid grid-cols-2 gap-4">
+          <label class="text-sm text-slate-700 flex items-center gap-2">
+            <span>Colunas:</span>
+            <input type="number" min="3" max="20" x-model.number="cols" class="w-16 border rounded-md px-2 py-1.5">
+          </label>
+          <label class="text-sm text-slate-700 flex items-center gap-2">
+            <span>Linhas:</span>
+            <input type="number" min="3" max="20" x-model.number="rows" class="w-16 border rounded-md px-2 py-1.5">
+          </label>
         </div>
 
-        <div class="grid grid-cols-2 gap-4 mb-4">
-          <div>
-            <label class="block text-sm text-slate-600 mb-1">Colunas</label>
-            <input type="number" min="3" max="20" x-model.number="cols" class="w-full border rounded-md px-2 py-1.5">
-          </div>
-          <div>
-            <label class="block text-sm text-slate-600 mb-1">Linhas</label>
-            <input type="number" min="3" max="20" x-model.number="rows" class="w-full border rounded-md px-2 py-1.5">
+        <div>
+          <div class="text-sm text-slate-700 mb-2">Cor do rejunte:</div>
+          <div class="grid grid-cols-8 gap-2">
+            <template x-for="cor in coresLadrilar" :key="'rej-'+cor.nome">
+              <button
+                class="h-9 w-9 rounded-sm border border-slate-300"
+                :class="groutColor===cor.hex ? 'ring-2 ring-slate-900' : ''"
+                :style="`background:${cor.hex}`"
+                :title="cor.nome"
+                @click="groutColor = cor.hex">
+              </button>
+            </template>
           </div>
         </div>
 
         <button @click="atualizarTapete()"
-                class="w-full bg-rose-600 hover:bg-rose-700 text-white font-medium rounded-lg py-3">
-          ⟳ Clique - Atualizar Tapete
+                class="uppercase tracking-wider text-[11px] font-semibold text-white
+                       bg-[#d9c3a3] hover:bg-[#cfb893] active:bg-[#c6ae89]
+                       border border-[#d1c2a6] shadow-sm w-full py-3 rounded-sm">
+          Visualizar
         </button>
       </div>
-    </div>
-  </div>
 
-  <!-- TAPETE -->
-  <div class="mt-10 flex flex-col items-center">
-    <div class="rounded-xl overflow-auto border bg-white p-3">
-      <div :style="estiloTapete()" class="mx-auto" id="tapete">
-        <template x-for="i in rows*cols" :key="i">
-          <div :style="estiloPeca()"></div>
-        </template>
-      </div>
-    </div>
-    <button @click="baixarTapete()" class="mt-3 px-4 py-2 border rounded-md">Baixar Tapete (PNG)</button>
+      <div class="border-t-2 border-amber-200 mt-6"></div>
+    </aside>
   </div>
 
   <!-- canvases ocultos -->
@@ -275,7 +317,7 @@ function simuladorDP(){
 
     tileURL: '',
 
-    /* NOVO: histórico de cores do raster */
+    /* histórico de cores do raster */
     usedColorsRaster: [],
 
     init(){
@@ -287,7 +329,7 @@ function simuladorDP(){
 
     selecionarTemplate(tpl){
       this.tile = tpl;
-      this.usedColorsRaster = []; // limpa histórico ao trocar de modelo
+      this.usedColorsRaster = [];
       if (tpl.type === 'raster') {
         this.iniciarEditorRaster(tpl.src);
       } else {
@@ -354,7 +396,7 @@ function simuladorDP(){
         this.editor.ctx.clearRect(0,0,targetW,targetH);
         this.editor.ctx.drawImage(img, 0, 0, targetW, targetH);
         this.editor.original = this.editor.ctx.getImageData(0,0,targetW,targetH);
-        this.usedColorsRaster = []; // novo: limpa histórico ao iniciar
+        this.usedColorsRaster = [];
         this.gerarTileURL();
       };
       img.src = src;
@@ -363,7 +405,7 @@ function simuladorDP(){
     resetRaster(){
       if (!this.editor.original) return;
       this.editor.ctx.putImageData(this.editor.original, 0, 0);
-      this.usedColorsRaster = []; // novo: limpa histórico ao resetar
+      this.usedColorsRaster = [];
       this.gerarTileURL();
     },
 
@@ -373,7 +415,7 @@ function simuladorDP(){
       const x = Math.floor((ev.clientX - rect.left) * (this.editor.canvas.width / rect.width));
       const y = Math.floor((ev.clientY - rect.top) * (this.editor.canvas.height / rect.height));
       this.floodFill(x, y, this.hexToRgba(this.corSelecionada));
-      this.addUsedColor(this.corSelecionada); // novo: registra cor aplicada
+      this.addUsedColor(this.corSelecionada);
       this.gerarTileURL();
     },
 
@@ -425,18 +467,18 @@ function simuladorDP(){
 
     // ===== TAPETE =====
     estiloTapete(){
-  const size = 90
-  const gap = 2               // << rejunte de 2px
-  return {
-    display: 'grid',
-    gridTemplateColumns: `repeat(${this.cols}, ${size}px)`,
-    gridAutoRows: `${size}px`,
-    gap: `${gap}px`,          // << 2px entre peças
-    background: this.groutColor,
-    padding: `${gap}px`,      // << borda externa com o mesmo rejunte
-    width: 'fit-content'
-  }
-},
+      const size = 90;
+      const gap  = 2; // rejunte 2px
+      return {
+        display: 'grid',
+        gridTemplateColumns: `repeat(${this.cols}, ${size}px)`,
+        gridAutoRows: `${size}px`,
+        gap: `${gap}px`,
+        background: this.groutColor,
+        padding: `${gap}px`,
+        width: 'fit-content'
+      }
+    },
 
     estiloPeca(){
       return {
@@ -462,40 +504,39 @@ function simuladorDP(){
     },
 
     baixarTapete(){
-  const size = 90
-  const gap = 2               // << mesmo rejunte de 2px
+      const size = 90;
+      const gap  = 2; // mesmo rejunte
 
-  const totalW = this.cols*size + (this.cols+1)*gap
-  const totalH = this.rows*size + (this.rows+1)*gap
+      const totalW = this.cols*size + (this.cols+1)*gap;
+      const totalH = this.rows*size + (this.rows+1)*gap;
 
-  const canvas = document.getElementById('canvasTapete')
-  const ctx = canvas.getContext('2d')
-  canvas.width = totalW
-  canvas.height = totalH
+      const canvas = document.getElementById('canvasTapete');
+      const ctx = canvas.getContext('2d');
+      canvas.width = totalW;
+      canvas.height = totalH;
 
-  ctx.fillStyle = this.groutColor
-  ctx.fillRect(0,0,totalW,totalH)
+      ctx.fillStyle = this.groutColor;
+      ctx.fillRect(0,0,totalW,totalH);
 
-  const img = new Image()
-  img.onload = () => {
-    for(let r=0;r<this.rows;r++){
-      for(let c=0;c<this.cols;c++){
-        const x = gap + c*(size+gap)
-        const y = gap + r*(size+gap)
-        ctx.drawImage(img, x, y, size, size)
+      const img = new Image();
+      img.onload = () => {
+        for(let r=0;r<this.rows;r++){
+          for(let c=0;c<this.cols;c++){
+            const x = gap + c*(size+gap);
+            const y = gap + r*(size+gap);
+            ctx.drawImage(img, x, y, size, size);
+          }
+        }
+        const url = canvas.toDataURL('image/png');
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'tapete.png';
+        a.click();
       }
-    }
-    const url = canvas.toDataURL('image/png')
-    const a = document.createElement('a')
-    a.href = url
-    a.download = 'tapete.png'
-    a.click()
-  }
-  img.src = this.tileURL
-},
+      img.src = this.tileURL;
+    },
 
-
-    /* ========= NOVO: nomes e lista de cores usadas ========= */
+    /* ===== nomes e lista de cores usadas ===== */
     addUsedColor(hex){
       if(!hex) return;
       let n = (hex||'').toLowerCase();
@@ -514,109 +555,101 @@ function simuladorDP(){
     },
 
     coresUsadas(){
-      // SVG: usa as cores ATUAIS do objeto 'cores' (sem duplicar), na ordem p1->p2->miolo->borda->bg
       if (this.tile?.type === 'svg' && this.cores){
         const ordem = ['p1','p2','miolo','borda','bg'];
         const seq = ordem.map(k => this.cores[k]).filter(Boolean);
-        const out = [];
-        const seen = new Set();
+        const out = []; const seen = new Set();
         for (const hex of seq){
           const h = (hex||'').toLowerCase();
           if(!seen.has(h)){ seen.add(h); out.push(hex); }
         }
         return out;
       }
-      // Raster: cores que o usuário realmente aplicou (ordem de uso, sem duplicatas)
       return this.usedColorsRaster.length ? this.usedColorsRaster : [];
     },
 
-    /* ========= NOVO: Baixar PDF no layout do Ladrilar ========= */
-async baixarLadrilhoPDF(){
-  if(!this.tileURL) this.gerarTileURL();
+    /* ===== PDF no layout Ladrilar ===== */
+    async baixarLadrilhoPDF(){
+      if(!this.tileURL) this.gerarTileURL();
 
-  const jsPDF = await this._loadJsPDF();
-  const pdf = new jsPDF({ unit: 'pt', format: 'a4', compress: true });
-  const pw = pdf.internal.pageSize.getWidth();
-  const ph = pdf.internal.pageSize.getHeight();
-  const margin = 36;
+      const jsPDF = await this._loadJsPDF();
+      const pdf = new jsPDF({ unit: 'pt', format: 'a4', compress: true });
+      const pw = pdf.internal.pageSize.getWidth();
+      const ph = pdf.internal.pageSize.getHeight();
+      const margin = 36;
 
-  // cabeçalho
-  const now = new Date();
-  pdf.setFont('helvetica','normal'); pdf.setTextColor(80);
-  pdf.setFontSize(8);
-  pdf.text(now.toLocaleDateString() + ', ' + now.toLocaleTimeString(), margin, margin-10);
-  pdf.setFontSize(9);
-  pdf.text('Simulador | Studio Latitude', pw/2, margin-10, {align:'center'});
+      // cabeçalho
+      const now = new Date();
+      pdf.setFont('helvetica','normal'); pdf.setTextColor(80);
+      pdf.setFontSize(8);
+      pdf.text(now.toLocaleDateString() + ', ' + now.toLocaleTimeString(), margin, margin-10);
+      pdf.setFontSize(9);
+      pdf.text('Simulador | Studio Latitude', pw/2, margin-10, {align:'center'});
 
-  // ladrilho grande
-  const imgSize = Math.min(pw - margin*2, 420);
-  const ix = (pw - imgSize)/2, iy = margin + 8;
-  pdf.addImage(this.tileURL, 'PNG', ix, iy, imgSize, imgSize, undefined, 'FAST');
+      // ladrilho grande
+      const imgSize = Math.min(pw - margin*2, 420);
+      const ix = (pw - imgSize)/2, iy = margin + 8;
+      pdf.addImage(this.tileURL, 'PNG', ix, iy, imgSize, imgSize, undefined, 'FAST');
 
-  // legenda do modelo
-  const tituloY = iy + imgSize + 22;
-  pdf.setFontSize(9); pdf.setTextColor(60);
-  pdf.text('Studio Latitude - MODELO: ' + (this.tile?.nome || '').toUpperCase(), margin, tituloY);
+      // legenda do modelo
+      const tituloY = iy + imgSize + 22;
+      pdf.setFontSize(9); pdf.setTextColor(60);
+      pdf.text('Studio Latitude - MODELO: ' + (this.tile?.nome || '').toUpperCase(), margin, tituloY);
 
-  // paleta usada (sem duplicadas)
-  const usados = this.coresUsadas();
-  const sw = 48, sh = 48, gap = 14;
-  let sx = margin, sy = tituloY + 10;
+      // paleta usada
+      const usados = this.coresUsadas();
+      const sw = 48, sh = 48, gap = 14;
+      let sx = margin, sy = tituloY + 10;
 
-  pdf.setLineWidth(0.5);
-  usados.forEach((hex) => {
-    const rgb = this._hexToRgb(hex);
-    pdf.setDrawColor(200); pdf.setFillColor(rgb.r, rgb.g, rgb.b);
-    pdf.rect(sx, sy, sw, sh, 'FD');           // quadrado
+      pdf.setLineWidth(0.5);
+      usados.forEach((hex) => {
+        const rgb = this._hexToRgb(hex);
+        pdf.setDrawColor(200); pdf.setFillColor(rgb.r, rgb.g, rgb.b);
+        pdf.rect(sx, sy, sw, sh, 'FD');
 
-    // nome em até 2 linhas
-    pdf.setTextColor(60); pdf.setFontSize(8);
-    const nome = this.nomeDaCor(hex);
-    const parts = this._wrapName(nome);
-    pdf.text(parts[0], sx, sy + sh + 12);
-    if(parts[1]) pdf.text(parts[1], sx, sy + sh + 22);
+        pdf.setTextColor(60); pdf.setFontSize(8);
+        const nome = this.nomeDaCor(hex);
+        const parts = this._wrapName(nome);
+        pdf.text(parts[0], sx, sy + sh + 12);
+        if(parts[1]) pdf.text(parts[1], sx, sy + sh + 22);
 
-    sx += sw + gap;
-  });
+        sx += sw + gap;
+      });
 
-  // rodapé
-  pdf.setFontSize(7); pdf.setTextColor(110);
-  pdf.text(window.location.origin + window.location.pathname, margin, ph - 10);
-  pdf.text('1/1', pw - margin, ph - 10, {align:'right'});
+      // rodapé
+      pdf.setFontSize(7); pdf.setTextColor(110);
+      pdf.text(window.location.origin + window.location.pathname, margin, ph - 10);
+      pdf.text('1/1', pw - margin, ph - 10, {align:'right'});
 
-  pdf.save('ladrilho.pdf');
-},
+      pdf.save('ladrilho.pdf');
+    },
 
-// quebra simples do nome em até 2 linhas
-_wrapName(nome){
-  const words = String(nome||'').split(' ');
-  if(words.length <= 1) return [nome, ''];
-  const mid = Math.ceil(words.length/2);
-  return [words.slice(0, mid).join(' '), words.slice(mid).join(' ')];
-},
+    _wrapName(nome){
+      const words = String(nome||'').split(' ');
+      if(words.length <= 1) return [nome, ''];
+      const mid = Math.ceil(words.length/2);
+      return [words.slice(0, mid).join(' '), words.slice(mid).join(' ')];
+    },
 
-// HEX -> RGB para o jsPDF
-_hexToRgb(hex){
-  let h = (hex||'').replace('#','');
-  if(h.length===3) h = h.split('').map(c=>c+c).join('');
-  const r = parseInt(h.slice(0,2),16);
-  const g = parseInt(h.slice(2,4),16);
-  const b = parseInt(h.slice(4,6),16);
-  return {r,g,b};
-},
+    _hexToRgb(hex){
+      let h = (hex||'').replace('#','');
+      if(h.length===3) h = h.split('').map(c=>c+c).join('');
+      const r = parseInt(h.slice(0,2),16);
+      const g = parseInt(h.slice(2,4),16);
+      const b = parseInt(h.slice(4,6),16);
+      return {r,g,b};
+    },
 
-// loader on-demand do jsPDF via CDN (evita incluir script fixo na página)
-_loadJsPDF(){
-  return new Promise((resolve, reject) => {
-    if (window.jspdf && window.jspdf.jsPDF) return resolve(window.jspdf.jsPDF);
-    const s = document.createElement('script');
-    s.src = 'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js';
-    s.onload = () => resolve(window.jspdf.jsPDF);
-    s.onerror = () => reject(new Error('Falha ao carregar jsPDF'));
-    document.head.appendChild(s);
-  }).then(() => window.jspdf.jsPDF);
-},
-
+    _loadJsPDF(){
+      return new Promise((resolve, reject) => {
+        if (window.jspdf && window.jspdf.jsPDF) return resolve(window.jspdf.jsPDF);
+        const s = document.createElement('script');
+        s.src = 'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js';
+        s.onload = () => resolve(window.jspdf.jsPDF);
+        s.onerror = () => reject(new Error('Falha ao carregar jsPDF'));
+        document.head.appendChild(s);
+      }).then(() => window.jspdf.jsPDF);
+    },
   }
 }
 </script>
