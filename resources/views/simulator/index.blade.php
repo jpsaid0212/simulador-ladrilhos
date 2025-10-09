@@ -6,6 +6,7 @@
 <section class="max-w-6xl mx-auto px-4 py-12">
 <div x-data="simuladorDP()" x-init="init()">
 
+  <!-- aviso / instruções -->
   <div class="bg-orange-50 border border-orange-100 rounded-xl px-4 py-3 text-sm text-slate-700">
     <p class="font-semibold mb-1">Monte seu Ladrilho Personalizado:</p>
     <ol class="list-decimal ml-5 space-y-1">
@@ -17,66 +18,62 @@
     </ol>
   </div>
 
-  <h2 class="text-2xl font-semibold text-center mt-8 mb-4">O QUE DESEJA SIMULAR?</h2>
-  <div class="flex justify-center">
-    <select x-model="modo" class="border rounded-md px-3 py-2">
-      <option value="ladrilho">Simular só Ladrilho, sem Moldura</option>
-    </select>
-  </div>
+  <!-- SELECTOR com miniatura -->
+  <div class="mt-10 max-w-xl mx-auto">
+    <label class="block text-center text-slate-600 mb-3">1 — Selecione um modelo para customizar</label>
 
-  <div class="mt-10">
-    <p class="text-center text-slate-600 mb-3">1 - Clique no Tipo de Ladrilho</p>
-    <div class="flex flex-wrap gap-2 justify-center">
-      <template x-for="cat in categorias" :key="cat">
-        <button @click="categoriaAtiva = cat"
-                class="px-3 py-1.5 rounded-md border"
-                :class="categoriaAtiva===cat ? 'border-rose-400 text-rose-600 bg-rose-50' : 'border-slate-300 text-slate-700 bg-white' "
-                x-text="cat"></button>
-      </template>
-    </div>
-  </div>
+    <div class="relative" x-data="{ open:false, q:'', filtrar(list){
+        const s = this.q.trim().toLowerCase();
+        if(!s) return list;
+        return list.filter(t => (t.nome||'').toLowerCase().includes(s) || (t.categoria||'').toLowerCase().includes(s));
+      }}">
+      <button type="button"
+              class="w-full border border-slate-300 bg-white rounded-md px-3 py-2 flex items-center justify-between gap-3 hover:bg-slate-50"
+              @click="open = !open">
+        <div class="flex items-center gap-3 min-w-0">
+          <img :src="tile?.id ? gerarThumb(tile) : (templates[0] ? gerarThumb(templates[0]) : '')"
+               alt="" class="h-5 w-5 rounded-sm border border-slate-300 object-cover">
+          <span class="truncate text-sm text-slate-800" x-text="tile?.nome ? tile.nome : 'Selecione um modelo'"></span>
+        </div>
+        <svg class="h-4 w-4 text-slate-500" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 10.94l3.71-3.71a.75.75 0 111.06 1.06l-4.24 4.24a.75.75 0 01-1.06 0L5.21 8.29a.75.75 0 01.02-1.08z" clip-rule="evenodd"/></svg>
+      </button>
 
-  <div class="mt-8">
-    <p class="text-center text-slate-600 mb-2">2 - Clique na miniatura, use a rolagem</p>
-    <div class="overflow-x-auto">
-      <div class="flex gap-3 min-w-max px-2">
-        <template x-for="tpl in templatesFiltrados()" :key="tpl.id">
-          <button class="border rounded-md overflow-hidden hover:shadow"
-                  :class="tile.id===tpl.id ? 'ring-2 ring-rose-500' : 'border-slate-300'"
-                  @click="selecionarTemplate(tpl)">
-            <img :src="gerarThumb(tpl)" alt="" class="h-20 w-20 object-cover">
-          </button>
-        </template>
+      <div x-show="open" x-transition @click.outside="open=false"
+           class="absolute z-30 mt-1 w-full rounded-md border border-slate-300 bg-white shadow-md">
+        <div class="p-2 border-b border-slate-200 flex items-center gap-2">
+          <input type="text" x-model="q" placeholder="Buscar…"
+                 class="w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-slate-400">
+          <svg class="h-4 w-4 text-slate-500 shrink-0" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M8.5 3.5a5 5 0 013.99 8.14l3.18 3.18a.75.75 0 11-1.06 1.06l-3.18-3.18A5 5 0 118.5 3.5zm0 1.5a3.5 3.5 0 100 7 3.5 3.5 0 000-7z" clip-rule="evenodd"/></svg>
+        </div>
+
+        <div class="max-h-72 overflow-auto py-1">
+          <div class="px-3 py-1 text-[12px] text-slate-500">Selecione um modelo para customizar</div>
+          <template x-for="tpl in filtrar(templates)" :key="tpl.id">
+            <button type="button"
+                    @click="selecionarTemplate(tpl); open=false; q='';"
+                    class="w-full px-3 py-2 flex items-center gap-3 text-left hover:bg-slate-50"
+                    :class="tile.id===tpl.id ? 'bg-rose-50' : ''">
+              <img :src="gerarThumb(tpl)" alt="" class="h-8 w-8 rounded-sm border border-slate-300 object-cover">
+              <div class="min-w-0">
+                <div class="text-sm text-slate-800 truncate" x-text="tpl.nome"></div>
+                <div class="text-[11px] text-slate-500 truncate" x-text="tpl.categoria"></div>
+              </div>
+            </button>
+          </template>
+        </div>
       </div>
     </div>
   </div>
 
-  <div class="mt-6">
-    <p class="text-center text-slate-600 mb-3">3 - Clique nas cores e depois nas áreas do ladrilho abaixo</p>
-
-    <div class="mx-auto max-w-5xl">
-      <div class="flex flex-wrap gap-2 justify-center border-t pt-4">
-        <template x-for="hex in paletaLinha1" :key="'l1'+hex">
-          <button class="h-9 w-9 rounded-md border" :style="`background:${hex}`"
-                  :class="corSelecionada===hex?'ring-2 ring-slate-900':''"
-                  @click="corSelecionada = hex" :title="hex"></button>
-        </template>
-      </div>
-      <div class="flex flex-wrap gap-2 justify-center border-t pt-4 mt-4">
-        <template x-for="hex in paletaLinha2" :key="'l2'+hex">
-          <button class="h-9 w-9 rounded-md border" :style="`background:${hex}`"
-                  :class="corSelecionada===hex?'ring-2 ring-slate-900':''"
-                  @click="corSelecionada = hex" :title="hex"></button>
-        </template>
-      </div>
-    </div>
+  <div class="mt-4">
+    <p class="text-center text-slate-600 text-sm">2 — Depois de escolher o modelo, selecione as cores ao lado e clique nas áreas do ladrilho.</p>
   </div>
 
+  <!-- GRID: esquerda preview / direita paleta + controles -->
   <div class="mt-8 grid grid-cols-1 lg:grid-cols-2 gap-8">
+    <!-- ESQUERDA: preview -->
     <div class="flex flex-col items-center">
       <div class="relative bg-white border rounded-xl p-3">
-
-        <!-- NOVO: modo edição por imagem (canvas) -->
         <template x-if="tile.type==='raster'">
           <div class="flex flex-col items-center">
             <canvas id="editorCanvas"
@@ -86,12 +83,9 @@
           </div>
         </template>
 
-        <!-- Modelos SVG (você pode remover depois se quiser ficar só com imagem) -->
         <template x-if="tile.type==='svg' && tile.id==='flor1'">
           <svg viewBox="0 0 100 100" class="w-[320px] h-[320px] sm:w-[380px] sm:h-[380px]">
-            <rect x="0" y="0" width="100" height="100"
-                  :fill="cores.bg"
-                  @click="pintar('bg')"></rect>
+            <rect x="0" y="0" width="100" height="100" :fill="cores.bg" @click="pintar('bg')"></rect>
             <ellipse cx="50" cy="50" rx="34" ry="18" :fill="cores.p1" @click="pintar('p1')"></ellipse>
             <ellipse cx="50" cy="50" rx="34" ry="18" transform="rotate(90,50,50)" :fill="cores.p2" @click="pintar('p2')"></ellipse>
             <circle cx="50" cy="50" r="10" :fill="cores.miolo" @click="pintar('miolo')"></circle>
@@ -108,48 +102,84 @@
             <rect x="4" y="4" width="92" height="92" fill="none" stroke-width="2.5" :stroke="cores.borda" @click="pintar('borda')"></rect>
           </svg>
         </template>
+      </div>
 
+      <!-- MODELO + CORES USADAS -->
+      <div class="mt-6 w-full">
+        <p class="uppercase tracking-[0.25em] text-[12px] text-slate-700">
+          STUDIO LATITUDE - Modelo:
+          <span class="normal-case tracking-normal font-medium" x-text="tile?.nome || '—'"></span>
+        </p>
+
+        <div class="mt-3 flex items-center gap-4">
+          <template x-for="c in coresUsadas()" :key="c">
+            <div class="flex flex-col items-center">
+              <span class="h-10 w-10 rounded-sm border border-slate-300" :style="`background:${c}`"></span>
+              <span class="mt-1 text-[11px] text-slate-600" x-text="nomeDaCor(c)"></span>
+            </div>
+          </template>
+        </div>
       </div>
 
       <div class="mt-3 flex items-center gap-3">
-        <button @click="baixarLadrilho()" class="px-3 py-2 border rounded-md">Baixar esta Imagem</button>
-
+        <button @click="baixarLadrilhoPDF()" class="px-3 py-2 border rounded-md">Baixar PDF</button>
         <template x-if="tile.type==='raster'">
           <button @click="resetRaster()" class="px-3 py-2 border rounded-md">Resetar ladrilho</button>
         </template>
-
         <span class="text-sm text-slate-500">Clique na cor e depois nas áreas do ladrilho</span>
       </div>
     </div>
 
+    <!-- DIREITA: paleta com NOMES + controles -->
     <div>
-      <div class="mb-4">
-        <label class="block text-sm text-slate-600 mb-1">Selecione a Cor do Rejunte</label>
-        <select x-model="groutColor" class="border rounded-md px-3 py-2">
-          <template x-for="opt in rejunteOpcoes" :key="opt.hex">
-            <option :value="opt.hex" x-text="opt.nome"></option>
+      <p class="text-slate-600 mb-2 text-sm">3 - Selecione as cores</p>
+
+      <div class="rounded-xl border border-slate-200 bg-white p-4">
+        <div class="grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-5 gap-x-6 gap-y-6">
+          <template x-for="cor in coresLadrilar" :key="cor.nome">
+            <button class="group flex flex-col items-center text-center"
+                    @click="corSelecionada = cor.hex"
+                    :title="cor.nome">
+              <span class="block h-12 w-12 rounded-md border border-slate-300 shadow-sm"
+                    :class="corSelecionada===cor.hex ? 'ring-2 ring-slate-900' : ''"
+                    :style="`background:${cor.hex}`"></span>
+              <span class="mt-1.5 text-[11px] text-slate-600 group-hover:text-slate-800 truncate w-20" x-text="cor.nome"></span>
+            </button>
           </template>
-        </select>
-      </div>
-
-      <div class="grid grid-cols-2 gap-4 mb-4">
-        <div>
-          <label class="block text-sm text-slate-600 mb-1">Colunas</label>
-          <input type="number" min="3" max="20" x-model.number="cols" class="w-full border rounded-md px-2 py-1.5">
-        </div>
-        <div>
-          <label class="block text-sm text-slate-600 mb-1">Linhas</label>
-          <input type="number" min="3" max="20" x-model.number="rows" class="w-full border rounded-md px-2 py-1.5">
         </div>
       </div>
 
-      <button @click="atualizarTapete()"
-              class="w-full bg-rose-600 hover:bg-rose-700 text-white font-medium rounded-lg py-3">
-        ⟳ Clique - Atualizar Tapete
-      </button>
+      <!-- controles -->
+      <div class="mt-6">
+        <div class="mb-4">
+          <label class="block text-sm text-slate-600 mb-1">Selecione a Cor do Rejunte</label>
+          <select x-model="groutColor" class="border rounded-md px-3 py-2 w-full">
+            <template x-for="opt in rejunteOpcoes" :key="opt.hex">
+              <option :value="opt.hex" x-text="opt.nome"></option>
+            </template>
+          </select>
+        </div>
+
+        <div class="grid grid-cols-2 gap-4 mb-4">
+          <div>
+            <label class="block text-sm text-slate-600 mb-1">Colunas</label>
+            <input type="number" min="3" max="20" x-model.number="cols" class="w-full border rounded-md px-2 py-1.5">
+          </div>
+          <div>
+            <label class="block text-sm text-slate-600 mb-1">Linhas</label>
+            <input type="number" min="3" max="20" x-model.number="rows" class="w-full border rounded-md px-2 py-1.5">
+          </div>
+        </div>
+
+        <button @click="atualizarTapete()"
+                class="w-full bg-rose-600 hover:bg-rose-700 text-white font-medium rounded-lg py-3">
+          ⟳ Clique - Atualizar Tapete
+        </button>
+      </div>
     </div>
   </div>
 
+  <!-- TAPETE -->
   <div class="mt-10 flex flex-col items-center">
     <div class="rounded-xl overflow-auto border bg-white p-3">
       <div :style="estiloTapete()" class="mx-auto" id="tapete">
@@ -158,10 +188,10 @@
         </template>
       </div>
     </div>
-
     <button @click="baixarTapete()" class="mt-3 px-4 py-2 border rounded-md">Baixar Tapete (PNG)</button>
   </div>
 
+  <!-- canvases ocultos -->
   <canvas id="canvasLadrilho" class="hidden"></canvas>
   <canvas id="canvasTapete" class="hidden"></canvas>
 
@@ -172,10 +202,8 @@ function simuladorDP(){
     categorias: ['Centrais','Geométricos','Florões'],
     categoriaAtiva: 'Centrais',
 
-    // NOVO: adiciona seu azulejo .avif como template "raster"
     templates: [
       { id:'img_az1', type:'raster', nome:'Azulejo 1', categoria:'Centrais', src: "{{ asset('simulator/patterns/azulejo1.avif') }}" },
-      // modelos SVG (exemplos)
       { id:'geo1',  type:'svg', nome:'Geométrico 01', categoria:'Geométricos', coresDefault:{ bg:'#e6e6e6', p1:'#6b7280', p2:'#94a3b8', miolo:'#1f2937', borda:'#374151' } },
       { id:'flor1', type:'svg', nome:'Flor 01',       categoria:'Florões',    coresDefault:{ bg:'#e6e6e6', p1:'#8ab79b', p2:'#5a8d75', miolo:'#2f5d50', borda:'#2f3e46' } },
     ],
@@ -196,182 +224,219 @@ function simuladorDP(){
     rows: 8,
     cols: 8,
 
-    paletaLinha1: ['#ffffff','#fbf8ef','#f3e7c9','#f2c94c','#e7a33d','#c05621','#7f1d1d','#5b2a27','#3f6212','#6b8e23','#4b5563','#bfdbfe','#93c5fd','#60a5fa','#3b82f6','#1e40af','#0b2e4f'],
-    paletaLinha2: ['#0f172a','#111827','#e2e8f0','#d1d5db','#9ca3af','#6b7280','#f5d0fe','#fca5a5','#f59e0b','#d97706','#c4b5fd','#a7f3d0','#34d399','#14b8a6','#0ea5e9','#0284c7','#0369a1'],
+    /* PALETA LADRILAR (hex aproximados) */
+    coresLadrilar: [
+      {nome:'Amazônia',        hex:'#2f4a45'},
+      {nome:'Azul Escuro',     hex:'#5b6e8e'},
+      {nome:'Bege Comum',      hex:'#f8ebc7'},
+      {nome:'Cana',            hex:'#b9aa54'},
+      {nome:'Fendi',           hex:'#b59b8f'},
+      {nome:'Mandala',         hex:'#6d8a93'},
+      {nome:'Nude',            hex:'#d9b79d'},
+      {nome:'Ouro',            hex:'#f2b733'},
+      {nome:'Royal',           hex:'#5ea1df'},
+      {nome:'Violeta',         hex:'#d7cfd3'},
+      {nome:'Branco',          hex:'#f4f2ea'},
+      {nome:'Bege Claro',      hex:'#eee2bd'},
+      {nome:'Amarelo Claro',   hex:'#f8de78'},
+      {nome:'Mostarda',        hex:'#e4ae54'},
+      {nome:'Marrom',          hex:'#6f4d4d'},
+      {nome:'Terracota Claro', hex:'#eda382'},
+      {nome:'Terracota Comum', hex:'#df825f'},
+      {nome:'Terracota Escuro',hex:'#cf735a'},
+      {nome:'Vermelho',        hex:'#9b3b33'},
+      {nome:'Vermelho Vivo',   hex:'#a6423c'},
+      {nome:'Amêndoa',         hex:'#cda06d'},
+      {nome:'Azul Claro',      hex:'#cfd7d9'},
+      {nome:'Azul Black',      hex:'#a9c1da'},
+      {nome:'Azul Ultramar',   hex:'#6a85b3'},
+      {nome:'Azul Grizo',      hex:'#d8dadd'},
+      {nome:'Azul Noite',      hex:'#5a6776'},
+      {nome:'Provence',        hex:'#aef0ef'},
+      {nome:'Tiffany',         hex:'#75e0e6'},
+      {nome:'Verde Claro',     hex:'#b4cbb6'},
+      {nome:'Verde Bandeira',  hex:'#6a834f'},
+      {nome:'Verde Escuro',    hex:'#5a6d4e'},
+      {nome:'Rosa Claro',      hex:'#f1c7bf'},
+      {nome:'Rosa Comum',      hex:'#f3b6b9'},
+      {nome:'Rosa Queimado',   hex:'#b57064'},
+      {nome:'Craft Claro',     hex:'#efe0cf'},
+      {nome:'Craft Comum',     hex:'#cda87b'},
+      {nome:'Craft Escuro',    hex:'#b08f64'},
+      {nome:'Turquesa',        hex:'#a8c7c1'},
+      {nome:'Cinza Claro',     hex:'#dddcd2'},
+      {nome:'Concreto',        hex:'#b3a696'},
+      {nome:'Cinza Escuro',    hex:'#7f7b78'},
+      {nome:'Preto',           hex:'#2f2f2f'},
+    ],
 
-    // estado do editor de imagem (raster)
+    // ===== editor raster =====
     editor: { canvas: null, ctx: null, img: null, original: null, scaleX:1, scaleY:1, tol: 28 },
 
     tileURL: '',
 
+    /* NOVO: histórico de cores do raster */
+    usedColorsRaster: [],
+
     init(){
-      this.selecionarTemplate(this.templates[0]) // começa no seu azulejo
-      this.atualizarTapete()
+      this.selecionarTemplate(this.templates[0]);
+      this.atualizarTapete();
     },
 
-    templatesFiltrados(){
-      return this.templates.filter(t => t.categoria === this.categoriaAtiva)
-    },
+    templatesFiltrados(){ return this.templates.filter(t => t.categoria === this.categoriaAtiva) },
 
     selecionarTemplate(tpl){
-      this.tile = tpl
-
+      this.tile = tpl;
+      this.usedColorsRaster = []; // limpa histórico ao trocar de modelo
       if (tpl.type === 'raster') {
-        this.iniciarEditorRaster(tpl.src)
+        this.iniciarEditorRaster(tpl.src);
       } else {
-        this.cores = { ...tpl.coresDefault }
-        this.gerarTileURL() // svg
+        this.cores = { ...tpl.coresDefault };
+        this.gerarTileURL();
       }
     },
 
     gerarThumb(tpl){
-      if (tpl.type === 'raster') return tpl.src
-      const c = tpl.coresDefault
+      if (tpl.type === 'raster') return tpl.src;
+      const c = tpl.coresDefault;
       const svg = tpl.id==='flor1'
         ? `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect width="100" height="100" fill="${c.bg}"/><ellipse cx="50" cy="50" rx="34" ry="18" fill="${c.p1}"/><ellipse cx="50" cy="50" rx="34" ry="18" transform="rotate(90 50 50)" fill="${c.p2}"/><circle cx="50" cy="50" r="10" fill="${c.miolo}"/><rect x="4" y="4" width="92" height="92" fill="none" stroke="${c.borda}" stroke-width="2.5"/></svg>`
-        : `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect width="100" height="100" fill="${c.bg}"/><rect x="20" y="20" width="60" height="60" fill="${c.p1}"/><rect x="10" y="10" width="80" height="80" transform="rotate(45 50 50)" fill="${c.p2}"/><rect x="36" y="36" width="28" height="28" fill="${c.miolo}"/><rect x="4" y="4" width="92" height="92" fill="none" stroke="${c.borda}" stroke-width="2.5"/></svg>`
-      return 'data:image/svg+xml;utf8,' + encodeURIComponent(svg)
+        : `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect width="100" height="100" fill="${c.bg}"/><rect x="20" y="20" width="60" height="60" fill="${c.p1}"/><rect x="10" y="10" width="80" height="80" transform="rotate(45 50 50)" fill="${c.p2}"/><rect x="36" y="36" width="28" height="28" fill="${c.miolo}"/><rect x="4" y="4" width="92" height="92" fill="none" stroke="${c.borda}" stroke-width="2.5"/></svg>`;
+      return 'data:image/svg+xml;utf8,' + encodeURIComponent(svg);
     },
 
     // ===== SVG =====
-    pintar(campo){
-      this.cores[campo] = this.corSelecionada
-      this.gerarTileURL()
-    },
+    pintar(campo){ this.cores[campo] = this.corSelecionada; this.gerarTileURL() },
 
     svgString(){
       if(this.tile.id==='flor1'){
         return `
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
-          <rect x="0" y="0" width="100" height="100" fill="${this.cores.bg}"/>
+          <rect width="100" height="100" fill="${this.cores.bg}"/>
           <ellipse cx="50" cy="50" rx="34" ry="18" fill="${this.cores.p1}"/>
           <ellipse cx="50" cy="50" rx="34" ry="18" transform="rotate(90 50 50)" fill="${this.cores.p2}"/>
           <circle cx="50" cy="50" r="10" fill="${this.cores.miolo}"/>
           <rect x="4" y="4" width="92" height="92" fill="none" stroke="${this.cores.borda}" stroke-width="2.5"/>
-        </svg>`
+        </svg>`;
       }
       return `
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
-        <rect x="0" y="0" width="100" height="100" fill="${this.cores.bg}"/>
+        <rect width="100" height="100" fill="${this.cores.bg}"/>
         <rect x="20" y="20" width="60" height="60" fill="${this.cores.p1}"/>
         <rect x="10" y="10" width="80" height="80" transform="rotate(45 50 50)" fill="${this.cores.p2}"/>
         <rect x="36" y="36" width="28" height="28" fill="${this.cores.miolo}"/>
         <rect x="4" y="4" width="92" height="92" fill="none" stroke="${this.cores.borda}" stroke-width="2.5"/>
-      </svg>`
+      </svg>`;
     },
 
     gerarTileURL(){
       if (this.tile.type === 'svg') {
-        const svg = this.svgString()
-        this.tileURL = 'data:image/svg+xml;utf8,' + encodeURIComponent(svg)
+        const svg = this.svgString();
+        this.tileURL = 'data:image/svg+xml;utf8,' + encodeURIComponent(svg);
       } else if (this.tile.type === 'raster' && this.editor.canvas) {
-        this.tileURL = this.editor.canvas.toDataURL('image/png')
+        this.tileURL = this.editor.canvas.toDataURL('image/png');
       }
     },
 
     // ===== RASTER (edição por clique) =====
     iniciarEditorRaster(src){
-      // configura canvas
-      this.editor.canvas = document.getElementById('editorCanvas')
-      this.editor.ctx = this.editor.canvas.getContext('2d')
+      this.editor.canvas = document.getElementById('editorCanvas');
+      this.editor.ctx = this.editor.canvas.getContext('2d');
 
-      // resolução interna alta para export/qualidade
-      const targetW = 600, targetH = 600
-      this.editor.canvas.width = targetW
-      this.editor.canvas.height = targetH
+      const targetW = 600, targetH = 600;
+      this.editor.canvas.width = targetW;
+      this.editor.canvas.height = targetH;
 
-      // carrega imagem
-      const img = new Image()
-      img.crossOrigin = 'anonymous'
+      const img = new Image();
+      img.crossOrigin = 'anonymous';
       img.onload = () => {
-        this.editor.img = img
-        // desenha centralizado (assume tile quadrado)
-        this.editor.ctx.clearRect(0,0,targetW,targetH)
-        this.editor.ctx.drawImage(img, 0, 0, targetW, targetH)
-        // guarda original para reset
-        this.editor.original = this.editor.ctx.getImageData(0,0,targetW,targetH)
-        this.gerarTileURL()
-      }
-      img.src = src
+        this.editor.img = img;
+        this.editor.ctx.clearRect(0,0,targetW,targetH);
+        this.editor.ctx.drawImage(img, 0, 0, targetW, targetH);
+        this.editor.original = this.editor.ctx.getImageData(0,0,targetW,targetH);
+        this.usedColorsRaster = []; // novo: limpa histórico ao iniciar
+        this.gerarTileURL();
+      };
+      img.src = src;
     },
 
     resetRaster(){
-      if (!this.editor.original) return
-      this.editor.ctx.putImageData(this.editor.original, 0, 0)
-      this.gerarTileURL()
+      if (!this.editor.original) return;
+      this.editor.ctx.putImageData(this.editor.original, 0, 0);
+      this.usedColorsRaster = []; // novo: limpa histórico ao resetar
+      this.gerarTileURL();
     },
 
     onCanvasClick(ev){
-      if (this.tile.type !== 'raster') return
-      const rect = ev.target.getBoundingClientRect()
-      // converte coordenada CSS -> pixels reais do canvas (600x600)
-      const x = Math.floor((ev.clientX - rect.left) * (this.editor.canvas.width / rect.width))
-      const y = Math.floor((ev.clientY - rect.top) * (this.editor.canvas.height / rect.height))
-      this.floodFill(x, y, this.hexToRgba(this.corSelecionada))
-      this.gerarTileURL()
+      if (this.tile.type !== 'raster') return;
+      const rect = ev.target.getBoundingClientRect();
+      const x = Math.floor((ev.clientX - rect.left) * (this.editor.canvas.width / rect.width));
+      const y = Math.floor((ev.clientY - rect.top) * (this.editor.canvas.height / rect.height));
+      this.floodFill(x, y, this.hexToRgba(this.corSelecionada));
+      this.addUsedColor(this.corSelecionada); // novo: registra cor aplicada
+      this.gerarTileURL();
     },
 
     floodFill(x, y, newColor){
-      const { ctx, canvas, tol } = this.editor
-      const imgData = ctx.getImageData(0,0,canvas.width,canvas.height)
-      const data = imgData.data
+      const { ctx, canvas, tol } = this.editor;
+      const imgData = ctx.getImageData(0,0,canvas.width,canvas.height);
+      const data = imgData.data;
 
-      const idx = (x, y) => (y * canvas.width + x) * 4
-      const target = data.slice(idx(x,y), idx(x,y)+4)
-      const sameColor = (i) => data[i]===newColor[0] && data[i+1]===newColor[1] && data[i+2]===newColor[2] && data[i+3]===255
+      const idx = (x, y) => (y * canvas.width + x) * 4;
+      const target = data.slice(idx(x,y), idx(x,y)+4);
+      const sameColor = (i) => data[i]===newColor[0] && data[i+1]===newColor[1] && data[i+2]===newColor[2] && data[i+3]===255;
       const withinTol = (i) => {
         return Math.abs(data[i]-target[0]) <= tol &&
                Math.abs(data[i+1]-target[1]) <= tol &&
                Math.abs(data[i+2]-target[2]) <= tol &&
-               Math.abs(data[i+3]-target[3]) <= 40
-      }
+               Math.abs(data[i+3]-target[3]) <= 40;
+      };
 
-      if (sameColor(idx(x,y))) return
+      if (sameColor(idx(x,y))) return;
 
-      const stack = [[x,y]]
-      const W = canvas.width, H = canvas.height
+      const stack = [[x,y]];
+      const W = canvas.width, H = canvas.height;
       while (stack.length) {
-        const [cx, cy] = stack.pop()
-        let i = idx(cx, cy)
-        if (!withinTol(i)) continue
+        const [cx, cy] = stack.pop();
+        let i = idx(cx, cy);
+        if (!withinTol(i)) continue;
 
-        // pinta pixel
-        data[i]   = newColor[0]
-        data[i+1] = newColor[1]
-        data[i+2] = newColor[2]
-        data[i+3] = 255
+        data[i]   = newColor[0];
+        data[i+1] = newColor[1];
+        data[i+2] = newColor[2];
+        data[i+3] = 255;
 
-        // vizinhos 4-conexos
-        if (cx > 0)       stack.push([cx-1, cy])
-        if (cx < W-1)     stack.push([cx+1, cy])
-        if (cy > 0)       stack.push([cx, cy-1])
-        if (cy < H-1)     stack.push([cx, cy+1])
+        if (cx > 0)       stack.push([cx-1, cy]);
+        if (cx < W-1)     stack.push([cx+1, cy]);
+        if (cy > 0)       stack.push([cx, cy-1]);
+        if (cy < H-1)     stack.push([cx, cy+1]);
       }
-      ctx.putImageData(imgData, 0, 0)
+      ctx.putImageData(imgData, 0, 0);
     },
 
     hexToRgba(hex){
-      let h = hex.replace('#','')
-      if (h.length===3) h = h.split('').map(c=>c+c).join('')
-      const r = parseInt(h.substr(0,2),16)
-      const g = parseInt(h.substr(2,2),16)
-      const b = parseInt(h.substr(4,2),16)
-      return [r,g,b,255]
+      let h = hex.replace('#','');
+      if (h.length===3) h = h.split('').map(c=>c+c).join('');
+      const r = parseInt(h.substr(0,2),16);
+      const g = parseInt(h.substr(2,2),16);
+      const b = parseInt(h.substr(4,2),16);
+      return [r,g,b,255];
     },
 
     // ===== TAPETE =====
     estiloTapete(){
-      const size = 90
-      return {
-        display: 'grid',
-        gridTemplateColumns: `repeat(${this.cols}, ${size}px)`,
-        gridAutoRows: `${size}px`,
-        gap: '6px',
-        background: this.groutColor,
-        padding: '6px',
-        width: 'fit-content'
-      }
-    },
+  const size = 90
+  const gap = 2               // << rejunte de 2px
+  return {
+    display: 'grid',
+    gridTemplateColumns: `repeat(${this.cols}, ${size}px)`,
+    gridAutoRows: `${size}px`,
+    gap: `${gap}px`,          // << 2px entre peças
+    background: this.groutColor,
+    padding: `${gap}px`,      // << borda externa com o mesmo rejunte
+    width: 'fit-content'
+  }
+},
 
     estiloPeca(){
       return {
@@ -384,52 +449,174 @@ function simuladorDP(){
       }
     },
 
-    atualizarTapete(){
-      if(!this.tileURL) this.gerarTileURL()
-    },
+    atualizarTapete(){ if(!this.tileURL) this.gerarTileURL() },
 
     baixarLadrilho(){
-      // usa a imagem atual (svg ou canvas)
       const url = (this.tile.type==='svg')
         ? ('data:image/svg+xml;utf8,' + encodeURIComponent(this.svgString()))
-        : this.editor.canvas.toDataURL('image/png')
-
-      const a = document.createElement('a')
-      a.href = url
-      a.download = 'ladrilho.png'
-      a.click()
+        : this.editor.canvas.toDataURL('image/png');
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'ladrilho.png';
+      a.click();
     },
 
     baixarTapete(){
-      const size = 90, gap = 6
-      const totalW = this.cols*size + (this.cols+1)*gap
-      const totalH = this.rows*size + (this.rows+1)*gap
+  const size = 90
+  const gap = 2               // << mesmo rejunte de 2px
 
-      const canvas = document.getElementById('canvasTapete')
-      const ctx = canvas.getContext('2d')
-      canvas.width = totalW
-      canvas.height = totalH
+  const totalW = this.cols*size + (this.cols+1)*gap
+  const totalH = this.rows*size + (this.rows+1)*gap
 
-      ctx.fillStyle = this.groutColor
-      ctx.fillRect(0,0,totalW,totalH)
+  const canvas = document.getElementById('canvasTapete')
+  const ctx = canvas.getContext('2d')
+  canvas.width = totalW
+  canvas.height = totalH
 
-      const img = new Image()
-      img.onload = () => {
-        for(let r=0;r<this.rows;r++){
-          for(let c=0;c<this.cols;c++){
-            const x = gap + c*(size+gap)
-            const y = gap + r*(size+gap)
-            ctx.drawImage(img, x, y, size, size)
-          }
-        }
-        const url = canvas.toDataURL('image/png')
-        const a = document.createElement('a')
-        a.href = url
-        a.download = 'tapete.png'
-        a.click()
+  ctx.fillStyle = this.groutColor
+  ctx.fillRect(0,0,totalW,totalH)
+
+  const img = new Image()
+  img.onload = () => {
+    for(let r=0;r<this.rows;r++){
+      for(let c=0;c<this.cols;c++){
+        const x = gap + c*(size+gap)
+        const y = gap + r*(size+gap)
+        ctx.drawImage(img, x, y, size, size)
       }
-      img.src = this.tileURL
+    }
+    const url = canvas.toDataURL('image/png')
+    const a = document.createElement('a')
+    a.href = url
+    a.download = 'tapete.png'
+    a.click()
+  }
+  img.src = this.tileURL
+},
+
+
+    /* ========= NOVO: nomes e lista de cores usadas ========= */
+    addUsedColor(hex){
+      if(!hex) return;
+      let n = (hex||'').toLowerCase();
+      if(!n.startsWith('#')) n = '#'+n;
+      if(n.length===4){ n = '#'+n.slice(1).split('').map(c=>c+c).join(''); }
+      if(!this.usedColorsRaster.includes(n)){
+        this.usedColorsRaster.push(n);
+      }
     },
+
+    nomeDaCor(hex){
+      if(!hex) return '';
+      const h = (hex || '').toLowerCase();
+      const m = (this.coresLadrilar || []).find(c => (c.hex || '').toLowerCase() === h);
+      return m ? m.nome : h;
+    },
+
+    coresUsadas(){
+      // SVG: usa as cores ATUAIS do objeto 'cores' (sem duplicar), na ordem p1->p2->miolo->borda->bg
+      if (this.tile?.type === 'svg' && this.cores){
+        const ordem = ['p1','p2','miolo','borda','bg'];
+        const seq = ordem.map(k => this.cores[k]).filter(Boolean);
+        const out = [];
+        const seen = new Set();
+        for (const hex of seq){
+          const h = (hex||'').toLowerCase();
+          if(!seen.has(h)){ seen.add(h); out.push(hex); }
+        }
+        return out;
+      }
+      // Raster: cores que o usuário realmente aplicou (ordem de uso, sem duplicatas)
+      return this.usedColorsRaster.length ? this.usedColorsRaster : [];
+    },
+
+    /* ========= NOVO: Baixar PDF no layout do Ladrilar ========= */
+async baixarLadrilhoPDF(){
+  if(!this.tileURL) this.gerarTileURL();
+
+  const jsPDF = await this._loadJsPDF();
+  const pdf = new jsPDF({ unit: 'pt', format: 'a4', compress: true });
+  const pw = pdf.internal.pageSize.getWidth();
+  const ph = pdf.internal.pageSize.getHeight();
+  const margin = 36;
+
+  // cabeçalho
+  const now = new Date();
+  pdf.setFont('helvetica','normal'); pdf.setTextColor(80);
+  pdf.setFontSize(8);
+  pdf.text(now.toLocaleDateString() + ', ' + now.toLocaleTimeString(), margin, margin-10);
+  pdf.setFontSize(9);
+  pdf.text('Simulador | Studio Latitude', pw/2, margin-10, {align:'center'});
+
+  // ladrilho grande
+  const imgSize = Math.min(pw - margin*2, 420);
+  const ix = (pw - imgSize)/2, iy = margin + 8;
+  pdf.addImage(this.tileURL, 'PNG', ix, iy, imgSize, imgSize, undefined, 'FAST');
+
+  // legenda do modelo
+  const tituloY = iy + imgSize + 22;
+  pdf.setFontSize(9); pdf.setTextColor(60);
+  pdf.text('Studio Latitude - MODELO: ' + (this.tile?.nome || '').toUpperCase(), margin, tituloY);
+
+  // paleta usada (sem duplicadas)
+  const usados = this.coresUsadas();
+  const sw = 48, sh = 48, gap = 14;
+  let sx = margin, sy = tituloY + 10;
+
+  pdf.setLineWidth(0.5);
+  usados.forEach((hex) => {
+    const rgb = this._hexToRgb(hex);
+    pdf.setDrawColor(200); pdf.setFillColor(rgb.r, rgb.g, rgb.b);
+    pdf.rect(sx, sy, sw, sh, 'FD');           // quadrado
+
+    // nome em até 2 linhas
+    pdf.setTextColor(60); pdf.setFontSize(8);
+    const nome = this.nomeDaCor(hex);
+    const parts = this._wrapName(nome);
+    pdf.text(parts[0], sx, sy + sh + 12);
+    if(parts[1]) pdf.text(parts[1], sx, sy + sh + 22);
+
+    sx += sw + gap;
+  });
+
+  // rodapé
+  pdf.setFontSize(7); pdf.setTextColor(110);
+  pdf.text(window.location.origin + window.location.pathname, margin, ph - 10);
+  pdf.text('1/1', pw - margin, ph - 10, {align:'right'});
+
+  pdf.save('ladrilho.pdf');
+},
+
+// quebra simples do nome em até 2 linhas
+_wrapName(nome){
+  const words = String(nome||'').split(' ');
+  if(words.length <= 1) return [nome, ''];
+  const mid = Math.ceil(words.length/2);
+  return [words.slice(0, mid).join(' '), words.slice(mid).join(' ')];
+},
+
+// HEX -> RGB para o jsPDF
+_hexToRgb(hex){
+  let h = (hex||'').replace('#','');
+  if(h.length===3) h = h.split('').map(c=>c+c).join('');
+  const r = parseInt(h.slice(0,2),16);
+  const g = parseInt(h.slice(2,4),16);
+  const b = parseInt(h.slice(4,6),16);
+  return {r,g,b};
+},
+
+// loader on-demand do jsPDF via CDN (evita incluir script fixo na página)
+_loadJsPDF(){
+  return new Promise((resolve, reject) => {
+    if (window.jspdf && window.jspdf.jsPDF) return resolve(window.jspdf.jsPDF);
+    const s = document.createElement('script');
+    s.src = 'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js';
+    s.onload = () => resolve(window.jspdf.jsPDF);
+    s.onerror = () => reject(new Error('Falha ao carregar jsPDF'));
+    document.head.appendChild(s);
+  }).then(() => window.jspdf.jsPDF);
+},
+
   }
 }
 </script>
