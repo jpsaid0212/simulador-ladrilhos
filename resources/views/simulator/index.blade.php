@@ -8,20 +8,17 @@
 
   <!-- aviso / instruções -->
   <div class="bg-orange-50 border border-orange-100 rounded-xl px-4 py-3 text-sm text-slate-700">
-  <p class="font-semibold mb-1">Monte seu Ladrilho Personalizado:</p>
-  <ol class="list-decimal ml-5 space-y-1">
-    <li>Selecione um <b>modelo</b> no seletor acima.</li>
-    <li>Escolha uma <b>cor na paleta</b>  e <b>clique nas áreas do ladrilho</b> para pintar.</li>
-    <li>No painel <b>Opções de visualização</b> , defina <b>Colunas</b>, <b>Linhas</b> e a <b>Cor do rejunte</b> e clique em <b>Visualizar</b> para montar o tapete.</li>
-    <li>Para salvar ou imprimir o ladrilho atual, clique em <b>Salvar PDF ou imprimir</b>.</li>
-    <li>Se quiser recomeçar a pintura do ladrilho (modelos editáveis), use <b>Resetar ladrilho</b>.</li>
-  </ol>
-  <p class="mt-2 text-[12px] text-slate-600">
-    Dica: as <b>cores usadas</b> aparecem abaixo do ladrilho e também são listadas no PDF.
-  </p>
-</div>
+    <p class="font-semibold mb-1">Monte seu Ladrilho Personalizado:</p>
+    <ol class="list-decimal ml-5 space-y-1">
+      <li>Escolha o que deseja simular.</li>
+      <li>Clique na peça desejada.</li>
+      <li>Clique na paleta de cores e depois vá clicando na peça grande.</li>
+      <li>Depois, visualize o tapete montado e a simulação 3D.</li>
+      <li>Para baixar clique em <b>Salvar PDF ou Imprimir</b>.</li>
+    </ol>
+  </div>
 
-  <!-- SELECTOR com miniatura -->
+  <!-- SELECTOR -->
   <div class="mt-10 max-w-xl mx-auto">
     <label class="block text-center text-slate-600 mb-3">1 — Selecione um modelo para customizar</label>
 
@@ -72,7 +69,7 @@
     <p class="text-center text-slate-600 text-sm">2 — Depois de escolher o modelo, selecione as cores ao lado e clique nas áreas do ladrilho.</p>
   </div>
 
-  <!-- GRID: esquerda preview / direita paleta + controles -->
+  <!-- GRID: esquerda preview / direita paleta -->
   <div class="mt-8 grid grid-cols-1 lg:grid-cols-2 gap-8">
     <!-- ESQUERDA: preview -->
     <div class="flex flex-col items-center">
@@ -108,7 +105,6 @@
       </div>
 
       <div class="flex flex-col items-center">
-        <!-- wrapper com mesma largura do card -->
         <div class="w-[340px] sm:w-[420px] mx-auto">
           <!-- MODELO + CORES USADAS -->
           <div class="mt-6">
@@ -150,12 +146,11 @@
           </div>
         </div>
       </div>
-
     </div>
 
-    <!-- DIREITA: paleta com nomes + controles -->
+    <!-- DIREITA: paleta com nomes -->
     <div>
-      <p class="text-slate-600 mb-2 text-sm"></p>
+      <p class="text-slate-600 mb-2 text-sm">3 - Selecione as cores</p>
 
       <div class="rounded-xl border border-slate-200 bg-white p-4">
         <div class="grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-5 gap-x-6 gap-y-6">
@@ -174,9 +169,8 @@
     </div>
   </div>
 
-  <!-- TAPETE (estilo Ladrilar) -->
+  <!-- TAPETE -->
   <div class="mt-12 lg:grid lg:grid-cols-[minmax(0,1fr)_340px] lg:gap-10">
-    <!-- ESQUERDA: tapete grande -->
     <div class="flex justify-center">
       <div class="border-2 border-slate-300 p-2 rounded-sm bg-white shadow-sm">
         <div :style="estiloTapete()" id="tapete">
@@ -187,7 +181,6 @@
       </div>
     </div>
 
-    <!-- DIREITA: painel de opções do tapete -->
     <aside class="mt-8 lg:mt-0">
       <div class="border-t-2 border-amber-200 mb-4"></div>
       <h3 class="uppercase text-[12px] font-semibold tracking-wider text-slate-700 mb-4">
@@ -233,6 +226,53 @@
     </aside>
   </div>
 
+  <!-- SIMULAÇÃO 3D -->
+  <div class="mt-14">
+    <h3 class="uppercase text-[20px] font-semibold tracking-wider text-slate-800">Simulação 3D</h3>
+    <p class="text-slate-600 mb-4 text-sm">Escolha um dos ambientes para visualizar seu ladrilho aplicado.</p>
+
+    <div class="flex flex-wrap gap-3">
+      <template x-for="room in rooms" :key="room.id">
+        <button
+          @click="openSimulacao(room.id)"
+          class="px-6 py-3 bg-[#e4d1b7] hover:bg-[#d9c3a3] text-[11px] font-semibold uppercase tracking-wider rounded-sm border border-[#d1c2a6]">
+          <span x-text="room.nome"></span>
+        </button>
+      </template>
+    </div>
+  </div>
+
+  <!-- MODAL 3D -->
+  <div x-show="sim.open"
+       x-transition.opacity
+       class="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-3"
+       @keydown.escape.window="sim.open=false"
+       @click.self="sim.open=false">
+
+    <div class="relative bg-white rounded-md shadow-xl p-2 md:p-4 w-[88vw] max-w-[960px]">
+      <button @click="sim.open=false"
+              class="absolute -top-3 -right-3 bg-white/90 rounded-full border px-2 py-1 text-[12px] shadow">
+        ✕
+      </button>
+
+      <div class="w-full flex justify-center">
+        <!-- wrapper -->
+        <div id="simWrap" class="relative inline-block max-w-full">
+          <!-- piso (div com padrão + efeito 3D) -->
+          <div id="simFloor"
+               class="absolute inset-0 z-0 will-change-transform"
+               :style="floorStyle()"></div>
+
+          <!-- imagem por cima (PNG com piso transparente) -->
+          <img id="sim3dBase"
+               :src="sim.photo"
+               alt=""
+               class="block max-w-full w-auto max-h-[70vh] h-auto select-none relative z-10">
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- canvases ocultos -->
   <canvas id="canvasLadrilho" class="hidden"></canvas>
   <canvas id="canvasTapete" class="hidden"></canvas>
@@ -255,74 +295,46 @@ function simuladorDP(){
     corSelecionada: '#2b2b2b',
 
     groutColor: '#cfd8e3',
-    rejunteOpcoes: [
-      {nome:'Azul Grizzo Claro', hex:'#cfd8e3'},
-      {nome:'Cinza Claro', hex:'#e5e7eb'},
-      {nome:'Cinza Médio', hex:'#9ca3af'},
-      {nome:'Areia', hex:'#d9c8a8'},
-      {nome:'Preto', hex:'#000000'}
-    ],
+    rows: 8, cols: 8,
 
-    rows: 8,
-    cols: 8,
-
-    /* PALETA LADRILAR (hex aproximados) */
     coresLadrilar: [
-      {nome:'Amazônia',        hex:'#2f4a45'},
-      {nome:'Azul Escuro',     hex:'#5b6e8e'},
-      {nome:'Bege Comum',      hex:'#f8ebc7'},
-      {nome:'Cana',            hex:'#b9aa54'},
-      {nome:'Fendi',           hex:'#b59b8f'},
-      {nome:'Mandala',         hex:'#6d8a93'},
-      {nome:'Nude',            hex:'#d9b79d'},
-      {nome:'Ouro',            hex:'#f2b733'},
-      {nome:'Royal',           hex:'#5ea1df'},
-      {nome:'Violeta',         hex:'#d7cfd3'},
-      {nome:'Branco',          hex:'#f4f2ea'},
-      {nome:'Bege Claro',      hex:'#eee2bd'},
-      {nome:'Amarelo Claro',   hex:'#f8de78'},
-      {nome:'Mostarda',        hex:'#e4ae54'},
-      {nome:'Marrom',          hex:'#6f4d4d'},
-      {nome:'Terracota Claro', hex:'#eda382'},
-      {nome:'Terracota Comum', hex:'#df825f'},
-      {nome:'Terracota Escuro',hex:'#cf735a'},
-      {nome:'Vermelho',        hex:'#9b3b33'},
-      {nome:'Vermelho Vivo',   hex:'#a6423c'},
-      {nome:'Amêndoa',         hex:'#cda06d'},
-      {nome:'Azul Claro',      hex:'#cfd7d9'},
-      {nome:'Azul Black',      hex:'#a9c1da'},
-      {nome:'Azul Ultramar',   hex:'#6a85b3'},
-      {nome:'Azul Grizo',      hex:'#d8dadd'},
-      {nome:'Azul Noite',      hex:'#5a6776'},
-      {nome:'Provence',        hex:'#aef0ef'},
-      {nome:'Tiffany',         hex:'#75e0e6'},
-      {nome:'Verde Claro',     hex:'#b4cbb6'},
-      {nome:'Verde Bandeira',  hex:'#6a834f'},
-      {nome:'Verde Escuro',    hex:'#5a6d4e'},
-      {nome:'Rosa Claro',      hex:'#f1c7bf'},
-      {nome:'Rosa Comum',      hex:'#f3b6b9'},
-      {nome:'Rosa Queimado',   hex:'#b57064'},
-      {nome:'Craft Claro',     hex:'#efe0cf'},
-      {nome:'Craft Comum',     hex:'#cda87b'},
-      {nome:'Craft Escuro',    hex:'#b08f64'},
-      {nome:'Turquesa',        hex:'#a8c7c1'},
-      {nome:'Cinza Claro',     hex:'#dddcd2'},
-      {nome:'Concreto',        hex:'#b3a696'},
-      {nome:'Cinza Escuro',    hex:'#7f7b78'},
-      {nome:'Preto',           hex:'#2f2f2f'},
+      {nome:'Amazônia',hex:'#2f4a45'},{nome:'Azul Escuro',hex:'#5b6e8e'},{nome:'Bege Comum',hex:'#f8ebc7'},
+      {nome:'Cana',hex:'#b9aa54'},{nome:'Fendi',hex:'#b59b8f'},{nome:'Mandala',hex:'#6d8a93'},
+      {nome:'Nude',hex:'#d9b79d'},{nome:'Ouro',hex:'#f2b733'},{nome:'Royal',hex:'#5ea1df'},
+      {nome:'Violeta',hex:'#d7cfd3'},{nome:'Branco',hex:'#f4f2ea'},{nome:'Bege Claro',hex:'#eee2bd'},
+      {nome:'Amarelo Claro',hex:'#f8de78'},{nome:'Mostarda',hex:'#e4ae54'},{nome:'Marrom',hex:'#6f4d4d'},
+      {nome:'Terracota Claro',hex:'#eda382'},{nome:'Terracota Comum',hex:'#df825f'},{nome:'Terracota Escuro',hex:'#cf735a'},
+      {nome:'Vermelho',hex:'#9b3b33'},{nome:'Vermelho Vivo',hex:'#a6423c'},{nome:'Amêndoa',hex:'#cda06d'},
+      {nome:'Azul Claro',hex:'#cfd7d9'},{nome:'Azul Black',hex:'#a9c1da'},{nome:'Azul Ultramar',hex:'#6a85b3'},
+      {nome:'Azul Grizo',hex:'#d8dadd'},{nome:'Azul Noite',hex:'#5a6776'},{nome:'Provence',hex:'#aef0ef'},
+      {nome:'Tiffany',hex:'#75e0e6'},{nome:'Verde Claro',hex:'#b4cbb6'},{nome:'Verde Bandeira',hex:'#6a834f'},
+      {nome:'Verde Escuro',hex:'#5a6d4e'},{nome:'Rosa Claro',hex:'#f1c7bf'},{nome:'Rosa Comum',hex:'#f3b6b9'},
+      {nome:'Rosa Queimado',hex:'#b57064'},{nome:'Craft Claro',hex:'#efe0cf'},{nome:'Craft Comum',hex:'#cda87b'},
+      {nome:'Craft Escuro',hex:'#b08f64'},{nome:'Turquesa',hex:'#a8c7c1'},{nome:'Cinza Claro',hex:'#dddcd2'},
+      {nome:'Concreto',hex:'#b3a696'},{nome:'Cinza Escuro',hex:'#7f7b78'},{nome:'Preto',hex:'#2f2f2f'},
     ],
 
-    // ===== editor raster =====
+    // editor raster
     editor: { canvas: null, ctx: null, img: null, original: null, scaleX:1, scaleY:1, tol: 28 },
 
     tileURL: '',
-
-    /* histórico de cores do raster */
     usedColorsRaster: [],
 
+    /* --------- SIMULAÇÃO 3D (CSS 3D) --------- */
+    rooms: [
+      // ajuste fino de angle/persp/offsetY conforme a foto
+      { id:'sala',     nome:'Sala',            photo:"{{ asset('simulator/rooms/sala_overlay.png') }}",     tileSize:90, angle:52, persp:900, offsetY:0 },
+      { id:'banheiro', nome:'Banheiro',        photo:"{{ asset('simulator/rooms/banheiro_overlay.png') }}", tileSize:88, angle:57, persp:900, offsetY:-4 },
+      { id:'cozinha',  nome:'Cozinha',         photo:"{{ asset('simulator/rooms/cozinha_overlay.png') }}",  tileSize:92, angle:54, persp:900, offsetY:-6 },
+      { id:'quarto',   nome:'Parede / Quarto', photo:"{{ asset('simulator/rooms/quarto_overlay.png') }}",   tileSize:86, angle:-55, persp:900, offsetY:0 }, // negativo gira "pra parede"
+    ],
+    sim: { open:false, photo:'', tileSize:90, angle:55, persp:900, offsetY:0 },
+
+    /* --------- init --------- */
     init(){
       this.selecionarTemplate(this.templates[0]);
       this.atualizarTapete();
+      window.addEventListener('resize', () => {}); // não precisa recalcular nada no CSS 3D
     },
 
     templatesFiltrados(){ return this.templates.filter(t => t.categoria === this.categoriaAtiva) },
@@ -378,9 +390,10 @@ function simuladorDP(){
       } else if (this.tile.type === 'raster' && this.editor.canvas) {
         this.tileURL = this.editor.canvas.toDataURL('image/png');
       }
+      // CSS 3D usa this.tileURL direto no style()
     },
 
-    // ===== RASTER (edição por clique) =====
+    // ===== RASTER =====
     iniciarEditorRaster(src){
       this.editor.canvas = document.getElementById('editorCanvas');
       this.editor.ctx = this.editor.canvas.getContext('2d');
@@ -427,12 +440,11 @@ function simuladorDP(){
       const idx = (x, y) => (y * canvas.width + x) * 4;
       const target = data.slice(idx(x,y), idx(x,y)+4);
       const sameColor = (i) => data[i]===newColor[0] && data[i+1]===newColor[1] && data[i+2]===newColor[2] && data[i+3]===255;
-      const withinTol = (i) => {
-        return Math.abs(data[i]-target[0]) <= tol &&
-               Math.abs(data[i+1]-target[1]) <= tol &&
-               Math.abs(data[i+2]-target[2]) <= tol &&
-               Math.abs(data[i+3]-target[3]) <= 40;
-      };
+      const withinTol = (i) =>
+        Math.abs(data[i]-target[0]) <= tol &&
+        Math.abs(data[i+1]-target[1]) <= tol &&
+        Math.abs(data[i+2]-target[2]) <= tol &&
+        Math.abs(data[i+3]-target[3]) <= 40;
 
       if (sameColor(idx(x,y))) return;
 
@@ -467,8 +479,7 @@ function simuladorDP(){
 
     // ===== TAPETE =====
     estiloTapete(){
-      const size = 90;
-      const gap  = 2; // rejunte 2px
+      const size = 90, gap = 2;
       return {
         display: 'grid',
         gridTemplateColumns: `repeat(${this.cols}, ${size}px)`,
@@ -504,16 +515,13 @@ function simuladorDP(){
     },
 
     baixarTapete(){
-      const size = 90;
-      const gap  = 2; // mesmo rejunte
-
+      const size = 90, gap = 2;
       const totalW = this.cols*size + (this.cols+1)*gap;
       const totalH = this.rows*size + (this.rows+1)*gap;
 
       const canvas = document.getElementById('canvasTapete');
       const ctx = canvas.getContext('2d');
-      canvas.width = totalW;
-      canvas.height = totalH;
+      canvas.width = totalW; canvas.height = totalH;
 
       ctx.fillStyle = this.groutColor;
       ctx.fillRect(0,0,totalW,totalH);
@@ -568,7 +576,7 @@ function simuladorDP(){
       return this.usedColorsRaster.length ? this.usedColorsRaster : [];
     },
 
-    /* ===== PDF no layout Ladrilar ===== */
+    /* ===== PDF ===== */
     async baixarLadrilhoPDF(){
       if(!this.tileURL) this.gerarTileURL();
 
@@ -578,7 +586,6 @@ function simuladorDP(){
       const ph = pdf.internal.pageSize.getHeight();
       const margin = 36;
 
-      // cabeçalho
       const now = new Date();
       pdf.setFont('helvetica','normal'); pdf.setTextColor(80);
       pdf.setFontSize(8);
@@ -586,17 +593,14 @@ function simuladorDP(){
       pdf.setFontSize(9);
       pdf.text('Simulador | Studio Latitude', pw/2, margin-10, {align:'center'});
 
-      // ladrilho grande
       const imgSize = Math.min(pw - margin*2, 420);
       const ix = (pw - imgSize)/2, iy = margin + 8;
       pdf.addImage(this.tileURL, 'PNG', ix, iy, imgSize, imgSize, undefined, 'FAST');
 
-      // legenda do modelo
       const tituloY = iy + imgSize + 22;
       pdf.setFontSize(9); pdf.setTextColor(60);
       pdf.text('Studio Latitude - MODELO: ' + (this.tile?.nome || '').toUpperCase(), margin, tituloY);
 
-      // paleta usada
       const usados = this.coresUsadas();
       const sw = 48, sh = 48, gap = 14;
       let sx = margin, sy = tituloY + 10;
@@ -616,7 +620,6 @@ function simuladorDP(){
         sx += sw + gap;
       });
 
-      // rodapé
       pdf.setFontSize(7); pdf.setTextColor(110);
       pdf.text(window.location.origin + window.location.pathname, margin, ph - 10);
       pdf.text('1/1', pw - margin, ph - 10, {align:'right'});
@@ -649,6 +652,36 @@ function simuladorDP(){
         s.onerror = () => reject(new Error('Falha ao carregar jsPDF'));
         document.head.appendChild(s);
       }).then(() => window.jspdf.jsPDF);
+    },
+
+    /* ---- Simulação 3D (CSS) ---- */
+    openSimulacao(id){
+      const r = this.rooms.find(x => x.id === id);
+      if(!r) return;
+      if(!this.tileURL) this.gerarTileURL();
+
+      this.sim.open     = true;
+      this.sim.photo    = r.photo;
+      this.sim.tileSize = r.tileSize;
+      this.sim.angle    = r.angle ?? 55;
+      this.sim.persp    = r.persp ?? 900;
+      this.sim.offsetY  = r.offsetY ?? 0;
+    },
+
+    // estilo do plano do piso (div) — PROFUNDIDADE AQUI
+    floorStyle(){
+      const size = this.sim.tileSize || 90;
+      return {
+        width: '100%',
+        height: '100%',
+        backgroundImage: `url('${this.tileURL}')`,
+        backgroundRepeat: 'repeat',
+        backgroundSize: `${size}px ${size}px`,
+        backgroundPosition: 'center bottom',
+        transformOrigin: 'bottom center',
+        transform: `perspective(${this.sim.persp}px) rotateX(${this.sim.angle}deg) translateY(${this.sim.offsetY}px)`,
+        filter: 'brightness(0.98) contrast(1.03)',
+      };
     },
   }
 }
