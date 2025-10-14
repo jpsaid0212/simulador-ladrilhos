@@ -8,14 +8,14 @@
 
   <!-- aviso / instruções -->
   <div class="bg-orange-50 border border-orange-100 rounded-xl px-4 py-3 text-sm text-slate-700">
-    <p class="font-semibold mb-1">Monte seu Ladrilho Personalizado:</p>
-    <ol class="list-decimal ml-5 space-y-1">
-      <li>Escolha o que deseja simular.</li>
-      <li>Clique na peça desejada.</li>
-      <li>Clique na paleta de cores e depois vá clicando na peça grande.</li>
-      <li>Depois, visualize o tapete montado e a simulação 3D.</li>
-      <li>Para baixar clique em <b>Salvar PDF ou Imprimir</b>.</li>
-    </ol>
+    <p class="font-semibold mb-1">crie seu ladrilho personalizado:</p>
+      <ol class="list-decimal ml-5 space-y-1">
+        <li>escolha o modelo na lista abaixo</li>
+        <li>escolha as cores na nossa paleta de cores</li>
+        <li>clique primeiro na cor e em seguida na parte do ladrilho que deseja pintar</li>
+        <li>clique no botão salvar pdf</li>
+        <li>nos envie o arquivo via whatsapp para orçamento e prazo de fabricação</li>
+      </ol>
   </div>
 
   <!-- SELECTOR -->
@@ -191,11 +191,11 @@
         <div class="grid grid-cols-2 gap-4">
           <label class="text-sm text-slate-700 flex items-center gap-2">
             <span>Colunas:</span>
-            <input type="number" min="3" max="20" x-model.number="cols" class="w-16 border rounded-md px-2 py-1.5">
+            <input type="number" class="w-16 border rounded-md px-2 py-1.5 bg-slate-50 text-slate-700 cursor-default" :value="rows" readonly aria-readonly="true" onwheel="this.blur()" />
           </label>
           <label class="text-sm text-slate-700 flex items-center gap-2">
             <span>Linhas:</span>
-            <input type="number" min="3" max="20" x-model.number="rows" class="w-16 border rounded-md px-2 py-1.5">
+            <input type="number" class="w-16 border rounded-md px-2 py-1.5 bg-slate-50 text-slate-700 cursor-default" :value="cols" readonly aria-readonly="true" onwheel="this.blur()" />
           </label>
         </div>
 
@@ -208,7 +208,7 @@
                 :class="groutColor===cor.hex ? 'ring-2 ring-slate-900' : ''"
                 :style="`background:${cor.hex}`"
                 :title="cor.nome"
-                @click="groutColor = cor.hex">
+                @click="groutColor = cor.hex; if(sim.open){ gerarSimTexture() }">
               </button>
             </template>
           </div>
@@ -295,24 +295,69 @@ function simuladorDP(){
     corSelecionada: '#2b2b2b',
 
     groutColor: '#cfd8e3',
-    rows: 8, cols: 8,
+    rows: 6,
+    cols: 5,
 
+    tapeteTileSize: 120,
+
+    // === PALETA OFICIAL (Studio Latitude) ===
     coresLadrilar: [
-      {nome:'Amazônia',hex:'#2f4a45'},{nome:'Azul Escuro',hex:'#5b6e8e'},{nome:'Bege Comum',hex:'#f8ebc7'},
-      {nome:'Cana',hex:'#b9aa54'},{nome:'Fendi',hex:'#b59b8f'},{nome:'Mandala',hex:'#6d8a93'},
-      {nome:'Nude',hex:'#d9b79d'},{nome:'Ouro',hex:'#f2b733'},{nome:'Royal',hex:'#5ea1df'},
-      {nome:'Violeta',hex:'#d7cfd3'},{nome:'Branco',hex:'#f4f2ea'},{nome:'Bege Claro',hex:'#eee2bd'},
-      {nome:'Amarelo Claro',hex:'#f8de78'},{nome:'Mostarda',hex:'#e4ae54'},{nome:'Marrom',hex:'#6f4d4d'},
-      {nome:'Terracota Claro',hex:'#eda382'},{nome:'Terracota Comum',hex:'#df825f'},{nome:'Terracota Escuro',hex:'#cf735a'},
-      {nome:'Vermelho',hex:'#9b3b33'},{nome:'Vermelho Vivo',hex:'#a6423c'},{nome:'Amêndoa',hex:'#cda06d'},
-      {nome:'Azul Claro',hex:'#cfd7d9'},{nome:'Azul Black',hex:'#a9c1da'},{nome:'Azul Ultramar',hex:'#6a85b3'},
-      {nome:'Azul Grizo',hex:'#d8dadd'},{nome:'Azul Noite',hex:'#5a6776'},{nome:'Provence',hex:'#aef0ef'},
-      {nome:'Tiffany',hex:'#75e0e6'},{nome:'Verde Claro',hex:'#b4cbb6'},{nome:'Verde Bandeira',hex:'#6a834f'},
-      {nome:'Verde Escuro',hex:'#5a6d4e'},{nome:'Rosa Claro',hex:'#f1c7bf'},{nome:'Rosa Comum',hex:'#f3b6b9'},
-      {nome:'Rosa Queimado',hex:'#b57064'},{nome:'Craft Claro',hex:'#efe0cf'},{nome:'Craft Comum',hex:'#cda87b'},
-      {nome:'Craft Escuro',hex:'#b08f64'},{nome:'Turquesa',hex:'#a8c7c1'},{nome:'Cinza Claro',hex:'#dddcd2'},
-      {nome:'Concreto',hex:'#b3a696'},{nome:'Cinza Escuro',hex:'#7f7b78'},{nome:'Preto',hex:'#2f2f2f'},
+      // linha 1
+      { nome:'BRANCO',        hex:'#F7F7F4' },
+      { nome:'CINZA CLARO',   hex:'#DDDCD2' },
+      { nome:'CINZA',         hex:'#B4B1AC' },
+      { nome:'PRATA',         hex:'#9FA7AD' },
+      { nome:'PRETO',         hex:'#2F2F2F' },
+
+      // linha 2
+      { nome:'OFFWHITE',      hex:'#F4F2EA' },
+      { nome:'CRAFT CLARO',   hex:'#EFE0CF' },
+      { nome:'CRAFT',         hex:'#CDA87B' },
+      { nome:'CRAFT ESC',     hex:'#B08F64' },
+      { nome:'AMÊNDOA',       hex:'#CDA06D' },
+      { nome:'MARROM',        hex:'#6F4D4D' },
+
+      // linha 3
+      { nome:'BEGE',          hex:'#EEDFC4' },
+      { nome:'AMARELO CL',    hex:'#F8DE78' },
+      { nome:'AMARELO',       hex:'#F4C232' },
+      { nome:'MOSTARDA',      hex:'#E4AE54' },
+      { nome:'VERDE CANA',    hex:'#B9AA54' },
+
+      // linha 4
+      { nome:'TERRACOTA CL',  hex:'#EDA382' },
+      { nome:'TERRACOTA',     hex:'#DF825F' },
+      { nome:'TERRACOTA ESC', hex:'#CF735A' },
+      { nome:'VERM VIVO',     hex:'#A6423C' },
+      { nome:'VERM ESC',      hex:'#8F332C' },
+
+      // linha 5
+      { nome:'ROSA CL',       hex:'#F1C7BF' },
+      { nome:'ROSA',          hex:'#F3B6B9' },
+      { nome:'GOIABA',        hex:'#E06A5E' },
+
+      // linha 6
+      { nome:'VERDE CL',      hex:'#B4CBB6' },
+      { nome:'VERDE',         hex:'#6A834F' },
+      { nome:'JAGUAR',        hex:'#2F7F5E' },
+      { nome:'VERDE ESC',     hex:'#3F5242' },
+
+      // linha 7
+      { nome:'AZ GRIZZO',     hex:'#D8DADD' },
+      { nome:'AZ GRIZZO CL',  hex:'#CFD7D9' },
+      { nome:'TIFFANY CL',    hex:'#AEEBEA' },
+      { nome:'TIFFANY',       hex:'#75E0E6' },
+      { nome:'OCEAN BLUE',    hex:'#167C8A' },
+
+      // linha 8
+      { nome:'AZUL CL',       hex:'#A9C1DA' },
+      { nome:'COBALTO',       hex:'#3F92D2' },
+      { nome:'PORTO',         hex:'#6A85B3' },
+      { nome:'AZUL ULTRAMAR', hex:'#3C5AA6' },
+      { nome:'AZUL ESC',      hex:'#4B5F7F' },
+      { nome:'AZUL ESC 2',    hex:'#3B4C63' },
     ],
+
 
     // editor raster
     editor: { canvas: null, ctx: null, img: null, original: null, scaleX:1, scaleY:1, tol: 28 },
@@ -322,19 +367,80 @@ function simuladorDP(){
 
     /* --------- SIMULAÇÃO 3D (CSS 3D) --------- */
     rooms: [
-      // ajuste fino de angle/persp/offsetY conforme a foto
       { id:'sala',     nome:'Sala',            photo:"{{ asset('simulator/rooms/sala_overlay.png') }}",     tileSize:90, angle:52, persp:900, offsetY:0 },
       { id:'banheiro', nome:'Banheiro',        photo:"{{ asset('simulator/rooms/banheiro_overlay.png') }}", tileSize:88, angle:57, persp:900, offsetY:-4 },
       { id:'cozinha',  nome:'Cozinha',         photo:"{{ asset('simulator/rooms/cozinha_overlay.png') }}",  tileSize:92, angle:54, persp:900, offsetY:-6 },
-      { id:'quarto',   nome:'Parede / Quarto', photo:"{{ asset('simulator/rooms/quarto_overlay.png') }}",   tileSize:86, angle:-55, persp:900, offsetY:0 }, // negativo gira "pra parede"
+      { id:'quarto',   nome:'Parede / Quarto', photo:"{{ asset('simulator/rooms/quarto_overlay.png') }}",   tileSize:86, angle:-55, persp:900, offsetY:0 },
     ],
     sim: { open:false, photo:'', tileSize:90, angle:55, persp:900, offsetY:0 },
+
+    // NOVO: textura (dataURL) com ladrilho + rejunte para o 3D
+    simTextureURL: '',
 
     /* --------- init --------- */
     init(){
       this.selecionarTemplate(this.templates[0]);
       this.atualizarTapete();
-      window.addEventListener('resize', () => {}); // não precisa recalcular nada no CSS 3D
+
+      // ---> TRAVA DURA: torna rows/cols constantes (ignoram x-model)
+      Object.defineProperty(this, 'rows', {
+        configurable: true,
+        get(){ return 5 },
+        set(_){ /* ignorado */ }
+      });
+      Object.defineProperty(this, 'cols', {
+        configurable: true,
+        get(){ return 6 },
+        set(_){ /* ignorado */ }
+      });
+
+      // fixa grade
+      this.rows = 5;
+      this.cols = 6;
+
+      // impede alterações pelos inputs (Alpine v3)
+      this.$watch('rows', v => { if (v !== 5) this.rows = 5; });
+      this.$watch('cols', v => { if (v !== 6) this.cols = 6; });
+
+      window.addEventListener('resize', () => {});
+    },
+
+    // NOVO: espessura do rejunte (px CSS) proporcional ao tamanho do ladrilho do ambiente
+    groutPx3D(){
+      const t = this.sim.tileSize || 90;
+      const hairline = t * 0.004;
+      return Math.max(0.5, hairline);
+    },
+
+    // NOVO: gera textura (tile + borda de rejunte) e guarda em simTextureURL
+    async gerarSimTexture(){
+      if(!this.tileURL) this.gerarTileURL();
+
+      const baseTilePx = 256; // tamanho do tile dentro da textura
+      const gCss = this.groutPx3D();
+      const gPx = Math.max(1, Math.round(baseTilePx * (gCss / (this.sim.tileSize || 90))));
+
+      const canvas = document.createElement('canvas');
+      canvas.width  = baseTilePx + 2*gPx;
+      canvas.height = baseTilePx + 2*gPx;
+
+      const ctx = canvas.getContext('2d');
+      // fundo = rejunte
+      ctx.fillStyle = this.groutColor;
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      // tile no centro
+      await new Promise((resolve, reject) => {
+        const img = new Image();
+        img.crossOrigin = 'anonymous';
+        img.onload = () => {
+          ctx.drawImage(img, gPx, gPx, baseTilePx, baseTilePx);
+          this.simTextureURL = canvas.toDataURL('image/png');
+          resolve();
+        };
+        img.onerror = reject;
+        img.src = this.tileURL;
+      });
     },
 
     templatesFiltrados(){ return this.templates.filter(t => t.categoria === this.categoriaAtiva) },
@@ -360,7 +466,11 @@ function simuladorDP(){
     },
 
     // ===== SVG =====
-    pintar(campo){ this.cores[campo] = this.corSelecionada; this.gerarTileURL() },
+    pintar(campo){
+      this.cores[campo] = this.corSelecionada;
+      this.gerarTileURL();
+      if(this.sim.open){ this.gerarSimTexture() } // reflete no 3D se aberto
+    },
 
     svgString(){
       if(this.tile.id==='flor1'){
@@ -430,6 +540,7 @@ function simuladorDP(){
       this.floodFill(x, y, this.hexToRgba(this.corSelecionada));
       this.addUsedColor(this.corSelecionada);
       this.gerarTileURL();
+      if(this.sim.open){ this.gerarSimTexture() } // reflete no 3D se aberto
     },
 
     floodFill(x, y, newColor){
@@ -479,7 +590,8 @@ function simuladorDP(){
 
     // ===== TAPETE =====
     estiloTapete(){
-      const size = 90, gap = 2;
+      const size = this.tapeteTileSize; // 120
+      const gap = 2;
       return {
         display: 'grid',
         gridTemplateColumns: `repeat(${this.cols}, ${size}px)`,
@@ -492,9 +604,10 @@ function simuladorDP(){
     },
 
     estiloPeca(){
+      const size = this.tapeteTileSize;
       return {
-        width: '90px',
-        height: '90px',
+        width: `${size}px`,
+        height: `${size}px`,
         backgroundImage: `url('${this.tileURL}')`,
         backgroundSize: 'cover',
         backgroundPosition: 'center',
@@ -515,7 +628,8 @@ function simuladorDP(){
     },
 
     baixarTapete(){
-      const size = 90, gap = 2;
+      const size = this.tapeteTileSize; // 120
+      const gap = 2;
       const totalW = this.cols*size + (this.cols+1)*gap;
       const totalH = this.rows*size + (this.rows+1)*gap;
 
@@ -543,6 +657,7 @@ function simuladorDP(){
       }
       img.src = this.tileURL;
     },
+
 
     /* ===== nomes e lista de cores usadas ===== */
     addUsedColor(hex){
@@ -655,28 +770,37 @@ function simuladorDP(){
     },
 
     /* ---- Simulação 3D (CSS) ---- */
-    openSimulacao(id){
+    // agora assíncrono: gera a textura com rejunte antes de abrir o modal
+    async openSimulacao(id){
       const r = this.rooms.find(x => x.id === id);
       if(!r) return;
       if(!this.tileURL) this.gerarTileURL();
 
-      this.sim.open     = true;
       this.sim.photo    = r.photo;
       this.sim.tileSize = r.tileSize;
       this.sim.angle    = r.angle ?? 55;
       this.sim.persp    = r.persp ?? 900;
       this.sim.offsetY  = r.offsetY ?? 0;
+
+      this.simTextureURL = '';
+      try { await this.gerarSimTexture(); } catch(e){ /* fallback silencioso */ }
+
+      this.sim.open = true;
     },
 
     // estilo do plano do piso (div) — PROFUNDIDADE AQUI
+    // usa a textura com rejunte e ajusta backgroundSize (tile + 2*g)
     floorStyle(){
       const size = this.sim.tileSize || 90;
+      const g    = this.groutPx3D();
+      const tex  = this.simTextureURL || this.tileURL;
+
       return {
         width: '100%',
         height: '100%',
-        backgroundImage: `url('${this.tileURL}')`,
+        backgroundImage: `url('${tex}')`,
         backgroundRepeat: 'repeat',
-        backgroundSize: `${size}px ${size}px`,
+        backgroundSize: `${size + g*2}px ${size + g*2}px`,
         backgroundPosition: 'center bottom',
         transformOrigin: 'bottom center',
         transform: `perspective(${this.sim.persp}px) rotateX(${this.sim.angle}deg) translateY(${this.sim.offsetY}px)`,
