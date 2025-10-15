@@ -2,8 +2,26 @@
 
 @section('title', 'Studio Latitude — Simulador de Ladrilhos')
 
+@push('head')
+<style>
+  /* === Futura LT W01 Medium (igual ao site original) === */
+  @font-face {
+    font-family: 'Futura LT W01 Medium';
+    src: url('{{ asset('fonts/Futura LT W01 Medium.woff') }}') format('woff');
+    font-weight: 400;
+    font-style: normal;
+    font-display: swap;
+  }
+
+  .futura-text {
+    font-family: 'Futura LT W01 Medium', system-ui, sans-serif !important;
+    font-weight: 400;
+  }
+</style>
+@endpush
+
 @section('content')
-<section class="max-w-6xl mx-auto px-4 py-12">
+<section class="max-w-6xl mx-auto px-4 py-12 futura-text">
 <div x-data="simuladorDP()" x-init="init()">
 
   <!-- aviso / instruções -->

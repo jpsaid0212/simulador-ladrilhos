@@ -4,28 +4,46 @@
 
 @push('head')
 <style>
-  .sobre-copy{
-    font-size:13.5px;
-    line-height:1.9;
-    color:rgb(79 79 79);
+  /* === Futura LT W01 Medium (igual ao site original) === */
+  @font-face {
+    font-family: 'Futura LT W01 Medium';
+    src: url('{{ asset('fonts/Futura LT W01 Medium.woff') }}') format('woff');
+    font-weight: 400;
+    font-style: normal;
+    font-display: swap;
   }
-  .sobre-copy p + p{
-    margin-top:.9rem;
+
+  .futura-text {
+    font-family: 'Futura LT W01 Medium', system-ui, sans-serif !important;
+    font-weight: 400;
   }
-  .sobre-h2{
-    font-size:15px;
-    color:#0ea5e9;
-    font-weight:600;
+
+  /* === Estilos da página === */
+  .sobre-copy {
+    font-size: 13.5px;
+    line-height: 1.9;
+    color: rgb(79 79 79);
   }
-  .sobre-em{
-    text-decoration:underline;
-    text-decoration-thickness:1px;
+
+  .sobre-copy p + p {
+    margin-top: .9rem;
+  }
+
+  .sobre-h2 {
+    font-size: 15px;
+    color: #0ea5e9;
+    font-weight: 700;
+  }
+
+  .sobre-em {
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
   }
 </style>
 @endpush
 
 @section('content')
-<section class="max-w-6xl mx-auto px-4 pt-10 pb-16">
+<section class="max-w-6xl mx-auto px-4 pt-10 pb-16 futura-text">
 
   {{-- BLOCO ÚNICO: Texto + 4 imagens --}}
   <div class="grid lg:grid-cols-12 gap-8 items-start">
@@ -45,15 +63,15 @@
 
       <p>
         Foi durante esse tempo de atelier que Luana trabalhou principalmente no aperfeiçoamento para
-        confecção dos <span class="sobre-em text-[#d97706] font-medium">moldes impressos em material 3D biodegradável</span>,
-        o que é uma alternativa aos moldes tradicionais de ladrilho -
+        confecção dos <span class="sobre-em text-[#d97706]">moldes impressos em material 3D biodegradável</span>,
+        o que é uma alternativa aos moldes tradicionais de ladrilho —
         <em>esses feitos em bronze ou latão.</em>
       </p>
 
       <p>
         Por conta dessa técnica inovadora e da possibilidade de criar os desenhos totalmente sob medida e
         fiel aos traços - em programas de modelagem 3D,
-        <span class="sobre-em text-[#d97706] font-medium">fez-se então possível a criação de linhas autorais</span>,
+        <span class="sobre-em text-[#d97706]">fez-se então possível a criação de linhas autorais</span>,
         colaborações com artistas e arquitetos brasileiros - o que vem até hoje agregando à sua
         gama de ladrilhos uma riqueza extensa de arte & design assinado.
       </p>
@@ -87,7 +105,7 @@
       </p>
     </div>
 
-    {{-- 4 imagens estáticas à direita (mesma posição/tamanho) --}}
+    {{-- 4 imagens estáticas à direita --}}
     <aside class="lg:col-span-5 space-y-3">
       @php
         $imgsSobre = [
@@ -115,8 +133,7 @@
         class="absolute inset-0 w-full h-full object-cover"
         controls
         playsinline
-        preload="metadata"
-        
+        preload="metadata">
         <source src="{{ asset('img/sobre/Studio_horizontal.mp4') }}" type="video/mp4">
       </video>
     </div>

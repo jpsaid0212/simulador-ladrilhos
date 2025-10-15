@@ -2,8 +2,26 @@
 @extends('layouts.site')
 @section('title','Studio Latitude — contato')
 
+@push('head')
+<style>
+  /* === Futura LT W01 Medium (igual ao site original) === */
+  @font-face {
+    font-family: 'Futura LT W01 Medium';
+    src: url('{{ asset('fonts/Futura LT W01 Medium.woff') }}') format('woff');
+    font-weight: 400;
+    font-style: normal;
+    font-display: swap;
+  }
+
+  .futura-text {
+    font-family: 'Futura LT W01 Medium', system-ui, sans-serif !important;
+    font-weight: 400;
+  }
+</style>
+@endpush
+
 @section('content')
-<section class="max-w-6xl mx-auto px-4 md:px-6 lg:px-8 py-10">
+<section class="max-w-6xl mx-auto px-4 md:px-6 lg:px-8 py-10 futura-text">
 
   {{-- ===== Topo em 3 colunas ===== --}}
   <div class="grid md:grid-cols-3 gap-12">
@@ -124,7 +142,7 @@
       `
     });
     info.open({ anchor: marker, map });
-    marker.addListener('click', () => info.open({ anchor: marker, map }));
+    marker.addEventListener('click', () => info.open({ anchor: marker, map }));
   }
   window.initStudioLatitudeMap = initStudioLatitudeMap;
 </script>

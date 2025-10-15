@@ -2,8 +2,26 @@
 @extends('layouts.site')
 @section('title', 'Studio Latitude — projetos / blocos 3D')
 
+@push('head')
+<style>
+  /* === Futura LT W01 Medium (igual ao site original) === */
+  @font-face {
+    font-family: 'Futura LT W01 Medium';
+    src: url('{{ asset('fonts/Futura LT W01 Medium.woff') }}') format('woff');
+    font-weight: 400;
+    font-style: normal;
+    font-display: swap;
+  }
+
+  .futura-text {
+    font-family: 'Futura LT W01 Medium', system-ui, sans-serif !important;
+    font-weight: 400;
+  }
+</style>
+@endpush
+
 @section('content')
-<section class="max-w-6xl mx-auto px-4 py-12 space-y-12">
+<section class="max-w-6xl mx-auto px-4 py-12 space-y-12 futura-text">
 
   {{-- LINK AZUL SUPERIOR (centralizado) --}}
   <div class="flex justify-center">

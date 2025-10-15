@@ -2,8 +2,27 @@
 @extends('layouts.site')
 @section('title','Studio Latitude — crie seu ladrilho')
 
+@push('head')
+<style>
+  /* === Futura LT W01 Medium (igual ao site original) === */
+  @font-face {
+    font-family: 'Futura LT W01 Medium';
+    src: url('{{ asset('fonts/Futura LT W01 Medium.woff') }}') format('woff');
+    font-weight: 400;
+    font-style: normal;
+    font-display: swap;
+  }
+
+  .futura-text {
+    font-family: 'Futura LT W01 Medium', system-ui, sans-serif !important;
+    font-weight: 400;
+  }
+</style>
+@endpush
+
 @section('content')
-<section class="max-w-6xl mx-auto px-4 py-12">
+<section class="max-w-6xl mx-auto px-4 py-12 futura-text">
+
   {{-- Topo: texto à esquerda / imagens à direita --}}
   <div class="grid md:grid-cols-2 gap-10 items-start">
     {{-- Coluna de texto (esquerda) --}}
@@ -68,29 +87,30 @@
   </div>
 
   {{-- Faixa inferior: duas imagens lado a lado --}}
-<div class="mt-10 grid md:grid-cols-2 gap-6 items-start">
-  <figure class="w-full h-auto text-center">
-  <div class="h-[380px] sm:h-[420px] md:h-[440px]">
-    <img
-      src="{{ asset('img/crie-seu-ladrilho/paginacao-natalia2.jpg') }}"
-      alt="Ladrilho final"
-      class="w-full h-full object-contain"
-      loading="lazy"
-    />
-  </div>
-  <figcaption class="mt-2 text-[14px] text-slate-500 italic">
-    Projeto de paginação do modelo "Janelas" em planta-baixa do cliente
-  </figcaption>
-</figure>
-  <div class="w-full h-[280px] sm:h-[320px] md:h-[300px]">
-    <img
-      src="{{ asset('img/crie-seu-ladrilho/crie-seu-ladrilho3.jpg') }}"
-      alt="Paginação em planta-baixa"
-      class="w-full h-full object-contain"
-      loading="lazy"
-    />
+  <div class="mt-10 grid md:grid-cols-2 gap-6 items-start">
+    <figure class="w-full h-auto text-center">
+      <div class="h-[380px] sm:h-[420px] md:h-[440px]">
+        <img
+          src="{{ asset('img/crie-seu-ladrilho/paginacao-natalia2.jpg') }}"
+          alt="Ladrilho final"
+          class="w-full h-full object-contain"
+          loading="lazy"
+        />
+      </div>
+      <figcaption class="mt-2 text-[14px] text-slate-500 italic">
+        Projeto de paginação do modelo "Janelas" em planta-baixa do cliente
+      </figcaption>
+    </figure>
+
+    <div class="w-full h-[280px] sm:h-[320px] md:h-[300px]">
+      <img
+        src="{{ asset('img/crie-seu-ladrilho/crie-seu-ladrilho3.jpg') }}"
+        alt="Paginação em planta-baixa"
+        class="w-full h-full object-contain"
+        loading="lazy"
+      />
+    </div>
   </div>
 
-</div>
 </section>
 @endsection
