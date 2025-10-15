@@ -9,3 +9,20 @@
 @source "../**/*.jsx";
 @source "../**/*.ts";
 @source "../**/*.tsx";
+
+/* Futura Bold — webfont local */
+@font-face {
+  font-family: 'Futura';
+  src:
+    url('/fonts/futura/Futura-Bold.woff2') format('woff2'),       /* moderno */
+    url('/fonts/futura/Futura-Bold.ttf') format('truetype');      /* fallback */
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* aplica no site todo */
+html, body {
+  font-family: 'Futura', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  font-weight: 700; /* tudo bold */
+}
