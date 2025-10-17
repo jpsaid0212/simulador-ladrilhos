@@ -120,6 +120,25 @@
             <rect x="4" y="4" width="92" height="92" fill="none" stroke-width="2.5" :stroke="cores.borda" @click="pintar('borda')"></rect>
           </svg>
         </template>
+
+        <template x-if="tile.type==='svg' && tile.id==='teste-simples'">
+          <svg viewBox="0 0 100 100" class="w-[320px] h-[320px] sm:w-[380px] sm:h-[380px]">
+            <rect x="0" y="0" width="100" height="100" :fill="cores.bg" opacity="0" @click="pintar('bg')"></rect>
+            <rect x="20" y="20" width="60" height="60" :fill="cores.p1" @click="pintar('p1')"></rect>
+            <rect x="10" y="10" width="80" height="80" transform="rotate(45 50 50)" :fill="cores.p2" @click="pintar('p2')"></rect>
+            <rect x="36" y="36" width="28" height="28" :fill="cores.miolo" @click="pintar('miolo')"></rect>
+            <rect x="4" y="4" width="92" height="92" fill="none" stroke-width="2.5" :stroke="cores.borda" @click="pintar('borda')"></rect>
+          </svg>
+        </template>
+        <template x-if="tile.type==='svg' && tile.id==='teste-complexo'">
+          <svg viewBox="0 0 100 100" class="w-[320px] h-[320px] sm:w-[380px] sm:h-[380px]">
+            <rect x="0" y="0" width="100" height="100" :fill="cores.bg" opacity="0" @click="pintar('bg')"></rect>
+            <rect x="20" y="20" width="60" height="60" :fill="cores.p1" @click="pintar('p1')"></rect>
+            <rect x="10" y="10" width="80" height="80" transform="rotate(45 50 50)" :fill="cores.p2" @click="pintar('p2')"></rect>
+            <rect x="36" y="36" width="28" height="28" :fill="cores.miolo" @click="pintar('miolo')"></rect>
+            <rect x="4" y="4" width="92" height="92" fill="none" stroke-width="2.5" :stroke="cores.borda" @click="pintar('borda')"></rect>
+          </svg>
+        </template>
       </div>
 
       <div class="flex flex-col items-center">
@@ -304,6 +323,9 @@ function simuladorDP(){
 
     templates: [
       { id:'img_az1', type:'raster', nome:'Azulejo 1', categoria:'Centrais', src: "{{ asset('simulator/patterns/azulejo1.avif') }}" },
+      // SVG files from public/simulator/patterns — rendered as images so they work with the canvas editor
+      { id:'teste-simples-file', type:'raster', nome:'Teste (simples)', categoria:'Centrais', src: "{{ asset('simulator/patterns/teste cor versao simples.svg') }}" },
+      { id:'teste-complexo-file', type:'raster', nome:'Teste (complexo)', categoria:'Centrais', src: "{{ asset('simulator/patterns/teste cor versao complexa.svg') }}" },
       { id:'geo1',  type:'svg', nome:'Geométrico 01', categoria:'Geométricos', coresDefault:{ bg:'#e6e6e6', p1:'#6b7280', p2:'#94a3b8', miolo:'#1f2937', borda:'#374151' } },
       { id:'flor1', type:'svg', nome:'Flor 01',       categoria:'Florões',    coresDefault:{ bg:'#e6e6e6', p1:'#8ab79b', p2:'#5a8d75', miolo:'#2f5d50', borda:'#2f3e46' } },
     ],
