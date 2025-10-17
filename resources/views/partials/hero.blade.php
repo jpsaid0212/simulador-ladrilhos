@@ -7,7 +7,7 @@
           <img 
             src="{{ asset('LOGOSTUDIOLATITUDE.png') }}" 
             alt="Studio Latitude Ladrilho" 
-            class="w-[280px] md:w-[450px] lg:w-[600px] h-auto"
+            class="w-[180px] md:w-[280px] lg:w-[360px] h-auto"
           >
         </div>
         <div class="mt-3 text-[12px] md:text-[13px] text-neutral-700/80">
