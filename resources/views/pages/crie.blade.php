@@ -86,31 +86,35 @@
     </aside>
   </div>
 
-  {{-- Faixa inferior: duas imagens lado a lado --}}
-  <div class="mt-10 grid md:grid-cols-2 gap-6 items-start">
-    <figure class="w-full h-auto text-center">
-      <div class="h-[380px] sm:h-[420px] md:h-[440px]">
-        <img
-          src="{{ asset('img/crie-seu-ladrilho/paginacao-natalia2.jpg') }}"
-          alt="Ladrilho final"
-          class="w-full h-full object-contain"
-          loading="lazy"
-        />
-      </div>
-      <figcaption class="mt-2 text-[14px] text-slate-500 italic">
-        Projeto de paginação do modelo "Janelas" em planta-baixa do cliente
-      </figcaption>
-    </figure>
-
-    <div class="w-full h-[280px] sm:h-[320px] md:h-[300px]">
+  {{-- Faixa inferior: duas imagens lado a lado (mesma altura e alinhadas) --}}
+<div class="mt-10 grid md:grid-cols-2 gap-6 items-start">
+  <figure class="w-full text-center">
+    <div class="w-full h-[320px] sm:h-[380px] md:h-[420px] lg:h-[460px]">
       <img
-        src="{{ asset('img/crie-seu-ladrilho/crie-seu-ladrilho3.jpg') }}"
+        src="{{ asset('img/crie-seu-ladrilho/paginacao-natalia2.jpg') }}"
         alt="Paginação em planta-baixa"
         class="w-full h-full object-contain"
         loading="lazy"
       />
     </div>
-  </div>
+    <figcaption class="mt-2 text-[14px] text-slate-500 italic">
+      Projeto de paginação do modelo "Janelas" em planta-baixa do cliente
+    </figcaption>
+  </figure>
+
+  <figure class="w-full text-center">
+    <div class="w-full h-[320px] sm:h-[380px] md:h-[420px] lg:h-[460px]">
+      <img
+        src="{{ asset('img/crie-seu-ladrilho/crie-seu-ladrilho3.jpg') }}"
+        alt="Ladrilho final"
+        class="w-full h-full object-contain"
+        loading="lazy"
+      />
+    </div>
+    {{-- Se não quiser legenda do lado direito, pode manter vazio ou remover o figcaption --}}
+    <figcaption class="sr-only">Imagem de ladrilho</figcaption>
+  </figure>
+</div>
 
 </section>
 @endsection
