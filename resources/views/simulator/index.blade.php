@@ -326,6 +326,12 @@ function simuladorDP(){
       // SVG files from public/simulator/patterns — rendered as images so they work with the canvas editor
       { id:'teste-simples-file', type:'raster', nome:'Teste (simples)', categoria:'Centrais', src: "{{ asset('simulator/patterns/teste cor versao simples.svg') }}" },
       { id:'teste-complexo-file', type:'raster', nome:'Teste (complexo)', categoria:'Centrais', src: "{{ asset('simulator/patterns/teste cor versao complexa.svg') }}" },
+      { id:'animal-print', type:'raster', nome:'Animal Print', categoria:'Centrais', src: "{{ asset('simulator/patterns/1 ANIMAL PRINT.svg') }}" },
+      { id:'andorinha', type:'raster', nome:'Andorinha', categoria:'Centrais', src: "{{ asset('simulator/patterns/1 ANDORINHA.svg') }}" },
+      { id:'rita-lee', type:'raster', nome:'Rita Lee', categoria:'Centrais', src: "{{ asset('simulator/patterns/1 RITA LEE.svg') }}" },
+      { id:'gama', type:'raster', nome:'Gama', categoria:'Geométricos', src: "{{ asset('simulator/patterns/GAMA.svg') }}" },
+      { id:'organic-mix', type:'raster', nome:'Organic Mix', categoria:'Centrais', src: "{{ asset('simulator/patterns/ORGANIC MIX.svg') }}" },
+      { id:'amazonia', type:'raster', nome:'Amazônia Vista de Cima', categoria:'Centrais', src: "{{ asset('simulator/patterns/amazonia vista de cima PAG.svg') }}" },
       { id:'geo1',  type:'svg', nome:'Geométrico 01', categoria:'Geométricos', coresDefault:{ bg:'#e6e6e6', p1:'#6b7280', p2:'#94a3b8', miolo:'#1f2937', borda:'#374151' } },
       { id:'flor1', type:'svg', nome:'Flor 01',       categoria:'Florões',    coresDefault:{ bg:'#e6e6e6', p1:'#8ab79b', p2:'#5a8d75', miolo:'#2f5d50', borda:'#2f3e46' } },
     ],
