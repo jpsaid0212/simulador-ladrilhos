@@ -5,18 +5,19 @@
     <div class="absolute inset-0 bg-white/70"></div>
   </div>
 
-  <div class="max-w-6xl mx-auto px-4 md:px-6 lg:px-8 py-10">
+  <div class="max-w-6xl mx-auto px-4 md:px-6 lg:px-8 py-10 text-[12px] md:text-[13px] leading-relaxed">
     <div class="grid md:grid-cols-2 gap-10 items-start">
       {{-- ESQ: instagram --}}
       <div>
-        <p class="text-slate-500 text-sm mb-1">siga nosso instagram:</p>
+        <p class="text-slate-500 text-xs mb-1">siga nosso instagram:</p>
         <div class="flex items-center gap-2">
           <a href="https://www.instagram.com/studio.latitude.ladrilho" target="_blank" rel="noopener"
              class="text-sky-600 underline underline-offset-4">@studio.latitude.ladrilho</a>
 
           {{-- ícone IG (usa Font Awesome; se não tiver, troque por um PNG/SVG) --}}
-          <img src="{{ asset('imgs/ig-badge.svg') }}" class="h-7 w-7">
-            <i class="fa-brands fa-instagram text-slate-600"></i>
+          <span class="inline-flex items-center gap-1">
+            {{-- <img src="{{ asset('imgs/ig-badge.svg') }}" class="h-5 w-5" alt="Instagram"> --}}
+            <i class="fa-brands fa-instagram text-slate-600 text-sm"></i>
           </span>
         </div>
       </div>
@@ -38,9 +39,6 @@
           </a>
         </p>
 
-        <p class="text-slate-500 mt-3">
-          STUDIO LATITUDE LADRILHO (CEMENT TILE) CNPJ 35.708.275/0001-69
-        </p>
 
         <p>
           <a
