@@ -14,7 +14,7 @@
   </div>
   {{-- Apenas a imagem da tabela de cores --}}
   <div class="mt-8">
-    <img src="{{ asset('img/cores/tabela-cores.avif') }}" 
+    <img src="{{ asset('img/cores/tabela-cores.jpg') }}" 
          alt="Tabela de cores Studio Latitude"
          class="max-w-3xl w-full h-auto">
   </div>
