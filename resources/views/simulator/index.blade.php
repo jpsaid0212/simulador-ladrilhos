@@ -400,7 +400,7 @@ function simuladorDP(){
 
 
     // editor raster
-    editor: { canvas: null, ctx: null, img: null, original: null, scaleX:1, scaleY:1, tol: 28 },
+    editor: { canvas: null, ctx: null, img: null, original: null, scaleX:1, scaleY:1, tol: 28, segments: null },
 
     tileURL: '',
     usedColorsRaster: [],
@@ -560,15 +560,75 @@ function simuladorDP(){
         this.editor.ctx.drawImage(img, 0, 0, targetW, targetH);
         this.editor.original = this.editor.ctx.getImageData(0,0,targetW,targetH);
         this.usedColorsRaster = [];
+
+        // Criar mapa de segmentos para áreas independentes
+        this.criarMapaSegmentos();
+
         this.gerarTileURL();
       };
       img.src = src;
+    },
+
+    // Cria um mapa de segmentos identificando áreas independentes
+    criarMapaSegmentos(){
+      const { ctx, canvas } = this.editor;
+      const imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+      const data = imgData.data;
+      const W = canvas.width, H = canvas.height;
+
+      // Inicializar mapa de segmentos
+      this.editor.segments = new Int32Array(W * H);
+      let segmentId = 0;
+
+      const idx = (x, y) => y * W + x;
+      const pixIdx = (x, y) => (y * W + x) * 4;
+
+      // Função para verificar se dois pixels são similares
+      const isSimilar = (idx1, idx2, tolerance = 30) => {
+        return Math.abs(data[idx1] - data[idx2]) <= tolerance &&
+               Math.abs(data[idx1+1] - data[idx2+1]) <= tolerance &&
+               Math.abs(data[idx1+2] - data[idx2+2]) <= tolerance;
+      };
+
+      // Flood fill para marcar cada segmento
+      const visited = new Uint8Array(W * H);
+
+      for (let y = 0; y < H; y++) {
+        for (let x = 0; x < W; x++) {
+          const i = idx(x, y);
+          if (visited[i]) continue;
+
+          segmentId++;
+          const stack = [[x, y]];
+          const pIdx = pixIdx(x, y);
+
+          while (stack.length > 0) {
+            const [cx, cy] = stack.pop();
+            const ci = idx(cx, cy);
+
+            if (visited[ci]) continue;
+            if (cx < 0 || cx >= W || cy < 0 || cy >= H) continue;
+
+            const cPixIdx = pixIdx(cx, cy);
+            if (!isSimilar(pIdx, cPixIdx)) continue;
+
+            visited[ci] = 1;
+            this.editor.segments[ci] = segmentId;
+
+            stack.push([cx-1, cy], [cx+1, cy], [cx, cy-1], [cx, cy+1]);
+          }
+        }
+      }
+
+      console.log(`Mapa de segmentos criado com ${segmentId} áreas independentes`);
     },
 
     resetRaster(){
       if (!this.editor.original) return;
       this.editor.ctx.putImageData(this.editor.original, 0, 0);
       this.usedColorsRaster = [];
+      // Recriar mapa de segmentos após reset
+      this.criarMapaSegmentos();
       this.gerarTileURL();
     },
 
@@ -577,10 +637,38 @@ function simuladorDP(){
       const rect = ev.target.getBoundingClientRect();
       const x = Math.floor((ev.clientX - rect.left) * (this.editor.canvas.width / rect.width));
       const y = Math.floor((ev.clientY - rect.top) * (this.editor.canvas.height / rect.height));
-      this.floodFill(x, y, this.hexToRgba(this.corSelecionada));
+
+      // Usar novo método que pinta apenas o segmento clicado
+      this.pintarSegmento(x, y, this.hexToRgba(this.corSelecionada));
       this.addUsedColor(this.corSelecionada);
       this.gerarTileURL();
       if(this.sim.open){ this.gerarSimTexture() } // reflete no 3D se aberto
+    },
+
+    // Pinta apenas o segmento específico clicado
+    pintarSegmento(x, y, newColor){
+      const { ctx, canvas, segments } = this.editor;
+      if (!segments) return;
+
+      const W = canvas.width, H = canvas.height;
+      const targetSegment = segments[y * W + x];
+      if (targetSegment === 0) return; // Área sem segmento
+
+      const imgData = ctx.getImageData(0, 0, W, H);
+      const data = imgData.data;
+
+      // Pintar apenas pixels do mesmo segmento
+      for (let i = 0; i < segments.length; i++) {
+        if (segments[i] === targetSegment) {
+          const pixIdx = i * 4;
+          data[pixIdx] = newColor[0];
+          data[pixIdx + 1] = newColor[1];
+          data[pixIdx + 2] = newColor[2];
+          data[pixIdx + 3] = 255;
+        }
+      }
+
+      ctx.putImageData(imgData, 0, 0);
     },
 
     floodFill(x, y, newColor){
