@@ -97,7 +97,7 @@
         loading="lazy"
       />
     </div>
-    <figcaption class="mt-2 text-[14px] text-slate-500 italic">
+    <figcaption class="mt-2 text-[14px] text-slate-500 italic text-left">
       Projeto de paginação do modelo "Janelas" em planta-baixa do cliente
     </figcaption>
   </figure>
