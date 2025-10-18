@@ -25,15 +25,15 @@
 <div x-data="simuladorDP()" x-init="init()">
 
   <!-- aviso / instruções -->
-  <div class="bg-orange-50 border border-orange-100 rounded-xl px-4 py-3 text-sm text-slate-700">
-    <p class="font-semibold mb-1">crie seu ladrilho personalizado:</p>
-      <ol class="list-decimal ml-5 space-y-1">
-        <li>escolha o modelo na lista abaixo</li>
-        <li>escolha as cores na nossa paleta de cores</li>
-        <li>clique primeiro na cor e em seguida na parte do ladrilho que deseja pintar</li>
-        <li>clique no botão salvar pdf</li>
-        <li>nos envie o arquivo via whatsapp para orçamento e prazo de fabricação</li>
-      </ol>
+  <div class="border border-slate-300 px-4 py-3 text-sm text-slate-700 font-bold">
+    <p class="mb-1">crie seu ladrilho personalizado:</p>
+    <ol class="list-decimal ml-5 space-y-1">
+      <li>escolha o modelo na lista abaixo</li>
+      <li>escolha as cores na nossa paleta de cores</li>
+      <li>clique primeiro na cor e em seguida na parte do ladrilho que deseja pintar</li>
+      <li>clique no botão salvar pdf</li>
+      <li>nos envie o arquivo via whatsapp para orçamento e prazo de fabricação</li>
+    </ol>
   </div>
 
   <!-- SELECTOR -->
@@ -91,7 +91,7 @@
   <div class="mt-8 grid grid-cols-1 lg:grid-cols-2 gap-8">
     <!-- ESQUERDA: preview -->
     <div class="flex flex-col items-center">
-      <div class="relative bg-white border rounded-xl p-3">
+      <div class="relative bg-white border p-3">
         <template x-if="tile.type==='raster'">
           <div class="flex flex-col items-center">
             <canvas id="editorCanvas"
@@ -187,9 +187,15 @@
 
     <!-- DIREITA: paleta com nomes -->
     <div>
-      <p class="text-slate-600 mb-2 text-sm">3 - Selecione as cores</p>
+      <div class="flex items-center justify-between mb-2">
+        <p class="text-slate-600 text-sm">3 - Selecione as cores</p>
+        <p class="text-[11px] text-slate-500 italic text-right leading-tight max-w-[180px]">
+          <span class="font-semibold not-italic"></span><br>
+          As cores podem sofrer variações.
+        </p>
+      </div>
 
-      <div class="rounded-xl border border-slate-200 bg-white p-4">
+      <div class="border border-slate-200 bg-white p-4">
         <div class="grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-5 gap-x-6 gap-y-6">
           <template x-for="cor in coresLadrilar" :key="cor.nome">
             <button class="group flex flex-col items-center text-center"
@@ -348,60 +354,60 @@ function simuladorDP(){
 
     // === PALETA OFICIAL (Studio Latitude) ===
     coresLadrilar: [
-      // linha 1
-      { nome:'BRANCO',        hex:'#F7F7F4' },
-      { nome:'CINZA CLARO',   hex:'#DDDCD2' },
-      { nome:'CINZA',         hex:'#B4B1AC' },
-      { nome:'PRATA',         hex:'#9FA7AD' },
-      { nome:'PRETO',         hex:'#2F2F2F' },
+      { nome:'branco',        hex:'#F7F7F4' },
+      { nome:'cinza claro',   hex:'#DDDCD2' },
+      { nome:'cinza',         hex:'#B4B1AC' },
+      { nome:'prata',         hex:'#9FA7AD' },
+      { nome:'preto',         hex:'#2F2F2F' },
 
       // linha 2
-      { nome:'OFFWHITE',      hex:'#F4F2EA' },
-      { nome:'CRAFT CLARO',   hex:'#EFE0CF' },
-      { nome:'CRAFT',         hex:'#CDA87B' },
-      { nome:'CRAFT ESC',     hex:'#B08F64' },
-      { nome:'AMÊNDOA',       hex:'#CDA06D' },
-      { nome:'MARROM',        hex:'#6F4D4D' },
+      { nome:'offwhite',      hex:'#F4F2EA' },
+      { nome:'craft claro',   hex:'#EFE0CF' },
+      { nome:'craft',         hex:'#CDA87B' },
+      { nome:'craft esc',     hex:'#B08F64' },
+      { nome:'amêndoa',       hex:'#CDA06D' },
+      { nome:'marrom',        hex:'#6F4D4D' },
 
       // linha 3
-      { nome:'BEGE',          hex:'#EEDFC4' },
-      { nome:'AMARELO CL',    hex:'#F8DE78' },
-      { nome:'AMARELO',       hex:'#F4C232' },
-      { nome:'MOSTARDA',      hex:'#E4AE54' },
-      { nome:'VERDE CANA',    hex:'#B9AA54' },
+      { nome:'bege',          hex:'#EEDFC4' },
+      { nome:'amarelo cl',    hex:'#F8DE78' },
+      { nome:'amarelo',       hex:'#F4C232' },
+      { nome:'mostarda',      hex:'#E4AE54' },
+      { nome:'verde cana',    hex:'#B9AA54' },
 
       // linha 4
-      { nome:'TERRACOTA CL',  hex:'#EDA382' },
-      { nome:'TERRACOTA',     hex:'#DF825F' },
-      { nome:'TERRACOTA ESC', hex:'#CF735A' },
-      { nome:'VERM VIVO',     hex:'#A6423C' },
-      { nome:'VERM ESC',      hex:'#8F332C' },
+      { nome:'terracota cl',  hex:'#EDA382' },
+      { nome:'terracota',     hex:'#DF825F' },
+      { nome:'terracota esc', hex:'#CF735A' },
+      { nome:'verm vivo',     hex:'#A6423C' },
+      { nome:'verm esc',      hex:'#8F332C' },
 
       // linha 5
-      { nome:'ROSA CL',       hex:'#F1C7BF' },
-      { nome:'ROSA',          hex:'#F3B6B9' },
-      { nome:'GOIABA',        hex:'#E06A5E' },
+      { nome:'rosa cl',       hex:'#F1C7BF' },
+      { nome:'rosa',          hex:'#F3B6B9' },
+      { nome:'goiaba',        hex:'#E06A5E' },
 
       // linha 6
-      { nome:'VERDE CL',      hex:'#B4CBB6' },
-      { nome:'VERDE',         hex:'#6A834F' },
-      { nome:'JAGUAR',        hex:'#2F7F5E' },
-      { nome:'VERDE ESC',     hex:'#3F5242' },
+      { nome:'verde cl',      hex:'#B4CBB6' },
+      { nome:'verde',         hex:'#6A834F' },
+      { nome:'jaguar',        hex:'#2F7F5E' },
+      { nome:'verde esc',     hex:'#3F5242' },
 
       // linha 7
-      { nome:'AZ GRIZZO',     hex:'#D8DADD' },
-      { nome:'AZ GRIZZO CL',  hex:'#CFD7D9' },
-      { nome:'TIFFANY CL',    hex:'#AEEBEA' },
-      { nome:'TIFFANY',       hex:'#75E0E6' },
-      { nome:'OCEAN BLUE',    hex:'#167C8A' },
+      { nome:'az grizzo',     hex:'#D8DADD' },
+      { nome:'az grizzo cl',  hex:'#CFD7D9' },
+      { nome:'tiffany cl',    hex:'#AEEBEA' },
+      { nome:'tiffany',       hex:'#75E0E6' },
+      { nome:'ocean blue',    hex:'#167C8A' },
 
       // linha 8
-      { nome:'AZUL CL',       hex:'#A9C1DA' },
-      { nome:'COBALTO',       hex:'#3F92D2' },
-      { nome:'PORTO',         hex:'#6A85B3' },
-      { nome:'AZUL ULTRAMAR', hex:'#3C5AA6' },
-      { nome:'AZUL ESC',      hex:'#4B5F7F' },
-      { nome:'AZUL ESC 2',    hex:'#3B4C63' },
+      { nome:'azul cl',       hex:'#A9C1DA' },
+      { nome:'cobalto',       hex:'#3F92D2' },
+      { nome:'porto',         hex:'#6A85B3' },
+      { nome:'azul ultramar', hex:'#3C5AA6' },
+      { nome:'azul esc',      hex:'#4B5F7F' },
+      { nome:'azul esc 2',    hex:'#3B4C63' },
+
     ],
 
 
@@ -418,13 +424,17 @@ function simuladorDP(){
       { id:'cozinha',  nome:'Cozinha',         photo:"{{ asset('simulator/rooms/cozinha_overlay.png') }}",  tileSize:92, angle:54, persp:900, offsetY:-6 },
       { id:'quarto',   nome:'Parede / Quarto', photo:"{{ asset('simulator/rooms/quarto_overlay.png') }}",   tileSize:86, angle:-55, persp:900, offsetY:0 },
     ],
-    sim: { open:false, photo:'', tileSize:90, angle:55, persp:900, offsetY:0 },
+    sim: { open:false, photo:'', tileSize:90, angle:55, persp:900, offsetY:0, groutScale: 1 },
 
     // NOVO: textura (dataURL) com ladrilho + rejunte para o 3D
     simTextureURL: '',
 
     /* --------- init --------- */
     init(){
+      this.$watch('groutColor', () => { if (this.sim.open) this.gerarSimTexture() });
+      this.$watch('sim.groutScale', () => { if (this.sim.open) this.gerarSimTexture() });
+      this.$watch('tileURL', () => { if (this.sim.open) this.gerarSimTexture() });
+
       this.selecionarTemplate(this.templates[0]);
       this.atualizarTapete();
 
@@ -454,15 +464,16 @@ function simuladorDP(){
     // NOVO: espessura do rejunte (px CSS) proporcional ao tamanho do ladrilho do ambiente
     groutPx3D(){
       const t = this.sim.tileSize || 90;
-      const hairline = t * 0.004;
-      return Math.max(0.5, hairline);
+      const hairline = t * 0.002;          // base fina
+      const scaled = hairline * (this.sim.groutScale || 1); 
+      return Math.max(0.25, scaled);       // mínimo bem fino
     },
 
     // NOVO: gera textura (tile + borda de rejunte) e guarda em simTextureURL
     async gerarSimTexture(){
       if(!this.tileURL) this.gerarTileURL();
 
-      const baseTilePx = 256; // tamanho do tile dentro da textura
+      const baseTilePx = 512; // tamanho do tile dentro da textura
       const gCss = this.groutPx3D();
       const gPx = Math.max(1, Math.round(baseTilePx * (gCss / (this.sim.tileSize || 90))));
 
@@ -725,7 +736,7 @@ function simuladorDP(){
     // ===== TAPETE =====
     estiloTapete(){
       const size = this.tapeteTileSize; // 120
-      const gap = 2;
+      const gap = 1;
       return {
         display: 'grid',
         gridTemplateColumns: `repeat(${this.cols}, ${size}px)`,
