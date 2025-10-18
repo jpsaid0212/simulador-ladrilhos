@@ -163,7 +163,8 @@
           <!-- BOTÕES -->
           <div class="mt-5 flex items-center justify-between gap-4">
             <button
-              @click="baixarLadrilhoPDF()"
+              @click="baixarLadrilhoPDF()
+              "
               type="button"
               class="uppercase tracking-wider text-[11px] font-semibold text-white
                      bg-[#d9c3a3] hover:bg-[#cfb893] active:bg-[#c6ae89]
@@ -215,7 +216,8 @@
   <!-- TAPETE -->
   <div class="mt-12 lg:grid lg:grid-cols-[minmax(0,1fr)_340px] lg:gap-10">
     <div class="flex justify-center">
-      <div class="border-2 border-slate-300 p-2 rounded-sm bg-white shadow-sm">
+      <!-- removido rounded-sm daqui -->
+      <div class="border-2 border-slate-300 p-2 bg-white shadow-sm">
         <div :style="estiloTapete()" id="tapete">
           <template x-for="i in rows*cols" :key="i">
             <div :style="estiloPeca()"></div>
@@ -231,14 +233,30 @@
       </h3>
 
       <div class="space-y-5">
+        <!-- CONTROLES: somente inputs numéricos -->
         <div class="grid grid-cols-2 gap-4">
-          <label class="text-sm text-slate-700 flex items-center gap-2">
+          <label class="text-sm text-slate-700">
             <span>Colunas:</span>
-            <input type="number" class="w-16 border rounded-md px-2 py-1.5 bg-slate-50 text-slate-700 cursor-default" :value="rows" readonly aria-readonly="true" onwheel="this.blur()" />
+            <input type="number"
+                   class="mt-1 w-24 border rounded-md px-2 py-1.5 bg-white text-slate-700"
+                   x-model.number="cols"
+                   :min="minCols"
+                   :max="maxCols"
+                   step="1"
+                   onwheel="this.blur()"
+                   @focus="$event.target.select()" />
           </label>
-          <label class="text-sm text-slate-700 flex items-center gap-2">
+
+          <label class="text-sm text-slate-700">
             <span>Linhas:</span>
-            <input type="number" class="w-16 border rounded-md px-2 py-1.5 bg-slate-50 text-slate-700 cursor-default" :value="cols" readonly aria-readonly="true" onwheel="this.blur()" />
+            <input type="number"
+                   class="mt-1 w-24 border rounded-md px-2 py-1.5 bg-white text-slate-700"
+                   x-model.number="rows"
+                   :min="minRows"
+                   :max="maxRows"
+                   step="1"
+                   onwheel="this.blur()"
+                   @focus="$event.target.select()" />
           </label>
         </div>
 
@@ -350,6 +368,12 @@ function simuladorDP(){
     rows: 6,
     cols: 5,
 
+    /* limites e helpers de linhas/colunas */
+    minRows: 1,
+    maxRows: 20,
+    minCols: 1,
+    maxCols: 20,
+
     tapeteTileSize: 120,
 
     // === PALETA OFICIAL (Studio Latitude) ===
@@ -438,28 +462,30 @@ function simuladorDP(){
       this.selecionarTemplate(this.templates[0]);
       this.atualizarTapete();
 
-      // ---> TRAVA DURA: torna rows/cols constantes (ignoram x-model)
-      Object.defineProperty(this, 'rows', {
-        configurable: true,
-        get(){ return 5 },
-        set(_){ /* ignorado */ }
-      });
-      Object.defineProperty(this, 'cols', {
-        configurable: true,
-        get(){ return 6 },
-        set(_){ /* ignorado */ }
-      });
-
-      // fixa grade
-      this.rows = 5;
-      this.cols = 6;
-
-      // impede alterações pelos inputs (Alpine v3)
-      this.$watch('rows', v => { if (v !== 5) this.rows = 5; });
-      this.$watch('cols', v => { if (v !== 6) this.cols = 6; });
+      // watchers reativos para linhas/colunas (clamp + render)
+      this.$watch('rows', v => this.setRows(v));
+      this.$watch('cols', v => this.setCols(v));
 
       window.addEventListener('resize', () => {});
     },
+
+    // helpers de linhas/colunas
+    clamp(v, min, max){
+      v = Number.isFinite(v) ? Math.round(v) : min;
+      return Math.min(max, Math.max(min, v));
+    },
+    setRows(v){
+      this.rows = this.clamp(v, this.minRows, this.maxRows);
+      this.atualizarTapete();
+    },
+    setCols(v){
+      this.cols = this.clamp(v, this.minCols, this.maxCols);
+      this.atualizarTapete();
+    },
+    incRows(){ this.setRows((this.rows ?? 0) + 1) },
+    decRows(){ this.setRows((this.rows ?? 0) - 1) },
+    incCols(){ this.setCols((this.cols ?? 0) + 1) },
+    decCols(){ this.setCols((this.cols ?? 0) - 1) },
 
     // NOVO: espessura do rejunte (px CSS) proporcional ao tamanho do ladrilho do ambiente
     groutPx3D(){
@@ -756,7 +782,7 @@ function simuladorDP(){
         backgroundImage: `url('${this.tileURL}')`,
         backgroundSize: 'cover',
         backgroundPosition: 'center',
-        borderRadius: '2px'
+        borderRadius: '0' // sem arredondamento nas peças
       }
     },
 
@@ -819,7 +845,7 @@ function simuladorDP(){
       if(!hex) return '';
       const h = (hex || '').toLowerCase();
       const m = (this.coresLadrilar || []).find(c => (c.hex || '').toLowerCase() === h);
-      return m ? m.nome : h;
+      return m ? c.nome : h;
     },
 
     coresUsadas(){
