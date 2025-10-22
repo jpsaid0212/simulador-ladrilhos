@@ -310,27 +310,18 @@
        @keydown.escape.window="sim.open=false"
        @click.self="sim.open=false">
 
-    <div class="relative bg-white rounded-md shadow-xl p-2 md:p-4 w-[88vw] max-w-[960px]">
+    <div class="relative bg-white rounded-md shadow-xl p-1 md:p-2 w-auto max-w-[95vw]">
       <button @click="sim.open=false"
               class="absolute -top-3 -right-3 bg-white/90 rounded-full border px-2 py-1 text-[12px] shadow">
         ✕
       </button>
 
-      <div class="w-full flex justify-center">
-        <!-- wrapper -->
-        <div id="simWrap" class="relative inline-block max-w-full">
-          <!-- piso (div com padrão + efeito 3D) -->
-          <div id="simFloor"
-               class="absolute inset-0 z-0 will-change-transform"
-               :style="floorStyle()"></div>
-
-          <!-- imagem por cima (PNG com piso transparente) -->
-          <img id="sim3dBase"
-               :src="sim.photo"
-               alt=""
-               class="block max-w-full w-auto max-h-[70vh] h-auto select-none relative z-10">
-        </div>
-      </div>
+     <div id="simWrap" class="relative inline-block overflow-hidden">
+      <div id="simFloor" class="absolute inset-0 z-0" :style="floorStyle()"></div>
+      <img :src="sim.overlay"
+          alt=""
+          class="block w-auto h-auto max-w-[95vw] max-h-[80vh] select-none relative z-10">
+    </div>
     </div>
   </div>
 
@@ -443,12 +434,46 @@ function simuladorDP(){
 
     /* --------- SIMULAÇÃO 3D (CSS 3D) --------- */
     rooms: [
-      { id:'sala',     nome:'Sala',            photo:"{{ asset('simulator/rooms/sala_overlay.png') }}",     tileSize:90, angle:52, persp:900, offsetY:0 },
-      { id:'banheiro', nome:'Banheiro',        photo:"{{ asset('simulator/rooms/banheiro_overlay.png') }}", tileSize:88, angle:57, persp:900, offsetY:-4 },
-      { id:'cozinha',  nome:'Cozinha',         photo:"{{ asset('simulator/rooms/cozinha_overlay.png') }}",  tileSize:92, angle:54, persp:900, offsetY:-6 },
-      { id:'quarto',   nome:'Parede / Quarto', photo:"{{ asset('simulator/rooms/quarto_overlay.png') }}",   tileSize:86, angle:-55, persp:900, offsetY:0 },
-    ],
-    sim: { open:false, photo:'', tileSize:90, angle:55, persp:900, offsetY:0, groutScale: 1 },
+    {
+      id: 'sala',
+      nome: 'piso',
+      overlay: "{{ asset('simulator/rooms/piso.png') }}",
+      tileSize: 90,
+      offsetY: 0,
+      perspective: true,     // <- só este tem profundidade
+    },
+    {
+      id: 'banheiro',
+      nome: 'Parede Esquerda',
+      overlay: "{{ asset('simulator/rooms/paredeesquerdafundo.png') }}",
+      tileSize: 88,
+      offsetY: 0
+    },
+    {
+      id: 'cozinha',
+      nome: 'Parede De Fundo',
+      overlay: "{{ asset('simulator/rooms/parededefundo.png') }}",
+      tileSize: 92,
+      offsetY: 0
+    },
+    {
+      id: 'quarto',
+      nome: 'Parede Central',
+      overlay: "{{ asset('simulator/rooms/paredecentral.png') }}",
+      tileSize: 86,
+      offsetY: 0
+    },
+    {
+      id: 'sala-jantar',              // id único (sem espaços)
+      nome: 'Cozinha',         // texto do botão
+      overlay: "{{ asset('simulator/rooms/cozinha_overlay.png') }}", // seu PNG
+      tileSize: 90,                   // tamanho do ladrilho (px CSS) — ajuste fino
+      offsetY: 0                      // se precisar “subir/descer” o piso
+      // floorMask: "{{ asset('simulator/rooms/sala_jantar_mask.png') }}", // opcional (explico abaixo)
+    }
+  ],
+
+    sim: { open:false, tileSize:90, offsetY:0, groutScale:1, overlay:'', floorMask:'' },
 
     // NOVO: textura (dataURL) com ladrilho + rejunte para o 3D
     simTextureURL: '',
@@ -947,37 +972,56 @@ function simuladorDP(){
       if(!r) return;
       if(!this.tileURL) this.gerarTileURL();
 
-      this.sim.photo    = r.photo;
-      this.sim.tileSize = r.tileSize;
-      this.sim.angle    = r.angle ?? 55;
-      this.sim.persp    = r.persp ?? 900;
-      this.sim.offsetY  = r.offsetY ?? 0;
+      this.sim.tileSize = r.tileSize ?? 90;
+      this.sim.offsetY  = r.offsetY  ?? 0;
+      this.sim.overlay  = r.overlay  || '';
+      this.sim.floorMask = r.floorMask || '';
+      this.sim.perspective = !!r.perspective;
 
       this.simTextureURL = '';
-      try { await this.gerarSimTexture(); } catch(e){ /* fallback silencioso */ }
+      try { await this.gerarSimTexture(); } catch(e){}
 
       this.sim.open = true;
     },
 
+
     // estilo do plano do piso (div) — PROFUNDIDADE AQUI
     // usa a textura com rejunte e ajusta backgroundSize (tile + 2*g)
-    floorStyle(){
-      const size = this.sim.tileSize || 90;
-      const g    = this.groutPx3D();
-      const tex  = this.simTextureURL || this.tileURL;
+   floorStyle(){
+    const size = this.sim.tileSize || 90;
+    const g    = this.groutPx3D();
+    const tex  = this.simTextureURL || this.tileURL;
+    const mask = this.sim.floorMask || '';
 
-      return {
-        width: '100%',
-        height: '100%',
-        backgroundImage: `url('${tex}')`,
-        backgroundRepeat: 'repeat',
-        backgroundSize: `${size + g*2}px ${size + g*2}px`,
-        backgroundPosition: 'center bottom',
-        transformOrigin: 'bottom center',
-        transform: `perspective(${this.sim.persp}px) rotateX(${this.sim.angle}deg) translateY(${this.sim.offsetY}px)`,
-        filter: 'brightness(0.98) contrast(1.03)',
-      };
-    },
+    const style = {
+      width: '100%',
+      height: '100%',
+      backgroundImage: `url('${tex}')`,
+      backgroundRepeat: 'repeat',
+      backgroundSize: `${size + g*2}px ${size + g*2}px`,
+      backgroundPosition: this.sim.perspective ? 'center bottom' : 'center center',
+      transform: `translateY(${this.sim.offsetY || 0}px)`,
+    };
+
+    // apenas o "piso" tem profundidade
+    if (this.sim.perspective) {
+      style.transformOrigin = 'center top';
+      style.transform = `${style.transform} perspective(1200px) rotateX(55deg)`;
+    }
+
+    if (mask) {
+      style.maskImage = `url('${mask}')`;
+      style.maskRepeat = 'no-repeat';
+      style.maskSize = 'contain';
+      style.maskPosition = 'center center';
+      style['-webkit-mask-image'] = `url('${mask}')`;
+      style['-webkit-mask-repeat'] = 'no-repeat';
+      style['-webkit-mask-size'] = 'contain';
+      style['-webkit-mask-position'] = 'center center';
+    }
+
+    return style;
+  },
   }
 }
 </script>
