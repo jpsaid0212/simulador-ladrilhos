@@ -120,13 +120,16 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        overflow: hidden;
+        overflow: auto;
         min-height: 600px;
         box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        max-width: 100%;
     }
 
     #c {
         background: #ffffff;
+        max-width: 100%;
+        height: auto;
     }
 
     .sim-pill {
@@ -240,7 +243,7 @@
     </aside>
 
     <main class="sim-canvasWrap">
-        <canvas id="c" width="1200" height="800"></canvas>
+        <canvas id="c"></canvas>
     </main>
 </div>
 </section>
@@ -462,10 +465,12 @@
 
             // ---- responsivo
             const resize = () => {
-                const main = document.querySelector('.canvasWrap');
-                const w = main.clientWidth - 20, h = window.innerHeight - 32;
-                canvas.setWidth(Math.max(640, w));
-                canvas.setHeight(Math.max(460, h - 32));
+                const main = document.querySelector('.sim-canvasWrap');
+                if (!main) return;
+                const w = main.clientWidth - 40;
+                const h = Math.max(600, window.innerHeight - 200);
+                canvas.setWidth(Math.min(1200, w));
+                canvas.setHeight(Math.min(800, h));
                 canvas.requestRenderAll();
                 if (bgImg) fitToCanvas(bgImg);
                 if (patternRect && polyObject) applyPatternToPolygon();
