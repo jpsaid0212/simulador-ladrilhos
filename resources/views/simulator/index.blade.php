@@ -320,7 +320,7 @@
       <div id="simFloor" class="absolute inset-0 z-0" :style="floorStyle()"></div>
       <img :src="sim.overlay"
           alt=""
-          class="block w-auto h-auto max-w-[95vw] max-h-[80vh] select-none relative z-10">
+          class="block w-auto h-auto max-w-[90vw] max-h-[70vh] select-none relative z-10">
     </div>
     </div>
   </div>
@@ -438,42 +438,48 @@ function simuladorDP(){
       id: 'sala',
       nome: 'piso',
       overlay: "{{ asset('simulator/rooms/piso.png') }}",
-      tileSize: 90,
-      offsetY: 0,
-      perspective: true,     // <- só este tem profundidade
+      tileSize: 65,
+      offsetY: 160,
+      offsetX: 0,
+      perspective: true,
+      perspectiveValue: 800,
+      rotateX: 60,
     },
     {
       id: 'banheiro',
       nome: 'Parede Esquerda',
       overlay: "{{ asset('simulator/rooms/paredeesquerdafundo.png') }}",
-      tileSize: 88,
-      offsetY: 0
+      tileSize: 45,
+      offsetY: 70,
+      offsetX: -50
     },
     {
       id: 'cozinha',
       nome: 'Parede De Fundo',
       overlay: "{{ asset('simulator/rooms/parededefundo.png') }}",
-      tileSize: 92,
-      offsetY: 0
+      tileSize: 32,
+      offsetY: 0,
+      offsetX: 0
     },
     {
       id: 'quarto',
       nome: 'Parede Central',
       overlay: "{{ asset('simulator/rooms/paredecentral.png') }}",
-      tileSize: 86,
-      offsetY: 0
+      tileSize: 35,
+      offsetY: 40,
+      offsetX: 0
     },
     {
-      id: 'sala-jantar',              // id único (sem espaços)
-      nome: 'Cozinha',         // texto do botão
-      overlay: "{{ asset('simulator/rooms/cozinha_overlay.png') }}", // seu PNG
-      tileSize: 90,                   // tamanho do ladrilho (px CSS) — ajuste fino
-      offsetY: 0                      // se precisar “subir/descer” o piso
-      // floorMask: "{{ asset('simulator/rooms/sala_jantar_mask.png') }}", // opcional (explico abaixo)
+      id: 'sala-jantar',
+      nome: 'Cozinha',
+      overlay: "{{ asset('simulator/rooms/cozinha_overlay.png') }}",
+      tileSize: 28,
+      offsetY: 290,
+      offsetX: -30
     }
   ],
 
-    sim: { open:false, tileSize:90, offsetY:0, groutScale:1, overlay:'', floorMask:'' },
+    sim: { open:false, tileSize:90, offsetY:0, offsetX:0, groutScale:1, overlay:'', floorMask:'', perspective:false, perspectiveValue:1200, rotateX:55 },
 
     // NOVO: textura (dataURL) com ladrilho + rejunte para o 3D
     simTextureURL: '',
@@ -974,9 +980,12 @@ function simuladorDP(){
 
       this.sim.tileSize = r.tileSize ?? 90;
       this.sim.offsetY  = r.offsetY  ?? 0;
+      this.sim.offsetX  = r.offsetX  ?? 0;
       this.sim.overlay  = r.overlay  || '';
       this.sim.floorMask = r.floorMask || '';
       this.sim.perspective = !!r.perspective;
+      this.sim.perspectiveValue = r.perspectiveValue ?? 1200;
+      this.sim.rotateX = r.rotateX ?? 55;
 
       this.simTextureURL = '';
       try { await this.gerarSimTexture(); } catch(e){}
@@ -992,6 +1001,8 @@ function simuladorDP(){
     const g    = this.groutPx3D();
     const tex  = this.simTextureURL || this.tileURL;
     const mask = this.sim.floorMask || '';
+    const offsetX = this.sim.offsetX || 0;
+    const offsetY = this.sim.offsetY || 0;
 
     const style = {
       width: '100%',
@@ -1000,13 +1011,15 @@ function simuladorDP(){
       backgroundRepeat: 'repeat',
       backgroundSize: `${size + g*2}px ${size + g*2}px`,
       backgroundPosition: this.sim.perspective ? 'center bottom' : 'center center',
-      transform: `translateY(${this.sim.offsetY || 0}px)`,
+      transform: `translate(${offsetX}px, ${offsetY}px)`,
     };
 
     // apenas o "piso" tem profundidade
     if (this.sim.perspective) {
+      const perspValue = this.sim.perspectiveValue || 1200;
+      const rotValue = this.sim.rotateX || 55;
       style.transformOrigin = 'center top';
-      style.transform = `${style.transform} perspective(1200px) rotateX(55deg)`;
+      style.transform = `${style.transform} perspective(${perspValue}px) rotateX(${rotValue}deg)`;
     }
 
     if (mask) {
