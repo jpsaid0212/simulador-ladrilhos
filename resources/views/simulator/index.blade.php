@@ -36,52 +36,56 @@
     </ol>
   </div>
 
-  <!-- SELECTOR -->
-  <div class="mt-10 max-w-xl mx-auto">
-    <label class="block text-center text-slate-600 mb-3">1 — Selecione um modelo para customizar</label>
+ <!-- SELECTOR (faixa horizontal rolável) -->
+<div class="mt-4 max-w-6xl mx-auto" 
+     x-data="{
+       sc:null, prog:0,
+       init(){
+         this.sc = this.$refs.scroller;
+         const upd = () => {
+           const max = this.sc.scrollWidth - this.sc.clientWidth;
+           this.prog = max > 0 ? (this.sc.scrollLeft / max) * 100 : 0;
+         };
+         this.sc.addEventListener('scroll', upd, {passive:true});
+         window.addEventListener('resize', upd);
+         this.$nextTick(upd);
+       }
+     }">
 
-    <div class="relative" x-data="{ open:false, q:'', filtrar(list){
-        const s = this.q.trim().toLowerCase();
-        if(!s) return list;
-        return list.filter(t => (t.nome||'').toLowerCase().includes(s) || (t.categoria||'').toLowerCase().includes(s));
-      }}">
-      <button type="button"
-              class="w-full border border-slate-300 bg-white rounded-md px-3 py-2 flex items-center justify-between gap-3 hover:bg-slate-50"
-              @click="open = !open">
-        <div class="flex items-center gap-3 min-w-0">
-          <img :src="tile?.id ? gerarThumb(tile) : (templates[0] ? gerarThumb(templates[0]) : '')"
-               alt="" class="h-5 w-5 rounded-sm border border-slate-300 object-cover">
-          <span class="truncate text-sm text-slate-800" x-text="tile?.nome ? tile.nome : 'Selecione um modelo'"></span>
-        </div>
-        <svg class="h-4 w-4 text-slate-500" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 10.94l3.71-3.71a.75.75 0 111.06 1.06l-4.24 4.24a.75.75 0 01-1.06 0L5.21 8.29a.75.75 0 01.02-1.08z" clip-rule="evenodd"/></svg>
+  <p class="text-center text-slate-600 text-sm mb-2">
+    <span class="font-medium">2 —</span> Clique na miniatura e use a rolagem lateral
+  </p>
+
+  <!-- faixa de miniaturas -->
+  <div
+    x-ref="scroller"
+    class="flex gap-3 overflow-x-auto py-2 px-2 -mx-4 md:mx-0 scroll-smooth"
+    style="-webkit-overflow-scrolling:touch; scrollbar-width: thin;">
+    
+    <template x-for="tpl in templates" :key="tpl.id">
+      <button
+        type="button"
+        @click="selecionarTemplate(tpl)"
+        class="shrink-0 focus:outline-none"
+        :title="tpl.nome"
+      >
+        <img
+          :src="gerarThumb(tpl)"
+          class="h-24 w-24 object-cover border border-slate-300"
+          :class="tile.id===tpl.id ? 'ring-2 ring-slate-900' : ''"
+          alt=""
+        />
       </button>
-
-      <div x-show="open" x-transition @click.outside="open=false"
-           class="absolute z-30 mt-1 w-full rounded-md border border-slate-300 bg-white shadow-md">
-        <div class="p-2 border-b border-slate-200 flex items-center gap-2">
-          <input type="text" x-model="q" placeholder="Buscar…"
-                 class="w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-slate-400">
-          <svg class="h-4 w-4 text-slate-500 shrink-0" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M8.5 3.5a5 5 0 013.99 8.14l3.18 3.18a.75.75 0 11-1.06 1.06l-3.18-3.18A5 5 0 118.5 3.5zm0 1.5a3.5 3.5 0 100 7 3.5 3.5 0 000-7z" clip-rule="evenodd"/></svg>
-        </div>
-
-        <div class="max-h-72 overflow-auto py-1">
-          <div class="px-3 py-1 text-[12px] text-slate-500">Selecione um modelo para customizar</div>
-          <template x-for="tpl in filtrar(templates)" :key="tpl.id">
-            <button type="button"
-                    @click="selecionarTemplate(tpl); open=false; q='';"
-                    class="w-full px-3 py-2 flex items-center gap-3 text-left hover:bg-slate-50"
-                    :class="tile.id===tpl.id ? 'bg-rose-50' : ''">
-              <img :src="gerarThumb(tpl)" alt="" class="h-8 w-8 rounded-sm border border-slate-300 object-cover">
-              <div class="min-w-0">
-                <div class="text-sm text-slate-800 truncate" x-text="tpl.nome"></div>
-                <div class="text-[11px] text-slate-500 truncate" x-text="tpl.categoria"></div>
-              </div>
-            </button>
-          </template>
-        </div>
-      </div>
-    </div>
+    </template>
   </div>
+
+  <!-- barra de progresso da rolagem -->
+  <div class="h-1 bg-slate-200 rounded-full mt-2 mx-4 md:mx-0">
+    <div class="h-1 rounded-full" :style="`width:${prog}%; background:#1a73e8;`"></div>
+  </div>
+</div>
+<!-- /SELECTOR -->
+
 
   <div class="mt-4">
     <p class="text-center text-slate-600 text-sm">2 — Depois de escolher o modelo, selecione as cores ao lado e clique nas áreas do ladrilho.</p>
@@ -408,14 +412,14 @@ function simuladorDP(){
     corSelecionada: '#2b2b2b',
 
     groutColor: '#cfd8e3',
-    rows: 6,
-    cols: 5,
+    rows: 4,
+    cols: 4,
 
     /* limites e helpers de linhas/colunas */
-    minRows: 1,
-    maxRows: 20,
-    minCols: 1,
-    maxCols: 20,
+    minRows: 4,
+    maxRows: 4,
+    minCols: 4,
+    maxCols: 4,
 
     tapeteTileSize: 120,
 
