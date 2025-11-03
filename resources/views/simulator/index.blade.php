@@ -186,31 +186,77 @@
       </div>
     </div>
 
-    <!-- DIREITA: paleta com nomes -->
-    <div>
-      <div class="flex items-center justify-between mb-2">
-        <p class="text-slate-600 text-sm">3 - Selecione as cores</p>
-        <p class="text-[11px] text-slate-500 italic text-right leading-tight max-w-[180px]">
-          <span class="font-semibold not-italic"></span><br>
-          As cores podem sofrer variações.
-        </p>
-      </div>
+<!-- DIREITA: paleta com nomes (estilo Ladrilar) -->
+<div>
+  <div class="flex items-center justify-between mb-2">
+    <p class="text-slate-600 text-sm">3 - Selecione as cores</p>
+    <p class="text-[11px] text-slate-500 italic text-right leading-tight max-w-[220px]">
+      As cores podem sofrer variações.
+    </p>
+  </div>
 
-      <div class="border border-slate-200 bg-white p-4">
-        <div class="grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-5 gap-x-6 gap-y-6">
-          <template x-for="cor in coresLadrilar" :key="cor.nome">
-            <button class="group flex flex-col items-center text-center"
-                    @click="corSelecionada = cor.hex"
-                    :title="cor.nome">
-              <span class="block h-12 w-12 rounded-md border border-slate-300 shadow-sm"
-                    :class="corSelecionada===cor.hex ? 'ring-2 ring-slate-900' : ''"
-                    :style="`background:${cor.hex}`"></span>
-              <span class="mt-1.5 text-[11px] text-slate-600 group-hover:text-slate-800 truncate w-20" x-text="cor.nome"></span>
-            </button>
-          </template>
-        </div>
-      </div>
+  <!-- wrapper com largura parecida com a referência -->
+  <div class="bg-white px-2 py-3">
+    <style>
+      /* grade e espaçamentos iguais ao Ladrilar */
+      .palette-ladrilar{
+        display:grid;
+        grid-template-columns: repeat(6, 84px); /* 6 por linha, quadrado + rótulo */
+        /* row-gap / col-gap balanceados como no site */
+        column-gap: 1px;   /* espaço lateral entre colunas */
+        row-gap: 26px;      /* espaço vertical entre linhas */
+        justify-content: start;
+      }
+      .swatch-wrap{ width:84px; }                 /* mesma largura do slot */
+      .swatch-box{
+        width: 72px; height: 72px;                /* tamanho do quadrado de cor */
+        border: 1px solid #e6e6e6;                /* borda fininha e neutra */
+        border-radius: 0;                         /* sem arredondar, como no site */
+        box-shadow: 0 0 0 0 rgba(0,0,0,0);        /* sem glow; limpo */
+      }
+      .swatch-name{
+        margin-top: 6px;
+        font-size: 11px;
+        line-height: 1.15rem;
+        color: #4b5563;                           /* slate-600 */
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+      .swatch-selected{
+        outline: 2px solid #111827;               /* destaque no selecionado (preto) */
+        outline-offset: 0;
+      }
+
+      /* responsivo próximo ao comportamento do site */
+      @media (max-width: 1024px){
+        .palette-ladrilar{ grid-template-columns: repeat(4, 84px); column-gap: 24px; }
+      }
+      @media (max-width: 640px){
+        .palette-ladrilar{ grid-template-columns: repeat(3, 84px); column-gap: 20px; }
+      }
+    </style>
+
+    <div class="palette-ladrilar">
+      <template x-for="cor in coresLadrilar" :key="cor.nome">
+        <button
+          type="button"
+          class="swatch-wrap text-left"
+          @click="corSelecionada = cor.hex"
+          :title="cor.nome"
+        >
+          <span
+            class="swatch-box block"
+            :class="corSelecionada===cor.hex ? 'swatch-selected' : ''"
+            :style="`background:${cor.hex}`"
+          ></span>
+          <span class="swatch-name" x-text="cor.nome"></span>
+        </button>
+      </template>
     </div>
+  </div>
+</div>
+
   </div>
 
   <!-- TAPETE -->
@@ -227,64 +273,70 @@
     </div>
 
     <aside class="mt-8 lg:mt-0">
-      <div class="border-t-2 border-amber-200 mb-4"></div>
-      <h3 class="uppercase text-[12px] font-semibold tracking-wider text-slate-700 mb-4">
-        Opções de visualização
-      </h3>
+  <div class="border-t-2 border-amber-200 mb-4"></div>
+  <h3 class="uppercase text-[12px] font-semibold tracking-wider text-slate-700 mb-4">
+    Opções de visualização
+  </h3>
 
-      <div class="space-y-5">
-        <!-- CONTROLES: somente inputs numéricos -->
-        <div class="grid grid-cols-2 gap-4">
-          <label class="text-sm text-slate-700">
-            <span>Colunas:</span>
-            <input type="number"
-                   class="mt-1 w-24 border rounded-md px-2 py-1.5 bg-white text-slate-700"
-                   x-model.number="cols"
-                   :min="minCols"
-                   :max="maxCols"
-                   step="1"
-                   onwheel="this.blur()"
-                   @focus="$event.target.select()" />
-          </label>
+  <div class="space-y-5">
+    <!-- CONTROLES: label ao lado do input -->
+    <div class="space-y-3">
+  <div class="flex items-center gap-2">
+    <label class="text-sm text-slate-700 w-24 shrink-0">Colunas:</label>
+    <input
+      type="number"
+      class="h-9 w-24 border border-[#d1a74a] rounded-none px-3 bg-white text-slate-700 focus:outline-none focus:ring-0 focus:border-[#d1a74a]"
+      x-model.number="cols"
+      :min="minCols"
+      :max="maxCols"
+      step="1"
+      onwheel="this.blur()"
+      @focus="$event.target.select()"
+    />
+  </div>
 
-          <label class="text-sm text-slate-700">
-            <span>Linhas:</span>
-            <input type="number"
-                   class="mt-1 w-24 border rounded-md px-2 py-1.5 bg-white text-slate-700"
-                   x-model.number="rows"
-                   :min="minRows"
-                   :max="maxRows"
-                   step="1"
-                   onwheel="this.blur()"
-                   @focus="$event.target.select()" />
-          </label>
-        </div>
+  <div class="flex items-center gap-2">
+    <label class="text-sm text-slate-700 w-24 shrink-0">Linhas:</label>
+    <input
+      type="number"
+      class="h-9 w-24 border border-[#d1a74a] rounded-none px-3 bg-white text-slate-700 focus:outline-none focus:ring-0 focus:border-[#d1a74a]"
+      x-model.number="rows"
+      :min="minRows"
+      :max="maxRows"
+      step="1"
+      onwheel="this.blur()"
+      @focus="$event.target.select()"
+    />
+  </div>
+</div>
 
-        <div>
-          <div class="text-sm text-slate-700 mb-2">Cor do rejunte:</div>
-          <div class="grid grid-cols-8 gap-2">
-            <template x-for="cor in coresLadrilar" :key="'rej-'+cor.nome">
-              <button
-                class="h-9 w-9 rounded-sm border border-slate-300"
-                :class="groutColor===cor.hex ? 'ring-2 ring-slate-900' : ''"
-                :style="`background:${cor.hex}`"
-                :title="cor.nome"
-                @click="groutColor = cor.hex; if(sim.open){ gerarSimTexture() }">
-              </button>
-            </template>
-          </div>
-        </div>
 
-        <button @click="atualizarTapete()"
-                class="uppercase tracking-wider text-[11px] font-semibold text-white
-                       bg-[#d9c3a3] hover:bg-[#cfb893] active:bg-[#c6ae89]
-                       border border-[#d1c2a6] shadow-sm w-full py-3 rounded-sm">
-          Visualizar
-        </button>
+    <div>
+      <div class="text-sm text-slate-700 mb-2">Cor do rejunte:</div>
+      <div class="grid grid-cols-8 gap-2">
+        <template x-for="cor in coresLadrilar" :key="'rej-'+cor.nome">
+          <button
+            class="h-9 w-9 rounded-sm border border-slate-300"
+            :class="groutColor===cor.hex ? 'ring-2 ring-slate-900' : ''"
+            :style="`background:${cor.hex}`"
+            :title="cor.nome"
+            @click="groutColor = cor.hex; if(sim.open){ gerarSimTexture() }">
+          </button>
+        </template>
       </div>
+    </div>
 
-      <div class="border-t-2 border-amber-200 mt-6"></div>
-    </aside>
+    <button @click="atualizarTapete()"
+            class="uppercase tracking-wider text-[11px] font-semibold text-white
+                   bg-[#d9c3a3] hover:bg-[#cfb893] active:bg-[#c6ae89]
+                   border border-[#d1c2a6] shadow-sm w-full py-3 rounded-sm">
+      Visualizar
+    </button>
+  </div>
+
+  <div class="border-t-2 border-amber-200 mt-6"></div>
+</aside>
+
   </div>
 
   <!-- SIMULAÇÃO 3D -->
@@ -320,7 +372,7 @@
       <div id="simFloor" class="absolute inset-0 z-0" :style="floorStyle()"></div>
       <img :src="sim.overlay"
           alt=""
-          class="block w-auto h-auto max-w-[90vw] max-h-[70vh] select-none relative z-10">
+          class="block w-auto h-auto max-w-[95vw] max-h-[80vh] select-none relative z-10">
     </div>
     </div>
   </div>
@@ -438,48 +490,42 @@ function simuladorDP(){
       id: 'sala',
       nome: 'piso',
       overlay: "{{ asset('simulator/rooms/piso.png') }}",
-      tileSize: 65,
-      offsetY: 160,
-      offsetX: 0,
-      perspective: true,
-      perspectiveValue: 800,
-      rotateX: 60,
+      tileSize: 90,
+      offsetY: 0,
+      perspective: true,     // <- só este tem profundidade
     },
     {
       id: 'banheiro',
       nome: 'Parede Esquerda',
       overlay: "{{ asset('simulator/rooms/paredeesquerdafundo.png') }}",
-      tileSize: 45,
-      offsetY: 70,
-      offsetX: -50
+      tileSize: 88,
+      offsetY: 0
     },
     {
       id: 'cozinha',
       nome: 'Parede De Fundo',
       overlay: "{{ asset('simulator/rooms/parededefundo.png') }}",
-      tileSize: 32,
-      offsetY: 0,
-      offsetX: 0
+      tileSize: 92,
+      offsetY: 0
     },
     {
       id: 'quarto',
       nome: 'Parede Central',
       overlay: "{{ asset('simulator/rooms/paredecentral.png') }}",
-      tileSize: 35,
-      offsetY: 40,
-      offsetX: 0
+      tileSize: 86,
+      offsetY: 0
     },
     {
-      id: 'sala-jantar',
-      nome: 'Cozinha',
-      overlay: "{{ asset('simulator/rooms/cozinha_overlay.png') }}",
-      tileSize: 28,
-      offsetY: 290,
-      offsetX: -30
+      id: 'sala-jantar',              // id único (sem espaços)
+      nome: 'Cozinha',         // texto do botão
+      overlay: "{{ asset('simulator/rooms/cozinha_overlay.png') }}", // seu PNG
+      tileSize: 90,                   // tamanho do ladrilho (px CSS) — ajuste fino
+      offsetY: 0                      // se precisar “subir/descer” o piso
+      // floorMask: "{{ asset('simulator/rooms/sala_jantar_mask.png') }}", // opcional (explico abaixo)
     }
   ],
 
-    sim: { open:false, tileSize:90, offsetY:0, offsetX:0, groutScale:1, overlay:'', floorMask:'', perspective:false, perspectiveValue:1200, rotateX:55 },
+    sim: { open:false, tileSize:90, offsetY:0, groutScale:1, overlay:'', floorMask:'' },
 
     // NOVO: textura (dataURL) com ladrilho + rejunte para o 3D
     simTextureURL: '',
@@ -980,12 +1026,9 @@ function simuladorDP(){
 
       this.sim.tileSize = r.tileSize ?? 90;
       this.sim.offsetY  = r.offsetY  ?? 0;
-      this.sim.offsetX  = r.offsetX  ?? 0;
       this.sim.overlay  = r.overlay  || '';
       this.sim.floorMask = r.floorMask || '';
       this.sim.perspective = !!r.perspective;
-      this.sim.perspectiveValue = r.perspectiveValue ?? 1200;
-      this.sim.rotateX = r.rotateX ?? 55;
 
       this.simTextureURL = '';
       try { await this.gerarSimTexture(); } catch(e){}
@@ -1001,8 +1044,6 @@ function simuladorDP(){
     const g    = this.groutPx3D();
     const tex  = this.simTextureURL || this.tileURL;
     const mask = this.sim.floorMask || '';
-    const offsetX = this.sim.offsetX || 0;
-    const offsetY = this.sim.offsetY || 0;
 
     const style = {
       width: '100%',
@@ -1011,15 +1052,13 @@ function simuladorDP(){
       backgroundRepeat: 'repeat',
       backgroundSize: `${size + g*2}px ${size + g*2}px`,
       backgroundPosition: this.sim.perspective ? 'center bottom' : 'center center',
-      transform: `translate(${offsetX}px, ${offsetY}px)`,
+      transform: `translateY(${this.sim.offsetY || 0}px)`,
     };
 
     // apenas o "piso" tem profundidade
     if (this.sim.perspective) {
-      const perspValue = this.sim.perspectiveValue || 1200;
-      const rotValue = this.sim.rotateX || 55;
       style.transformOrigin = 'center top';
-      style.transform = `${style.transform} perspective(${perspValue}px) rotateX(${rotValue}deg)`;
+      style.transform = `${style.transform} perspective(1200px) rotateX(55deg)`;
     }
 
     if (mask) {
