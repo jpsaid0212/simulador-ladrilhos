@@ -1074,7 +1074,7 @@ function simuladorDP(){
     // apenas o "piso" tem profundidade
     if (this.sim.perspective) {
       style.transformOrigin = 'center top';
-      style.transform = `${style.transform} perspective(800px) rotateX(60deg)`;
+      style.transform = `${style.transform} perspective(1200px) rotateX(48deg)`;
     }
 
     if (mask) {
