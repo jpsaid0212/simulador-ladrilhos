@@ -129,7 +129,8 @@
     #c {
         background: #ffffff;
         max-width: 100%;
-        height: auto;
+        max-height: 100%;
+        display: block;
     }
 
     .sim-pill {
@@ -297,7 +298,7 @@
 
             function fitToCanvas(img) {
                 const cw = canvas.getWidth(), ch = canvas.getHeight();
-                const s = Math.min(cw / img.width, ch / img.height);
+                const s = Math.min(cw / img.width, ch / img.height, 1);
                 img.scale(s).set({ left: (cw - img.width * s) / 2, top: (ch - img.height * s) / 2 });
             }
 
@@ -468,9 +469,9 @@
                 const main = document.querySelector('.sim-canvasWrap');
                 if (!main) return;
                 const w = main.clientWidth - 40;
-                const h = Math.max(600, window.innerHeight - 200);
-                canvas.setWidth(Math.min(1200, w));
-                canvas.setHeight(Math.min(800, h));
+                const h = window.innerHeight - 200;
+                canvas.setWidth(Math.max(600, Math.min(1200, w)));
+                canvas.setHeight(Math.max(500, Math.min(800, h)));
                 canvas.requestRenderAll();
                 if (bgImg) fitToCanvas(bgImg);
                 if (patternRect && polyObject) applyPatternToPolygon();

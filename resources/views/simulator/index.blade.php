@@ -362,21 +362,22 @@
   <!-- MODAL 3D -->
   <div x-show="sim.open"
        x-transition.opacity
-       class="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-3"
+       class="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4"
        @keydown.escape.window="sim.open=false"
        @click.self="sim.open=false">
 
-    <div class="relative bg-white rounded-md shadow-xl p-1 md:p-2 w-auto max-w-[95vw]">
+    <div class="relative bg-white rounded-lg shadow-2xl p-3 w-auto max-w-[90vw] max-h-[90vh] flex items-center justify-center">
       <button @click="sim.open=false"
-              class="absolute -top-3 -right-3 bg-white/90 rounded-full border px-2 py-1 text-[12px] shadow">
+              class="absolute -top-3 -right-3 bg-white hover:bg-gray-100 rounded-full border-2 border-gray-300 w-8 h-8 flex items-center justify-center text-lg font-bold shadow-lg z-50 transition-colors">
         ✕
       </button>
 
-     <div id="simWrap" class="relative inline-block overflow-hidden">
+     <div id="simWrap" class="relative inline-block overflow-hidden rounded">
       <div id="simFloor" class="absolute inset-0 z-0" :style="floorStyle()"></div>
       <img :src="sim.overlay"
           alt=""
-          class="block w-auto h-auto max-w-[95vw] max-h-[80vh] select-none relative z-10">
+          :style="`max-width: min(85vw, ${sim.maxWidth}px); max-height: min(75vh, ${sim.maxHeight}px); width: auto; height: auto; display: block;`"
+          class="select-none relative z-10">
     </div>
     </div>
   </div>
@@ -494,42 +495,51 @@ function simuladorDP(){
       id: 'sala',
       nome: 'piso',
       overlay: "{{ asset('simulator/rooms/piso.png') }}",
-      tileSize: 90,
+      tileSize: 35,
       offsetY: 0,
-      perspective: true,     // <- só este tem profundidade
+      perspective: true,
+      maxWidth: 800,
+      maxHeight: 600
     },
     {
       id: 'banheiro',
       nome: 'Parede Esquerda',
       overlay: "{{ asset('simulator/rooms/paredeesquerdafundo.png') }}",
-      tileSize: 88,
-      offsetY: 0
+      tileSize: 60,
+      offsetY: 0,
+      maxWidth: 800,
+      maxHeight: 700
     },
     {
       id: 'cozinha',
       nome: 'Parede De Fundo',
       overlay: "{{ asset('simulator/rooms/parededefundo.png') }}",
-      tileSize: 92,
-      offsetY: 0
+      tileSize: 62,
+      offsetY: 0,
+      maxWidth: 850,
+      maxHeight: 650
     },
     {
       id: 'quarto',
       nome: 'Parede Central',
       overlay: "{{ asset('simulator/rooms/paredecentral.png') }}",
-      tileSize: 86,
-      offsetY: 0
+      tileSize: 58,
+      offsetY: 90,
+      maxWidth: 800,
+      maxHeight: 500
     },
     {
-      id: 'sala-jantar',              // id único (sem espaços)
-      nome: 'Cozinha',         // texto do botão
-      overlay: "{{ asset('simulator/rooms/cozinha_overlay.png') }}", // seu PNG
-      tileSize: 90,                   // tamanho do ladrilho (px CSS) — ajuste fino
-      offsetY: 0                      // se precisar “subir/descer” o piso
-      // floorMask: "{{ asset('simulator/rooms/sala_jantar_mask.png') }}", // opcional (explico abaixo)
+      id: 'sala-jantar',
+      nome: 'Cozinha',
+      overlay: "{{ asset('simulator/rooms/cozinha_overlay.png') }}",
+      tileSize: 65,
+      offsetY: 0,
+      maxWidth: 850,
+      maxHeight: 650
     }
   ],
 
-    sim: { open:false, tileSize:90, offsetY:0, groutScale:1, overlay:'', floorMask:'' },
+    sim: { open:false, tileSize:90, offsetY:0, groutScale:1, overlay:'', floorMask:'', maxWidth:900, maxHeight:700 },
 
     // NOVO: textura (dataURL) com ladrilho + rejunte para o 3D
     simTextureURL: '',
@@ -1033,6 +1043,8 @@ function simuladorDP(){
       this.sim.overlay  = r.overlay  || '';
       this.sim.floorMask = r.floorMask || '';
       this.sim.perspective = !!r.perspective;
+      this.sim.maxWidth = r.maxWidth ?? 900;
+      this.sim.maxHeight = r.maxHeight ?? 700;
 
       this.simTextureURL = '';
       try { await this.gerarSimTexture(); } catch(e){}
@@ -1062,7 +1074,7 @@ function simuladorDP(){
     // apenas o "piso" tem profundidade
     if (this.sim.perspective) {
       style.transformOrigin = 'center top';
-      style.transform = `${style.transform} perspective(1200px) rotateX(55deg)`;
+      style.transform = `${style.transform} perspective(800px) rotateX(60deg)`;
     }
 
     if (mask) {
