@@ -268,7 +268,7 @@
   </div>
 
   <!-- TAPETE -->
-  <div class="mt-12 lg:grid lg:grid-cols-[minmax(0,1fr)_340px] lg:gap-10">
+  <div class="mt-12 lg:grid lg:grid-cols-[minmax(0,1fr)_400px] lg:gap-10">
     <div class="flex justify-start">
       <div class="border-0 p-0 bg-transparent shadow-none self-start">
         <div :style="estiloTapete()" id="tapete">
@@ -323,7 +323,7 @@
       <div class="grid grid-cols-8 gap-2">
         <template x-for="cor in coresLadrilar" :key="'rej-'+cor.nome">
           <button
-            class="h-9 w-9 rounded-sm border border-slate-300"
+            class="h-9 w-9 rounded-sm"
             :class="groutColor===cor.hex ? 'ring-2 ring-slate-900' : ''"
             :style="`background:${cor.hex}`"
             :title="cor.nome"
@@ -425,7 +425,7 @@ function simuladorDP(){
     minCols: 4,
     maxCols: 4,
 
-    tapeteTileSize: 120,
+    tapeteTileSize: 160,
 
     // === PALETA OFICIAL (Studio Latitude) ===
     coresLadrilar: [
