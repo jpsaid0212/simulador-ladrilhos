@@ -19,8 +19,8 @@
   ];
 
   $currentUrl = rtrim(url()->current(), '/');
-  $activeHex = '#c29a2b';
-  $hoverHex  = '#a87f21';
+  $activeHex = '#8bbcd9';
+  $hoverHex  = '#6a9bb5';
   $textGray  = '#6e6e6e';
 @endphp
 

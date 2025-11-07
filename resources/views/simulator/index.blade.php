@@ -165,8 +165,8 @@
               "
               type="button"
               class="uppercase tracking-wider text-[11px] font-semibold text-white
-                     bg-[#d9c3a3] hover:bg-[#cfb893] active:bg-[#c6ae89]
-                     border border-[#d1c2a6] shadow-sm
+                     bg-[#8bbcd9] hover:bg-[#6a9bb5] active:bg-[#8bbcd9]
+                     border border-[#8bbcd9] shadow-sm
                      px-6 py-3 rounded-sm flex-1 text-center">
               salvar pdf ou imprimir
             </button>
@@ -323,7 +323,7 @@
       <div class="grid grid-cols-8 gap-2">
         <template x-for="cor in coresLadrilar" :key="'rej-'+cor.nome">
           <button
-            class="h-9 w-9 rounded-sm"
+            class="h-11 w-11 rounded-sm"
             :class="groutColor===cor.hex ? 'ring-2 ring-slate-900' : ''"
             :style="`background:${cor.hex}`"
             :title="cor.nome"
@@ -335,8 +335,8 @@
 
     <button @click="atualizarTapete()"
             class="uppercase tracking-wider text-[11px] font-semibold text-white
-                   bg-[#d9c3a3] hover:bg-[#cfb893] active:bg-[#c6ae89]
-                   border border-[#d1c2a6] shadow-sm w-full py-3 rounded-sm">
+                   bg-[#8bbcd9] hover:bg-[#6a9bb5] active:bg-[#8bbcd9]
+                   border border-[#8bbcd9] shadow-sm w-full py-3 rounded-sm">
       Visualizar
     </button>
   </div>
@@ -355,7 +355,7 @@
       <template x-for="room in rooms" :key="room.id">
         <button
           @click="openSimulacao(room.id)"
-          class="px-6 py-3 bg-[#e4d1b7] hover:bg-[#d9c3a3] text-[11px] font-semibold uppercase tracking-wider rounded-sm border border-[#d1c2a6]">
+          class="px-6 py-3 bg-[#8bbcd9] hover:bg-[#6a9bb5] text-[11px] font-semibold uppercase tracking-wider rounded-sm border border-[#8bbcd9]">
           <span x-text="room.nome"></span>
         </button>
       </template>
