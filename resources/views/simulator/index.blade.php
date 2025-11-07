@@ -381,6 +381,11 @@
           alt=""
           :style="`max-width: min(85vw, ${sim.maxWidth}px); max-height: min(75vh, ${sim.maxHeight}px); width: auto; height: auto; display: block;`"
           class="select-none relative z-10">
+      <img x-show="sim.shadowOverlay"
+          :src="sim.shadowOverlay"
+          alt=""
+          :style="`max-width: min(85vw, ${sim.maxWidth}px); max-height: min(75vh, ${sim.maxHeight}px); width: auto; height: auto; display: block;`"
+          class="select-none absolute inset-0 z-20 pointer-events-none">
     </div>
     </div>
   </div>
@@ -509,6 +514,7 @@ function simuladorDP(){
       id: 'banheiro',
       nome: 'Parede Esquerda',
       overlay: "{{ asset('simulator/rooms/paredeesquerdafundo.png') }}",
+      shadowOverlay: "{{ asset('simulator/rooms/SALA SOMBRA.png') }}",
       tileSize: 60,
       offsetY: 0,
       maxWidth: 800,
@@ -543,7 +549,7 @@ function simuladorDP(){
     }
   ],
 
-    sim: { open:false, tileSize:90, offsetY:0, groutScale:1, overlay:'', floorMask:'', maxWidth:900, maxHeight:700 },
+    sim: { open:false, tileSize:90, offsetY:0, groutScale:1, overlay:'', shadowOverlay:'', floorMask:'', maxWidth:900, maxHeight:700 },
 
     // NOVO: textura (dataURL) com ladrilho + rejunte para o 3D
     simTextureURL: '',
@@ -1071,13 +1077,14 @@ function simuladorDP(){
       this.sim.tileSize = r.tileSize ?? 90;
       this.sim.offsetY  = r.offsetY  ?? 0;
       this.sim.overlay  = r.overlay  || '';
+      this.sim.shadowOverlay = r.shadowOverlay || '';
       this.sim.floorMask = r.floorMask || '';
       this.sim.perspective = !!r.perspective;
       this.sim.maxWidth = r.maxWidth ?? 900;
       this.sim.maxHeight = r.maxHeight ?? 700;
 
       this.simTextureURL = '';
-      try { await this.gerarSimTexture(); } catch(e){}
+      try { await this.gerarSimTextura(); } catch(e){}
 
       this.sim.open = true;
     },
