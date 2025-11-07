@@ -420,12 +420,13 @@ function simuladorDP(){
     cols: 4,
 
     /* limites e helpers de linhas/colunas */
-    minRows: 4,
-    maxRows: 4,
-    minCols: 4,
-    maxCols: 4,
+    minRows: 1,
+    maxRows: 10,
+    minCols: 1,
+    maxCols: 10,
 
     tapeteTileSize: 160,
+    baseTileSize: 160, // tamanho base do ladrilho
 
     // === PALETA OFICIAL (Studio Latitude) ===
     coresLadrilar: [
@@ -854,8 +855,34 @@ function simuladorDP(){
     },
 
     // ===== TAPETE =====
+    // Calcula o tamanho do ladrilho baseado no número de linhas e colunas
+    calcularTamanhoLadrilho(){
+      // Tamanho base para 4x4 grid
+      const baseSize = 160;
+      const baseGrid = 4;
+
+      // Se for 4x4 ou menor, usa tamanho base
+      if (this.cols <= baseGrid && this.rows <= baseGrid) {
+        return baseSize;
+      }
+
+      // Para grids maiores, escala proporcionalmente
+      const maxDimension = Math.max(this.cols, this.rows);
+
+      // Fator de escala - quanto maior o grid, menor o ladrilho
+      const scaleFactor = baseGrid / maxDimension;
+
+      // Calcula o novo tamanho
+      let size = Math.floor(baseSize * scaleFactor);
+
+      // Garante tamanho mínimo de 40px e máximo de 160px
+      size = Math.max(40, Math.min(baseSize, size));
+
+      return size;
+    },
+
     estiloTapete(){
-      const size = this.tapeteTileSize; // 120
+      const size = this.calcularTamanhoLadrilho();
       const gap = 1;
       return {
         display: 'grid',
@@ -869,7 +896,7 @@ function simuladorDP(){
     },
 
     estiloPeca(){
-      const size = this.tapeteTileSize;
+      const size = this.calcularTamanhoLadrilho();
       return {
         width: `${size}px`,
         height: `${size}px`,
@@ -893,10 +920,10 @@ function simuladorDP(){
     },
 
     baixarTapete(){
-      const size = this.tapeteTileSize; // 120
-      const gap = 2;
-      const totalW = this.cols*size + (this.cols+1)*gap;
-      const totalH = this.rows*size + (this.rows+1)*gap;
+      const size = this.calcularTamanhoLadrilho();
+      const gap = 1;
+      const totalW = this.cols*size + (this.cols-1)*gap;
+      const totalH = this.rows*size + (this.rows-1)*gap;
 
       const canvas = document.getElementById('canvasTapete');
       const ctx = canvas.getContext('2d');
@@ -909,8 +936,8 @@ function simuladorDP(){
       img.onload = () => {
         for(let r=0;r<this.rows;r++){
           for(let c=0;c<this.cols;c++){
-            const x = gap + c*(size+gap);
-            const y = gap + r*(size+gap);
+            const x = c*(size+gap);
+            const y = r*(size+gap);
             ctx.drawImage(img, x, y, size, size);
           }
         }
