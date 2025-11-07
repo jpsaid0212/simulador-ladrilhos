@@ -37,30 +37,22 @@
   </div>
 
  <!-- SELECTOR (faixa horizontal rolável) -->
-  <div class="mt-10 max-w-xl mx-auto">
-    <label class="block text-center text-slate-600 mb-3">1 — Selecione um modelo para customizar</label>
+<div class="mt-10 max-w-xl">
 
-
-
-  <!-- faixa de miniaturas -->
-  <div
-    x-ref="scroller"
-    class="flex gap-3 overflow-x-auto py-2 px-2 -mx-4 md:mx-0 scroll-smooth"
-    style="-webkit-overflow-scrolling:touch; scrollbar-width: thin;">
-    
-    <template x-for="tpl in templates" :key="tpl.id">
-      <button
-        type="button"
-        @click="selecionarTemplate(tpl)"
-        class="shrink-0 focus:outline-none"
-        :title="tpl.nome"
-      >
-        <img
-          :src="gerarThumb(tpl)"
-          class="h-24 w-24 object-cover border border-slate-300"
-          :class="tile.id===tpl.id ? 'ring-2 ring-slate-900' : ''"
-          alt=""
-        />
+    <div class="relative" x-data="{ open:false, q:'', filtrar(list){
+        const s = this.q.trim().toLowerCase();
+        if(!s) return list;
+        return list.filter(t => (t.nome||'').toLowerCase().includes(s) || (t.categoria||'').toLowerCase().includes(s));
+      }}">
+      <button type="button"
+              class="w-full border border-slate-300 bg-white rounded-md px-3 py-2 flex items-center justify-between gap-3 hover:bg-slate-50"
+              @click="open = !open">
+        <div class="flex items-center gap-3 min-w-0">
+          <img :src="tile?.id ? gerarThumb(tile) : (templates[0] ? gerarThumb(templates[0]) : '')"
+               alt="" class="h-5 w-5 rounded-sm border border-slate-300 object-cover">
+          <span class="truncate text-sm text-slate-800" x-text="tile?.nome ? tile.nome : 'Selecione um modelo'"></span>
+        </div>
+        <svg class="h-4 w-4 text-slate-500" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 10.94l3.71-3.71a.75.75 0 111.06 1.06l-4.24 4.24a.75.75 0 01-1.06 0L5.21 8.29a.75.75 0 01.02-1.08z" clip-rule="evenodd"/></svg>
       </button>
 
       <div x-show="open" x-transition @click.outside="open=false"
@@ -97,7 +89,7 @@
   <div class="mt-8 grid grid-cols-1 lg:grid-cols-2 gap-8">
     <!-- ESQUERDA: preview -->
     <div class="flex flex-col items-start">
-      <div class="relative bg-white p-3">
+      <div class="relative bg-white ">
         <template x-if="tile.type==='raster'">
           <div class="flex flex-col items-center">
             <canvas id="editorCanvas"
