@@ -40,20 +40,27 @@
   <div class="mt-10 max-w-xl mx-auto">
     <label class="block text-center text-slate-600 mb-3">1 — Selecione um modelo para customizar</label>
 
-    <div class="relative" x-data="{ open:false, q:'', filtrar(list){
-        const s = this.q.trim().toLowerCase();
-        if(!s) return list;
-        return list.filter(t => (t.nome||'').toLowerCase().includes(s) || (t.categoria||'').toLowerCase().includes(s));
-      }}">
-      <button type="button"
-              class="w-full border border-slate-300 bg-white rounded-md px-3 py-2 flex items-center justify-between gap-3 hover:bg-slate-50"
-              @click="open = !open">
-        <div class="flex items-center gap-3 min-w-0">
-          <img :src="tile?.id ? gerarThumb(tile) : (templates[0] ? gerarThumb(templates[0]) : '')"
-               alt="" class="h-5 w-5 rounded-sm border border-slate-300 object-cover">
-          <span class="truncate text-sm text-slate-800" x-text="tile?.nome ? tile.nome : 'Selecione um modelo'"></span>
-        </div>
-        <svg class="h-4 w-4 text-slate-500" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 10.94l3.71-3.71a.75.75 0 111.06 1.06l-4.24 4.24a.75.75 0 01-1.06 0L5.21 8.29a.75.75 0 01.02-1.08z" clip-rule="evenodd"/></svg>
+
+
+  <!-- faixa de miniaturas -->
+  <div
+    x-ref="scroller"
+    class="flex gap-3 overflow-x-auto py-2 px-2 -mx-4 md:mx-0 scroll-smooth"
+    style="-webkit-overflow-scrolling:touch; scrollbar-width: thin;">
+    
+    <template x-for="tpl in templates" :key="tpl.id">
+      <button
+        type="button"
+        @click="selecionarTemplate(tpl)"
+        class="shrink-0 focus:outline-none"
+        :title="tpl.nome"
+      >
+        <img
+          :src="gerarThumb(tpl)"
+          class="h-24 w-24 object-cover border border-slate-300"
+          :class="tile.id===tpl.id ? 'ring-2 ring-slate-900' : ''"
+          alt=""
+        />
       </button>
 
       <div x-show="open" x-transition @click.outside="open=false"
@@ -85,21 +92,18 @@
 <!-- /SELECTOR -->
 
 
-  <div class="mt-4">
-    <p class="text-center text-slate-600 text-sm">2 — Depois de escolher o modelo, selecione as cores ao lado e clique nas áreas do ladrilho.</p>
-  </div>
 
   <!-- GRID: esquerda preview / direita paleta -->
   <div class="mt-8 grid grid-cols-1 lg:grid-cols-2 gap-8">
     <!-- ESQUERDA: preview -->
-    <div class="flex flex-col items-center">
-      <div class="relative bg-white border p-3">
+    <div class="flex flex-col items-start">
+      <div class="relative bg-white p-3">
         <template x-if="tile.type==='raster'">
           <div class="flex flex-col items-center">
             <canvas id="editorCanvas"
-                    class="w-[320px] h-[320px] sm:w-[380px] sm:h-[380px] border border-slate-200 rounded"
-                    @click="onCanvasClick($event)"></canvas>
-            <div class="text-xs text-slate-500 mt-2">Clique na cor e depois em uma área do ladrilho para pintar</div>
+              class="w-[320px] h-[320px] sm:w-[380px] sm:h-[380px]"
+              @click="onCanvasClick($event)">
+            </canvas>
           </div>
         </template>
 
@@ -191,7 +195,6 @@
 <!-- DIREITA: paleta com nomes (estilo Ladrilar) -->
 <div>
   <div class="flex items-center justify-between mb-2">
-    <p class="text-slate-600 text-sm">3 - Selecione as cores</p>
     <p class="text-[11px] text-slate-500 italic text-right leading-tight max-w-[220px]">
       As cores podem sofrer variações.
     </p>
@@ -199,43 +202,54 @@
 
   <!-- wrapper com largura parecida com a referência -->
   <div class="bg-white px-2 py-3">
-    <style>
+        <style>
       /* grade e espaçamentos iguais ao Ladrilar */
-      .palette-ladrilar{
-        display:grid;
-        grid-template-columns: repeat(6, 84px); /* 6 por linha, quadrado + rótulo */
-        /* row-gap / col-gap balanceados como no site */
-        column-gap: 1px;   /* espaço lateral entre colunas */
-        row-gap: 26px;      /* espaço vertical entre linhas */
+      .palette-ladrilar {
+        display: grid;
+        grid-template-columns: repeat(6, 72px); /* 6 por linha */
         justify-content: start;
+        row-gap: 5px; /* pequeno espaço vertical */
       }
-      .swatch-wrap{ width:84px; }                 /* mesma largura do slot */
-      .swatch-box{
-        width: 72px; height: 72px;                /* tamanho do quadrado de cor */
-        border: 1px solid #e6e6e6;                /* borda fininha e neutra */
-        border-radius: 0;                         /* sem arredondar, como no site */
-        box-shadow: 0 0 0 0 rgba(0,0,0,0);        /* sem glow; limpo */
+
+      .swatch-wrap {
+        width: 72px;
+        margin-right: 10px; /* simula gap negativo horizontal */
       }
-      .swatch-name{
+
+      .swatch-box {
+        width: 72px;
+        height: 72px;
+        border: 1px solid #e6e6e6;
+        border-radius: 0;
+        box-shadow: none;
+      }
+
+      .swatch-name {
         margin-top: 6px;
         font-size: 11px;
         line-height: 1.15rem;
-        color: #4b5563;                           /* slate-600 */
+        color: #4b5563; /* slate-600 */
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
       }
-      .swatch-selected{
-        outline: 2px solid #111827;               /* destaque no selecionado (preto) */
+
+      .swatch-selected {
+        outline: 2px solid #111827;
         outline-offset: 0;
       }
 
       /* responsivo próximo ao comportamento do site */
-      @media (max-width: 1024px){
-        .palette-ladrilar{ grid-template-columns: repeat(4, 84px); column-gap: 24px; }
+      @media (max-width: 1024px) {
+        .palette-ladrilar {
+          grid-template-columns: repeat(4, 72px);
+        }
       }
-      @media (max-width: 640px){
-        .palette-ladrilar{ grid-template-columns: repeat(3, 84px); column-gap: 20px; }
+
+      @media (max-width: 640px) {
+        .palette-ladrilar {
+          grid-template-columns: repeat(3, 72px);
+        }
       }
     </style>
 
@@ -263,9 +277,8 @@
 
   <!-- TAPETE -->
   <div class="mt-12 lg:grid lg:grid-cols-[minmax(0,1fr)_340px] lg:gap-10">
-    <div class="flex justify-center">
-      <!-- removido rounded-sm daqui -->
-      <div class="border-2 border-slate-300 p-2 bg-white shadow-sm">
+    <div class="flex justify-start">
+      <div class="border-0 p-0 bg-transparent shadow-none self-start">
         <div :style="estiloTapete()" id="tapete">
           <template x-for="i in rows*cols" :key="i">
             <div :style="estiloPeca()"></div>
@@ -857,8 +870,8 @@ function simuladorDP(){
         gridTemplateColumns: `repeat(${this.cols}, ${size}px)`,
         gridAutoRows: `${size}px`,
         gap: `${gap}px`,
-        background: this.groutColor,
-        padding: `${gap}px`,
+        background: this.groutColor,  // rejunte aparece nos espaçamentos internos
+        padding: '0px',               // remove a borda externa de rejunte
         width: 'fit-content'
       }
     },
