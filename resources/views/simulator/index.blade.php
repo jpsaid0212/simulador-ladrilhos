@@ -280,7 +280,7 @@
     </div>
 
     <aside class="mt-8 lg:mt-0">
-  <div class="border-t-2 border-amber-200 mb-4"></div>
+  <div class="border-t-2 border-[#8bbcd9] mb-4"></div>
   <h3 class="uppercase text-[12px] font-semibold tracking-wider text-slate-700 mb-4">
     Opções de visualização
   </h3>
@@ -292,7 +292,7 @@
     <label class="text-sm text-slate-700 w-24 shrink-0">Colunas:</label>
     <input
       type="number"
-      class="h-9 w-24 border border-[#d1a74a] rounded-none px-3 bg-white text-slate-700 focus:outline-none focus:ring-0 focus:border-[#d1a74a]"
+      class="h-9 w-24 border border-[#8bbcd9] rounded-none px-3 bg-white text-slate-700 focus:outline-none focus:ring-0 focus:border-[#8bbcd9]"
       x-model.number="cols"
       :min="minCols"
       :max="maxCols"
@@ -306,7 +306,7 @@
     <label class="text-sm text-slate-700 w-24 shrink-0">Linhas:</label>
     <input
       type="number"
-      class="h-9 w-24 border border-[#d1a74a] rounded-none px-3 bg-white text-slate-700 focus:outline-none focus:ring-0 focus:border-[#d1a74a]"
+      class="h-9 w-24 border border-[#8bbcd9] rounded-none px-3 bg-white text-slate-700 focus:outline-none focus:ring-0 focus:border-[#8bbcd9]"
       x-model.number="rows"
       :min="minRows"
       :max="maxRows"
@@ -341,7 +341,7 @@
     </button>
   </div>
 
-  <div class="border-t-2 border-amber-200 mt-6"></div>
+  <div class="border-t-2 border-[#8bbcd9] mt-6"></div>
 </aside>
 
   </div>
@@ -435,59 +435,59 @@ function simuladorDP(){
 
     // === PALETA OFICIAL (Studio Latitude) ===
     coresLadrilar: [
-      { nome:'branco',        hex:'#F7F7F4' },
-      { nome:'cinza claro',   hex:'#DDDCD2' },
-      { nome:'cinza',         hex:'#B4B1AC' },
-      { nome:'prata',         hex:'#9FA7AD' },
-      { nome:'preto',         hex:'#2F2F2F' },
+      { nome:'branco',        hex:'#F9F9F9' },
+      { nome:'cinza claro',   hex:'#BFB7B4' },
+      { nome:'cinza',         hex:'#8E877F' },
+      { nome:'prata',         hex:'#8C9194' },
+      { nome:'preto',         hex:'#262523' },
 
       // linha 2
-      { nome:'offwhite',      hex:'#F4F2EA' },
-      { nome:'craft claro',   hex:'#EFE0CF' },
-      { nome:'craft',         hex:'#CDA87B' },
-      { nome:'craft esc',     hex:'#B08F64' },
-      { nome:'amêndoa',       hex:'#CDA06D' },
-      { nome:'marrom',        hex:'#6F4D4D' },
+      { nome:'offwhite',      hex:'#EDE4DB' },
+      { nome:'craft claro',   hex:'#ECE0C6' },
+      { nome:'craft',         hex:'#D5C0AB' },
+      { nome:'craft esc',     hex:'#B08D6F' },
+      { nome:'amêndoa',       hex:'#9E6933' },
+      { nome:'marrom',        hex:'#482F2B' },
 
       // linha 3
-      { nome:'bege',          hex:'#EEDFC4' },
-      { nome:'amarelo cl',    hex:'#F8DE78' },
-      { nome:'amarelo',       hex:'#F4C232' },
-      { nome:'mostarda',      hex:'#E4AE54' },
-      { nome:'verde cana',    hex:'#B9AA54' },
+      { nome:'bege',          hex:'#EBE0B3' },
+      { nome:'amarelo cl',    hex:'#DECA8B' },
+      { nome:'amarelo',       hex:'#D6AD43' },
+      { nome:'mostarda',      hex:'#BE9714' },
+      { nome:'verde cana',    hex:'#978E41' },
 
       // linha 4
-      { nome:'terracota cl',  hex:'#EDA382' },
-      { nome:'terracota',     hex:'#DF825F' },
-      { nome:'terracota esc', hex:'#CF735A' },
-      { nome:'verm vivo',     hex:'#A6423C' },
-      { nome:'verm esc',      hex:'#8F332C' },
+      { nome:'terracota cl',  hex:'#DBB797' },
+      { nome:'terracota',     hex:'#BC825C' },
+      { nome:'terracota esc', hex:'#90482F' },
+      { nome:'verm vivo',     hex:'#701E13' },
+      { nome:'verm esc',      hex:'#522019' },
 
       // linha 5
-      { nome:'rosa cl',       hex:'#F1C7BF' },
-      { nome:'rosa',          hex:'#F3B6B9' },
-      { nome:'goiaba',        hex:'#E06A5E' },
+      { nome:'rosa cl',       hex:'#E3BBB1' },
+      { nome:'rosa',          hex:'#C37463' },
+      { nome:'goiaba',        hex:'#AE4D3A' },
 
       // linha 6
-      { nome:'verde cl',      hex:'#B4CBB6' },
-      { nome:'verde',         hex:'#6A834F' },
-      { nome:'jaguar',        hex:'#2F7F5E' },
-      { nome:'verde esc',     hex:'#3F5242' },
+      { nome:'verde cl',      hex:'#B5BEAB' },
+      { nome:'verde',         hex:'#889F82' },
+      { nome:'jaguar',        hex:'#4A6441' },
+      { nome:'verde esc',     hex:'#474F42' },
 
       // linha 7
-      { nome:'az grizzo',     hex:'#D8DADD' },
-      { nome:'az grizzo cl',  hex:'#CFD7D9' },
-      { nome:'tiffany cl',    hex:'#AEEBEA' },
-      { nome:'tiffany',       hex:'#75E0E6' },
-      { nome:'ocean blue',    hex:'#167C8A' },
+      { nome:'az grizzo',     hex:'#BEC9C5' },
+      { nome:'az grizzo cl',  hex:'#BFCED5' },
+      { nome:'tiffany cl',    hex:'#A3D0CB' },
+      { nome:'tiffany',       hex:'#30888C' },
+      { nome:'ocean blue',    hex:'#425F67' },
 
       // linha 8
-      { nome:'azul cl',       hex:'#A9C1DA' },
-      { nome:'cobalto',       hex:'#3F92D2' },
-      { nome:'porto',         hex:'#6A85B3' },
-      { nome:'azul ultramar', hex:'#3C5AA6' },
-      { nome:'azul esc',      hex:'#4B5F7F' },
-      { nome:'azul esc 2',    hex:'#3B4C63' },
+      { nome:'azul cl',       hex:'#A8CCE4' },
+      { nome:'cobalto',       hex:'#94C0DD' },
+      { nome:'porto',         hex:'#7291D1' },
+      { nome:'azul ultramar', hex:'#3F5A91' },
+      { nome:'azul esc',      hex:'#54627C' },
+      { nome:'azul esc 2',    hex:'#404759' },
 
     ],
 
