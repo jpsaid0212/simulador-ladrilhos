@@ -271,10 +271,24 @@
   <div class="mt-12 lg:grid lg:grid-cols-[minmax(0,1fr)_400px] lg:gap-10">
     <div class="flex justify-start">
       <div class="border-0 p-0 bg-transparent shadow-none self-start">
-        <div :style="estiloTapete()" id="tapete">
-          <template x-for="i in rows*cols" :key="i">
-            <div :style="estiloPeca()"></div>
-          </template>
+        <!-- Loading state -->
+        <div x-show="tapeteLoading" class="flex items-center justify-center p-8">
+          <svg class="animate-spin h-8 w-8 text-[#8bbcd9]" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+          </svg>
+        </div>
+
+        <!-- Imagem renderizada do tapete -->
+        <img x-show="!tapeteLoading && tapeteImageURL"
+             :src="tapeteImageURL"
+             alt="Tapete de ladrilhos"
+             class="max-w-full h-auto border border-gray-200 shadow-sm"
+             style="image-rendering: -webkit-optimize-contrast; image-rendering: crisp-edges;">
+
+        <!-- Fallback caso não haja imagem -->
+        <div x-show="!tapeteLoading && !tapeteImageURL" class="p-8 text-center text-gray-500">
+          Clique em "Visualizar" para gerar o tapete
         </div>
       </div>
     </div>
@@ -327,7 +341,7 @@
             :class="groutColor===cor.hex ? 'ring-2 ring-slate-900' : ''"
             :style="`background:${cor.hex}`"
             :title="cor.nome"
-            @click="groutColor = cor.hex; if(sim.open){ gerarSimTexture() }">
+            @click="groutColor = cor.hex">
           </button>
         </template>
       </div>
@@ -515,13 +529,12 @@ function simuladorDP(){
       nome: 'Parede Esquerda',
       overlay: "{{ asset('simulator/rooms/paredeesquerdafundo.png') }}",
       shadowOverlay: "{{ asset('simulator/rooms/SALA SOMBRA.png') }}",
-      tileSize: 50,         // tamanho menor para caber 10x5
-      fixedTilesX: 10,      // número fixo de colunas
-      fixedTilesY: 5,       // número fixo de linhas
-      tileAreaWidth: 520,   // largura da área visível dos ladrilhos em pixels (ajuste conforme necessário)
-      tileAreaHeight: 260,  // altura da área visível dos ladrilhos em pixels (ajuste conforme necessário)
-      offsetX: 20,          // ajuste horizontal: negativo=esquerda, positivo=direita
-      offsetY: -17,        // ajuste vertical: negativo=cima, positivo=baixo
+      tileSize: 50,         // tamanho base para o ladrilho
+      fixedTilesX: 10,      // EXATAMENTE 10 colunas
+      fixedTilesY: 5,       // EXATAMENTE 5 linhas
+      gridPercent: { width: 0.68, height: 0.40 }, // aumentado: ladrilhos maiores (70% largura, 42% altura)
+      offsetX: -23,           // ajuste horizontal
+      offsetY: -33,           // ajuste vertical
       maxWidth: 800,
       maxHeight: 700
     },
@@ -547,45 +560,62 @@ function simuladorDP(){
       id: 'sala-jantar',
       nome: 'Cozinha',
       overlay: "{{ asset('simulator/rooms/cozinha_overlay.png') }}",
-      tileSize: 35,         // tamanho ajustado para caber exatamente 7x4
-      fixedTilesX: 7,       // número fixo de colunas
-      fixedTilesY: 4,       // número fixo de linhas
-      offsetX: 36,           // pequeno ajuste para direita
-      offsetY: -7,         // pequeno ajuste para cima
+      tileSize: 50,         // tamanho base
+      fixedTilesX: 7,       // EXATAMENTE 7 colunas
+      fixedTilesY: 4,       // EXATAMENTE 4 linhas
+      gridPercent: { width: 0.74, height: 0.70 }, // ladrilhos maiores (38% largura, 30% altura)
+      offsetX: 5,          // ajuste horizontal
+      offsetY: 60,          // ajuste vertical
       maxWidth: 850,
       maxHeight: 650
     }
   ],
 
-    sim: { open:false, tileSize:90, fixedTilesX:null, fixedTilesY:null, tileAreaWidth:null, tileAreaHeight:null, offsetX:0, offsetY:0, groutScale:1, overlay:'', shadowOverlay:'', floorMask:'', maxWidth:900, maxHeight:700, overlayWidth:0, overlayHeight:0 },
+    sim: { open:false, tileSize:90, fixedTilesX:null, fixedTilesY:null, tileAreaWidth:null, tileAreaHeight:null, gridPercent:null, offsetX:0, offsetY:0, groutScale:1, overlay:'', shadowOverlay:'', floorMask:'', maxWidth:900, maxHeight:700, overlayWidth:0, overlayHeight:0 },
 
     // NOVO: textura (dataURL) com ladrilho + rejunte para o 3D
     simTextureURL: '',
 
     /* --------- init --------- */
-    init(){
-      this.$watch('groutColor', () => { if (this.sim.open) this.gerarSimTexture() });
+    async init(){
+      this.$watch('groutColor', () => {
+        if (this.sim.open) this.gerarSimTexture();
+      });
       this.$watch('sim.groutScale', () => { if (this.sim.open) this.gerarSimTexture() });
-      this.$watch('tileURL', () => { if (this.sim.open) this.gerarSimTexture() });
+      this.$watch('tileURL', () => {
+        if (this.sim.open) this.gerarSimTexture();
+      });
 
-      this.selecionarTemplate(this.templates[0]);
-      this.atualizarTapete();
+      // Selecionar template e aguardar que ele esteja pronto
+      await this.selecionarTemplate(this.templates[0]);
+
+      // Aguardar um pouco para garantir que tileURL foi gerado
+      await this.$nextTick();
+
+      // Agora renderizar o tapete inicial
+      await this.renderizarTapeteCanvas();
 
       // watchers reativos para linhas/colunas (clamp + render)
       this.$watch('rows', v => this.setRows(v));
       this.$watch('cols', v => this.setCols(v));
 
       // Recalcular estilo quando redimensionar a janela
+      let resizeTimeout;
       window.addEventListener('resize', () => {
         if (this.sim.open) {
-          // Forçar recálculo do estilo
-          this.$nextTick(() => {
-            const el = document.getElementById('simFloor');
-            if (el) {
-              const newStyle = this.floorStyle();
-              Object.assign(el.style, newStyle);
-            }
-          });
+          // Debounce para evitar muitos recálculos
+          clearTimeout(resizeTimeout);
+          resizeTimeout = setTimeout(() => {
+            this.$nextTick(() => {
+              const el = document.getElementById('simFloor');
+              if (el) {
+                const newStyle = this.floorStyle();
+                Object.keys(newStyle).forEach(key => {
+                  el.style[key] = newStyle[key];
+                });
+              }
+            });
+          }, 100);
         }
       });
     },
@@ -597,11 +627,11 @@ function simuladorDP(){
     },
     setRows(v){
       this.rows = this.clamp(v, this.minRows, this.maxRows);
-      this.atualizarTapete();
+      // Não atualizar automaticamente - deixar para o botão Visualizar
     },
     setCols(v){
       this.cols = this.clamp(v, this.minCols, this.maxCols);
-      this.atualizarTapete();
+      // Não atualizar automaticamente - deixar para o botão Visualizar
     },
     incRows(){ this.setRows((this.rows ?? 0) + 1) },
     decRows(){ this.setRows((this.rows ?? 0) - 1) },
@@ -649,15 +679,17 @@ function simuladorDP(){
 
     templatesFiltrados(){ return this.templates.filter(t => t.categoria === this.categoriaAtiva) },
 
-    selecionarTemplate(tpl){
+    async selecionarTemplate(tpl){
       this.tile = tpl;
       this.usedColorsRaster = [];
       if (tpl.type === 'raster') {
-        this.iniciarEditorRaster(tpl.src);
+        await this.iniciarEditorRaster(tpl.src);
       } else {
         this.cores = { ...tpl.coresDefault };
         this.gerarTileURL();
       }
+      // Renderizar o tapete após selecionar um novo template
+      await this.renderizarTapeteCanvas();
     },
 
     gerarThumb(tpl){
@@ -670,10 +702,12 @@ function simuladorDP(){
     },
 
     // ===== SVG =====
-    pintar(campo){
+    async pintar(campo){
       this.cores[campo] = this.corSelecionada;
       this.gerarTileURL();
       if(this.sim.open){ this.gerarSimTexture() } // reflete no 3D se aberto
+      // Atualizar o tapete quando uma cor for mudada
+      await this.renderizarTapeteCanvas();
     },
 
     svgString(){
@@ -709,28 +743,35 @@ function simuladorDP(){
 
     // ===== RASTER =====
     iniciarEditorRaster(src){
-      this.editor.canvas = document.getElementById('editorCanvas');
-      this.editor.ctx = this.editor.canvas.getContext('2d');
+      return new Promise((resolve) => {
+        this.editor.canvas = document.getElementById('editorCanvas');
+        this.editor.ctx = this.editor.canvas.getContext('2d');
 
-      const targetW = 600, targetH = 600;
-      this.editor.canvas.width = targetW;
-      this.editor.canvas.height = targetH;
+        const targetW = 600, targetH = 600;
+        this.editor.canvas.width = targetW;
+        this.editor.canvas.height = targetH;
 
-      const img = new Image();
-      img.crossOrigin = 'anonymous';
-      img.onload = () => {
-        this.editor.img = img;
-        this.editor.ctx.clearRect(0,0,targetW,targetH);
-        this.editor.ctx.drawImage(img, 0, 0, targetW, targetH);
-        this.editor.original = this.editor.ctx.getImageData(0,0,targetW,targetH);
-        this.usedColorsRaster = [];
+        const img = new Image();
+        img.crossOrigin = 'anonymous';
+        img.onload = () => {
+          this.editor.img = img;
+          this.editor.ctx.clearRect(0,0,targetW,targetH);
+          this.editor.ctx.drawImage(img, 0, 0, targetW, targetH);
+          this.editor.original = this.editor.ctx.getImageData(0,0,targetW,targetH);
+          this.usedColorsRaster = [];
 
-        // Criar mapa de segmentos para áreas independentes
-        this.criarMapaSegmentos();
+          // Criar mapa de segmentos para áreas independentes
+          this.criarMapaSegmentos();
 
-        this.gerarTileURL();
-      };
-      img.src = src;
+          this.gerarTileURL();
+          resolve();
+        };
+        img.onerror = () => {
+          console.error('Erro ao carregar imagem:', src);
+          resolve();
+        };
+        img.src = src;
+      });
     },
 
     // Cria um mapa de segmentos identificando áreas independentes
@@ -787,16 +828,18 @@ function simuladorDP(){
       console.log(`Mapa de segmentos criado com ${segmentId} áreas independentes`);
     },
 
-    resetRaster(){
+    async resetRaster(){
       if (!this.editor.original) return;
       this.editor.ctx.putImageData(this.editor.original, 0, 0);
       this.usedColorsRaster = [];
       // Recriar mapa de segmentos após reset
       this.criarMapaSegmentos();
       this.gerarTileURL();
+      // Atualizar o tapete após reset
+      await this.renderizarTapeteCanvas();
     },
 
-    onCanvasClick(ev){
+    async onCanvasClick(ev){
       if (this.tile.type !== 'raster') return;
       const rect = ev.target.getBoundingClientRect();
       const x = Math.floor((ev.clientX - rect.left) * (this.editor.canvas.width / rect.width));
@@ -807,6 +850,8 @@ function simuladorDP(){
       this.addUsedColor(this.corSelecionada);
       this.gerarTileURL();
       if(this.sim.open){ this.gerarSimTexture() } // reflete no 3D se aberto
+      // Atualizar o tapete quando pintar o ladrilho
+      await this.renderizarTapeteCanvas();
     },
 
     // Pinta apenas o segmento específico clicado
@@ -881,6 +926,10 @@ function simuladorDP(){
     },
 
     // ===== TAPETE =====
+    // URL da imagem do tapete renderizado
+    tapeteImageURL: '',
+    tapeteLoading: false,
+
     // Calcula o tamanho do ladrilho baseado no número de linhas e colunas
     calcularTamanhoLadrilho(){
       // Tamanho base para 4x4 grid
@@ -905,6 +954,78 @@ function simuladorDP(){
       size = Math.max(40, Math.min(baseSize, size));
 
       return size;
+    },
+
+    // Nova função para renderizar o tapete em canvas
+    async renderizarTapeteCanvas(){
+      if(!this.tileURL) {
+        this.gerarTileURL();
+        // Aguardar um pouco para garantir que tileURL foi gerado
+        await new Promise(resolve => setTimeout(resolve, 100));
+      }
+
+      if(!this.tileURL) {
+        console.error('tileURL não disponível para renderizar tapete');
+        return;
+      }
+
+      this.tapeteLoading = true;
+
+      const tileSize = this.calcularTamanhoLadrilho();
+      const gap = 2; // espessura do rejunte em pixels
+
+      // Calcular dimensões totais do canvas
+      const canvasWidth = this.cols * tileSize + (this.cols - 1) * gap;
+      const canvasHeight = this.rows * tileSize + (this.rows - 1) * gap;
+
+      // Usar o canvas oculto existente
+      const canvas = document.getElementById('canvasTapete');
+      if (!canvas) {
+        console.error('Canvas canvasTapete não encontrado');
+        this.tapeteLoading = false;
+        return;
+      }
+      const ctx = canvas.getContext('2d');
+
+      // Configurar tamanho do canvas
+      canvas.width = canvasWidth;
+      canvas.height = canvasHeight;
+
+      // Preencher fundo com cor do rejunte
+      ctx.fillStyle = this.groutColor;
+      ctx.fillRect(0, 0, canvasWidth, canvasHeight);
+
+      // Carregar a imagem do ladrilho
+      return new Promise((resolve) => {
+        const img = new Image();
+        img.crossOrigin = 'anonymous';
+
+        img.onload = () => {
+          // Renderizar cada ladrilho
+          for(let row = 0; row < this.rows; row++) {
+            for(let col = 0; col < this.cols; col++) {
+              const x = col * (tileSize + gap);
+              const y = row * (tileSize + gap);
+
+              // Desenhar o ladrilho
+              ctx.drawImage(img, x, y, tileSize, tileSize);
+            }
+          }
+
+          // Converter para dataURL e armazenar
+          this.tapeteImageURL = canvas.toDataURL('image/png');
+          this.tapeteLoading = false;
+          resolve();
+        };
+
+        img.onerror = () => {
+          console.error('Erro ao carregar imagem do ladrilho');
+          this.tapeteLoading = false;
+          resolve();
+        };
+
+        img.src = this.tileURL;
+      });
     },
 
     estiloTapete(){
@@ -933,7 +1054,10 @@ function simuladorDP(){
       }
     },
 
-    atualizarTapete(){ if(!this.tileURL) this.gerarTileURL() },
+    async atualizarTapete(){
+      if(!this.tileURL) await this.gerarTileURL();
+      await this.renderizarTapeteCanvas();
+    },
 
     baixarLadrilho(){
       const url = (this.tile.type==='svg')
@@ -1099,6 +1223,7 @@ function simuladorDP(){
       this.sim.fixedTilesY = r.fixedTilesY ?? null;
       this.sim.tileAreaWidth = r.tileAreaWidth ?? null;
       this.sim.tileAreaHeight = r.tileAreaHeight ?? null;
+      this.sim.gridPercent = r.gridPercent ?? null;
       this.sim.offsetX  = r.offsetX  ?? 0;
       this.sim.offsetY  = r.offsetY  ?? 0;
       this.sim.overlay  = r.overlay  || '';
@@ -1115,6 +1240,17 @@ function simuladorDP(){
       try { await this.gerarSimTexture(); } catch(e){}
 
       this.sim.open = true;
+
+      // Aguardar o modal renderizar e recalcular o estilo
+      this.$nextTick(() => {
+        setTimeout(() => {
+          const el = document.getElementById('simFloor');
+          if (el) {
+            const newStyle = this.floorStyle();
+            Object.assign(el.style, newStyle);
+          }
+        }, 50);
+      });
     },
 
     // Carregar dimensões reais da imagem overlay
@@ -1139,72 +1275,51 @@ function simuladorDP(){
     // estilo do plano do piso (div) — PROFUNDIDADE AQUI
     // usa a textura com rejunte e ajusta backgroundSize (tile + 2*g)
    floorStyle(){
-    // Para grid fixo, sempre usar o tileSize configurado do ambiente
-    // Para grid automático, pode usar o recommendedSize do ladrilho
-    let size;
-    if (this.sim.fixedTilesX && this.sim.fixedTilesY) {
-      // Grid fixo: usar sempre o tamanho configurado para garantir o grid exato
-      size = this.sim.tileSize || 90;
-    } else {
-      // Grid automático: usar tamanho recomendado do ladrilho se disponível
-      const recommendedSize = this.tile?.recommendedSize;
-      size = recommendedSize || this.sim.tileSize || 90;
-    }
+    // Usar sempre o tileSize configurado do ambiente
+    const baseSize = this.sim.tileSize || 90;
 
     const g    = this.groutPx3D();
     const tex  = this.simTextureURL || this.tileURL;
     const mask = this.sim.floorMask || '';
 
-    // Ajuste responsivo do tamanho do ladrilho baseado no tamanho da tela
-    const viewportWidth = window.innerWidth;
+    // Obter dimensões do container do modal para calcular a escala
+    const modalEl = document.getElementById('simWrap');
+    const modalWidth = modalEl ? modalEl.offsetWidth : 800;
+    const modalHeight = modalEl ? modalEl.offsetHeight : 600;
 
-    // Usar dimensões reais da imagem overlay
-    let displayWidth = this.sim.overlayWidth || 800;
-    let displayHeight = this.sim.overlayHeight || 600;
+    // Usar dimensões reais da imagem overlay como referência
+    const overlayWidth = this.sim.overlayWidth || 800;
+    const overlayHeight = this.sim.overlayHeight || 600;
 
-    // Calcular escala para caber na viewport
-    const maxW = Math.min(viewportWidth * 0.85, this.sim.maxWidth);
-    const maxH = Math.min(window.innerHeight * 0.75, this.sim.maxHeight);
+    // Calcular escala baseada no tamanho atual do modal
+    const scale = Math.min(modalWidth / overlayWidth, modalHeight / overlayHeight, 1);
 
-    const scale = Math.min(maxW / displayWidth, maxH / displayHeight, 1);
-    displayWidth *= scale;
-    displayHeight *= scale;
-
-    // Se fixedTilesX/Y estão definidos, calcular tileSize baseado no grid fixo
+    // Se fixedTilesX/Y estão definidos, usar grid fixo
     let tilesX, tilesY, adjustedSize;
 
     if (this.sim.fixedTilesX && this.sim.fixedTilesY) {
       tilesX = this.sim.fixedTilesX;
       tilesY = this.sim.fixedTilesY;
 
-      // Para grid fixo, usar o tileSize configurado diretamente
-      // Isso garante que sempre teremos o número exato de ladrilhos
-      adjustedSize = size;
+      // Para grid fixo, usar o tamanho base escalado direto
+      // Isso simplifica e garante o grid correto
+      adjustedSize = baseSize * scale;
 
-      // Debug para verificar o grid
-      console.log('Fixed Grid Debug:', {
+      console.log('Grid fixo:', {
         tilesX, tilesY,
-        tileSize: size,
-        adjustedSize: adjustedSize,
-        rejunteSize: g * 2
+        baseSize,
+        scale,
+        adjustedSize,
+        modalWidth,
+        modalHeight
       });
     } else {
-      // Modo automático: usar tileSize configurado e calcular quantos cabem
-      adjustedSize = size;
-
-      // Reduz o tamanho em telas menores
-      if (viewportWidth < 640) { // mobile
-        adjustedSize = size * 0.6;
-      } else if (viewportWidth < 1024) { // tablet
-        adjustedSize = size * 0.8;
-      }
-
-      // Ajustar tamanho do ladrilho proporcionalmente à escala da imagem
-      adjustedSize *= scale;
+      // Modo automático: calcular quantos ladrilhos cabem
+      adjustedSize = baseSize * scale;
 
       const tileWithGrout = adjustedSize + g*2;
-      tilesX = Math.floor(displayWidth / tileWithGrout);
-      tilesY = Math.floor(displayHeight / tileWithGrout);
+      tilesX = Math.floor((modalWidth * 0.9) / tileWithGrout);
+      tilesY = Math.floor((modalHeight * 0.9) / tileWithGrout);
     }
 
     // Calcular quantos ladrilhos cabem inteiros
@@ -1214,29 +1329,61 @@ function simuladorDP(){
     const gridWidth = tilesX * tileWithGrout;
     const gridHeight = tilesY * tileWithGrout;
 
-    // Centralizar o grid
-    const offsetX = (displayWidth - gridWidth) / 2;
-    const offsetY = (displayHeight - gridHeight) / 2;
+    // Centralizar o grid baseado no tamanho do modal
+    const offsetX = (modalWidth - gridWidth) / 2;
+    const offsetY = (modalHeight - gridHeight) / 2;
 
-    // Aplicar ajustes manuais de offset
-    const finalOffsetX = offsetX + (this.sim.offsetX || 0);
-    const finalOffsetY = offsetY + (this.sim.offsetY || 0);
+    // Aplicar ajustes manuais de offset (também escalados)
+    const finalOffsetX = offsetX + ((this.sim.offsetX || 0) * scale);
+    const finalOffsetY = offsetY + ((this.sim.offsetY || 0) * scale);
+
+    // Para grid fixo, forçar o tamanho exato do background para garantir o grid correto
+    let backgroundSizeStr = `${tileWithGrout}px ${tileWithGrout}px`;
+
+    // Se temos grid fixo, calcular o tamanho ideal para preencher exatamente o grid desejado
+    if (this.sim.fixedTilesX && this.sim.fixedTilesY) {
+      // Usar gridPercent se disponível, senão usar valores padrão
+      const percentWidth = this.sim.gridPercent?.width || 0.65;
+      const percentHeight = this.sim.gridPercent?.height || 0.38;
+
+      // Calcular a área disponível para o grid
+      const areaWidth = modalWidth * percentWidth;
+      const areaHeight = modalHeight * percentHeight;
+
+      // Calcular o tamanho de cada ladrilho para caber exatamente o número desejado
+      const idealWidth = areaWidth / this.sim.fixedTilesX;
+      const idealHeight = areaHeight / this.sim.fixedTilesY;
+
+      // Usar o menor para manter ladrilhos quadrados
+      const idealSize = Math.min(idealWidth, idealHeight);
+      backgroundSizeStr = `${idealSize}px ${idealSize}px`;
+
+      console.log('Grid fixo configurado:', {
+        fixedTilesX: this.sim.fixedTilesX,
+        fixedTilesY: this.sim.fixedTilesY,
+        percentWidth,
+        percentHeight,
+        areaWidth,
+        areaHeight,
+        idealSize,
+        modalDimensions: { width: modalWidth, height: modalHeight }
+      });
+    }
 
     const style = {
       width: '100%',
       height: '100%',
       backgroundImage: `url('${tex}')`,
       backgroundRepeat: 'repeat',
-      backgroundSize: `${tileWithGrout}px ${tileWithGrout}px`,
+      backgroundSize: backgroundSizeStr,
       // Centralizar para evitar ladrilhos cortados + offset manual
       backgroundPosition: `${finalOffsetX}px ${finalOffsetY}px`,
-      transform: `translateY(${this.sim.offsetY || 0}px)`,
     };
 
     // apenas o "piso" tem profundidade
     if (this.sim.perspective) {
       style.transformOrigin = 'center top';
-      style.transform = `${style.transform} perspective(1200px) rotateX(48deg)`;
+      style.transform = `perspective(1200px) rotateX(48deg)`;
       // Para perspectiva, ajustar posição do fundo
       style.backgroundPosition = `center ${finalOffsetY}px`;
     }
