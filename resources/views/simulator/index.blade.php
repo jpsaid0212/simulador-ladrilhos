@@ -193,7 +193,7 @@
   </div>
 
   <!-- wrapper com largura parecida com a referência -->
-  <div class="bg-white px-2 py-3">
+  <div class="bg-white py-3">
         <style>
       /* grade e espaçamentos iguais ao Ladrilar */
       .palette-ladrilar {
@@ -289,7 +289,7 @@
     <!-- CONTROLES: label ao lado do input -->
     <div class="space-y-3">
   <div class="flex items-center gap-2">
-    <label class="text-sm text-slate-700 w-24 shrink-0">Colunas:</label>
+    <label class="text-sm text-slate-700 w-24 shrink-0">colunas:</label>
     <input
       type="number"
       class="h-9 w-24 border border-[#8bbcd9] rounded-none px-3 bg-white text-slate-700 focus:outline-none focus:ring-0 focus:border-[#8bbcd9]"
@@ -303,7 +303,7 @@
   </div>
 
   <div class="flex items-center gap-2">
-    <label class="text-sm text-slate-700 w-24 shrink-0">Linhas:</label>
+    <label class="text-sm text-slate-700 w-24 shrink-0">linhas:</label>
     <input
       type="number"
       class="h-9 w-24 border border-[#8bbcd9] rounded-none px-3 bg-white text-slate-700 focus:outline-none focus:ring-0 focus:border-[#8bbcd9]"
@@ -319,11 +319,11 @@
 
 
     <div>
-      <div class="text-sm text-slate-700 mb-2">Cor do rejunte:</div>
+      <div class="text-sm text-slate-700 mb-2">cor do rejunte:</div>
       <div class="grid grid-cols-8 gap-2">
         <template x-for="cor in coresLadrilar" :key="'rej-'+cor.nome">
           <button
-            class="h-11 w-11 rounded-sm"
+            class="h-11 w-11"
             :class="groutColor===cor.hex ? 'ring-2 ring-slate-900' : ''"
             :style="`background:${cor.hex}`"
             :title="cor.nome"
@@ -402,10 +402,10 @@ function simuladorDP(){
     categoriaAtiva: 'Centrais',
 
     templates: [
-      { id:'img_az1', type:'raster', nome:'Azulejo 1', categoria:'Centrais', src: "{{ asset('simulator/patterns/azulejo1.avif') }}" },
+      { id:'img_az1', type:'raster', nome:'Azulejo 1', categoria:'Centrais', src: "{{ asset('simulator/patterns/azulejo1.avif') }}", recommendedSize: 50 },
       // SVG files from public/simulator/patterns — rendered as images so they work with the canvas editor
-      { id:'teste-simples-file', type:'raster', nome:'Teste (simples)', categoria:'Centrais', src: "{{ asset('simulator/patterns/teste cor versao simples.svg') }}" },
-      { id:'teste-complexo-file', type:'raster', nome:'Teste (complexo)', categoria:'Centrais', src: "{{ asset('simulator/patterns/teste cor versao complexa.svg') }}" },
+      { id:'teste-simples-file', type:'raster', nome:'Teste (simples)', categoria:'Centrais', src: "{{ asset('simulator/patterns/teste cor versao simples.svg') }}", recommendedSize: 50 },
+      { id:'teste-complexo-file', type:'raster', nome:'Teste (complexo)', categoria:'Centrais', src: "{{ asset('simulator/patterns/teste cor versao complexa.svg') }}", recommendedSize: 60 },
       { id:'animal-print', type:'raster', nome:'Animal Print', categoria:'Centrais', src: "{{ asset('simulator/patterns/1 ANIMAL PRINT.svg') }}" },
       { id:'andorinha', type:'raster', nome:'Andorinha', categoria:'Centrais', src: "{{ asset('simulator/patterns/1 ANDORINHA.svg') }}" },
       { id:'rita-lee', type:'raster', nome:'Rita Lee', categoria:'Centrais', src: "{{ asset('simulator/patterns/1 RITA LEE.svg') }}" },
@@ -515,8 +515,13 @@ function simuladorDP(){
       nome: 'Parede Esquerda',
       overlay: "{{ asset('simulator/rooms/paredeesquerdafundo.png') }}",
       shadowOverlay: "{{ asset('simulator/rooms/SALA SOMBRA.png') }}",
-      tileSize: 60,
-      offsetY: 0,
+      tileSize: 50,         // tamanho menor para caber 10x5
+      fixedTilesX: 10,      // número fixo de colunas
+      fixedTilesY: 5,       // número fixo de linhas
+      tileAreaWidth: 520,   // largura da área visível dos ladrilhos em pixels (ajuste conforme necessário)
+      tileAreaHeight: 260,  // altura da área visível dos ladrilhos em pixels (ajuste conforme necessário)
+      offsetX: 20,          // ajuste horizontal: negativo=esquerda, positivo=direita
+      offsetY: -17,        // ajuste vertical: negativo=cima, positivo=baixo
       maxWidth: 800,
       maxHeight: 700
     },
@@ -542,14 +547,17 @@ function simuladorDP(){
       id: 'sala-jantar',
       nome: 'Cozinha',
       overlay: "{{ asset('simulator/rooms/cozinha_overlay.png') }}",
-      tileSize: 65,
-      offsetY: 0,
+      tileSize: 35,         // tamanho ajustado para caber exatamente 7x4
+      fixedTilesX: 7,       // número fixo de colunas
+      fixedTilesY: 4,       // número fixo de linhas
+      offsetX: 36,           // pequeno ajuste para direita
+      offsetY: -7,         // pequeno ajuste para cima
       maxWidth: 850,
       maxHeight: 650
     }
   ],
 
-    sim: { open:false, tileSize:90, offsetY:0, groutScale:1, overlay:'', shadowOverlay:'', floorMask:'', maxWidth:900, maxHeight:700 },
+    sim: { open:false, tileSize:90, fixedTilesX:null, fixedTilesY:null, tileAreaWidth:null, tileAreaHeight:null, offsetX:0, offsetY:0, groutScale:1, overlay:'', shadowOverlay:'', floorMask:'', maxWidth:900, maxHeight:700, overlayWidth:0, overlayHeight:0 },
 
     // NOVO: textura (dataURL) com ladrilho + rejunte para o 3D
     simTextureURL: '',
@@ -567,7 +575,19 @@ function simuladorDP(){
       this.$watch('rows', v => this.setRows(v));
       this.$watch('cols', v => this.setCols(v));
 
-      window.addEventListener('resize', () => {});
+      // Recalcular estilo quando redimensionar a janela
+      window.addEventListener('resize', () => {
+        if (this.sim.open) {
+          // Forçar recálculo do estilo
+          this.$nextTick(() => {
+            const el = document.getElementById('simFloor');
+            if (el) {
+              const newStyle = this.floorStyle();
+              Object.assign(el.style, newStyle);
+            }
+          });
+        }
+      });
     },
 
     // helpers de linhas/colunas
@@ -1075,6 +1095,11 @@ function simuladorDP(){
       if(!this.tileURL) this.gerarTileURL();
 
       this.sim.tileSize = r.tileSize ?? 90;
+      this.sim.fixedTilesX = r.fixedTilesX ?? null;
+      this.sim.fixedTilesY = r.fixedTilesY ?? null;
+      this.sim.tileAreaWidth = r.tileAreaWidth ?? null;
+      this.sim.tileAreaHeight = r.tileAreaHeight ?? null;
+      this.sim.offsetX  = r.offsetX  ?? 0;
       this.sim.offsetY  = r.offsetY  ?? 0;
       this.sim.overlay  = r.overlay  || '';
       this.sim.shadowOverlay = r.shadowOverlay || '';
@@ -1083,28 +1108,128 @@ function simuladorDP(){
       this.sim.maxWidth = r.maxWidth ?? 900;
       this.sim.maxHeight = r.maxHeight ?? 700;
 
+      // Carregar dimensões reais da imagem overlay
+      await this.loadOverlayDimensions(r.overlay);
+
       this.simTextureURL = '';
-      try { await this.gerarSimTextura(); } catch(e){}
+      try { await this.gerarSimTexture(); } catch(e){}
 
       this.sim.open = true;
+    },
+
+    // Carregar dimensões reais da imagem overlay
+    async loadOverlayDimensions(src){
+      return new Promise((resolve) => {
+        const img = new Image();
+        img.onload = () => {
+          this.sim.overlayWidth = img.naturalWidth;
+          this.sim.overlayHeight = img.naturalHeight;
+          resolve();
+        };
+        img.onerror = () => {
+          this.sim.overlayWidth = 0;
+          this.sim.overlayHeight = 0;
+          resolve();
+        };
+        img.src = src;
+      });
     },
 
 
     // estilo do plano do piso (div) — PROFUNDIDADE AQUI
     // usa a textura com rejunte e ajusta backgroundSize (tile + 2*g)
    floorStyle(){
-    const size = this.sim.tileSize || 90;
+    // Para grid fixo, sempre usar o tileSize configurado do ambiente
+    // Para grid automático, pode usar o recommendedSize do ladrilho
+    let size;
+    if (this.sim.fixedTilesX && this.sim.fixedTilesY) {
+      // Grid fixo: usar sempre o tamanho configurado para garantir o grid exato
+      size = this.sim.tileSize || 90;
+    } else {
+      // Grid automático: usar tamanho recomendado do ladrilho se disponível
+      const recommendedSize = this.tile?.recommendedSize;
+      size = recommendedSize || this.sim.tileSize || 90;
+    }
+
     const g    = this.groutPx3D();
     const tex  = this.simTextureURL || this.tileURL;
     const mask = this.sim.floorMask || '';
+
+    // Ajuste responsivo do tamanho do ladrilho baseado no tamanho da tela
+    const viewportWidth = window.innerWidth;
+
+    // Usar dimensões reais da imagem overlay
+    let displayWidth = this.sim.overlayWidth || 800;
+    let displayHeight = this.sim.overlayHeight || 600;
+
+    // Calcular escala para caber na viewport
+    const maxW = Math.min(viewportWidth * 0.85, this.sim.maxWidth);
+    const maxH = Math.min(window.innerHeight * 0.75, this.sim.maxHeight);
+
+    const scale = Math.min(maxW / displayWidth, maxH / displayHeight, 1);
+    displayWidth *= scale;
+    displayHeight *= scale;
+
+    // Se fixedTilesX/Y estão definidos, calcular tileSize baseado no grid fixo
+    let tilesX, tilesY, adjustedSize;
+
+    if (this.sim.fixedTilesX && this.sim.fixedTilesY) {
+      tilesX = this.sim.fixedTilesX;
+      tilesY = this.sim.fixedTilesY;
+
+      // Para grid fixo, usar o tileSize configurado diretamente
+      // Isso garante que sempre teremos o número exato de ladrilhos
+      adjustedSize = size;
+
+      // Debug para verificar o grid
+      console.log('Fixed Grid Debug:', {
+        tilesX, tilesY,
+        tileSize: size,
+        adjustedSize: adjustedSize,
+        rejunteSize: g * 2
+      });
+    } else {
+      // Modo automático: usar tileSize configurado e calcular quantos cabem
+      adjustedSize = size;
+
+      // Reduz o tamanho em telas menores
+      if (viewportWidth < 640) { // mobile
+        adjustedSize = size * 0.6;
+      } else if (viewportWidth < 1024) { // tablet
+        adjustedSize = size * 0.8;
+      }
+
+      // Ajustar tamanho do ladrilho proporcionalmente à escala da imagem
+      adjustedSize *= scale;
+
+      const tileWithGrout = adjustedSize + g*2;
+      tilesX = Math.floor(displayWidth / tileWithGrout);
+      tilesY = Math.floor(displayHeight / tileWithGrout);
+    }
+
+    // Calcular quantos ladrilhos cabem inteiros
+    const tileWithGrout = adjustedSize + g*2;
+
+    // Calcular o tamanho do grid completo (sem quebrados)
+    const gridWidth = tilesX * tileWithGrout;
+    const gridHeight = tilesY * tileWithGrout;
+
+    // Centralizar o grid
+    const offsetX = (displayWidth - gridWidth) / 2;
+    const offsetY = (displayHeight - gridHeight) / 2;
+
+    // Aplicar ajustes manuais de offset
+    const finalOffsetX = offsetX + (this.sim.offsetX || 0);
+    const finalOffsetY = offsetY + (this.sim.offsetY || 0);
 
     const style = {
       width: '100%',
       height: '100%',
       backgroundImage: `url('${tex}')`,
       backgroundRepeat: 'repeat',
-      backgroundSize: `${size + g*2}px ${size + g*2}px`,
-      backgroundPosition: this.sim.perspective ? 'center bottom' : 'center center',
+      backgroundSize: `${tileWithGrout}px ${tileWithGrout}px`,
+      // Centralizar para evitar ladrilhos cortados + offset manual
+      backgroundPosition: `${finalOffsetX}px ${finalOffsetY}px`,
       transform: `translateY(${this.sim.offsetY || 0}px)`,
     };
 
@@ -1112,6 +1237,8 @@ function simuladorDP(){
     if (this.sim.perspective) {
       style.transformOrigin = 'center top';
       style.transform = `${style.transform} perspective(1200px) rotateX(48deg)`;
+      // Para perspectiva, ajustar posição do fundo
+      style.backgroundPosition = `center ${finalOffsetY}px`;
     }
 
     if (mask) {
