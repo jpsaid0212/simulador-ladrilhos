@@ -539,33 +539,40 @@ function simuladorDP(){
       maxHeight: 700
     },
     {
-      id: 'cozinha',
+      id: 'sofa',
       nome: 'Parede De Fundo',
-      overlay: "{{ asset('simulator/rooms/parededefundo.png') }}",
-      tileSize: 62,
-      offsetY: 0,
-      maxWidth: 850,
-      maxHeight: 650
+      overlay: "{{ asset('simulator/rooms/sofa.png') }}",
+      tileSize: 51,         // tamanho base para o ladrilho
+      fixedTilesX: 10,      // EXATAMENTE 10 colunas
+      fixedTilesY: 5,       // EXATAMENTE 5 linhas
+      gridPercent: { width: 0.82, height: 0.45 }, // aumentado: ladrilhos maiores (70% largura, 42% altura)
+      offsetX: -80,           // ajuste horizontal
+      offsetY: -20,           // ajuste vertical
+      maxWidth: 800,
+      maxHeight: 700
     },
     {
-      id: 'quarto',
+      id: 'fogao',
       nome: 'Parede Central',
-      overlay: "{{ asset('simulator/rooms/paredecentral.png') }}",
-      tileSize: 58,
-      offsetY: 90,
+      overlay: "{{ asset('simulator/rooms/FOGAO.png') }}",
+      shadowOverlay: "{{ asset('simulator/rooms/FOGAO SOMBRA.png') }}",
+      tileSize: 190,         // tamanho grande para caber apenas 3 linhas
+      offsetX: 25,           // ajuste horizontal
+      offsetY: 110,           // ajuste vertical
       maxWidth: 800,
-      maxHeight: 500
+      maxHeight: 700
     },
     {
       id: 'sala-jantar',
       nome: 'Cozinha',
-      overlay: "{{ asset('simulator/rooms/cozinha_overlay.png') }}",
+      overlay: "{{ asset('simulator/rooms/cozinha.png') }}",
+      shadowOverlay: "{{ asset('simulator/rooms/cozinha sombra.png') }}",
       tileSize: 50,         // tamanho base
       fixedTilesX: 7,       // EXATAMENTE 7 colunas
       fixedTilesY: 4,       // EXATAMENTE 4 linhas
-      gridPercent: { width: 0.74, height: 0.70 }, // ladrilhos maiores (38% largura, 30% altura)
-      offsetX: 5,          // ajuste horizontal
-      offsetY: 60,          // ajuste vertical
+      gridPercent: { width: 0.76, height: 0.70 }, // ladrilhos maiores (38% largura, 30% altura)
+      offsetX: 15,          // ajuste horizontal
+      offsetY: 40,          // ajuste vertical
       maxWidth: 850,
       maxHeight: 650
     }
