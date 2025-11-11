@@ -542,6 +542,7 @@ function simuladorDP(){
       id: 'sofa',
       nome: 'Parede De Fundo',
       overlay: "{{ asset('simulator/rooms/sofa.png') }}",
+      shadowOverlay: "{{ asset('simulator/rooms/sofa sombra.png') }}",
       tileSize: 51,         // tamanho base para o ladrilho
       fixedTilesX: 10,      // EXATAMENTE 10 colunas
       fixedTilesY: 5,       // EXATAMENTE 5 linhas
