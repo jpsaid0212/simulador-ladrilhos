@@ -5,14 +5,25 @@ use App\Http\Controllers\SiteController;
 use App\Http\Controllers\SimulatorController;
 use App\Http\Controllers\CatalogoController;
 
-Route::get('/',                  [SiteController::class, 'home'])->name('home');
+// Main simulator is now the index page
+Route::get('/', [SimulatorController::class, 'index'])->name('home');
+
+// Simulador 2 - to be created later
+Route::get('/simulador2', function() {
+    return view('simulator.simulador2');
+})->name('simulador2');
+
+// Other pages still accessible by direct URL (not in menu)
 Route::get('/cores',             [SiteController::class, 'cores'])->name('cores');
 Route::get('/sobre',             [SiteController::class, 'sobre'])->name('sobre');
 Route::get('/crie-seu-ladrilho', [SiteController::class, 'crie'])->name('crie');
 Route::view('/projetos-blocos-3d', 'pages.projetos-blocos3d')->name('blocos3d');
 Route::get('/contato',           [SiteController::class, 'contato'])->name('contato');
 
-Route::get('/simulador', [SimulatorController::class, 'index'])->name('simulador.index');
+// Legacy simulator route (redirects to home)
+Route::get('/simulador', function() {
+    return redirect('/');
+});
 Route::get('/simulador/ambiente', [SimulatorController::class, 'ambiente'])->name('simulador.ambiente');
 
 // CATEGORIAS  -> CatalogoController@category

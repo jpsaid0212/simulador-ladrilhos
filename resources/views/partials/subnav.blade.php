@@ -6,16 +6,8 @@
   $blocos3dUrl = Route::has('blocos3d') ? route('blocos3d') : url('/projetos-blocos-3d');
 
   $tabs = [
-    ['label' => 'nossos ladrilhos', 'url' => route('home') ?? url('/')],
-    ['label' => 'simulador',        'url' => url('/simulador')],
-    ['label' => 'exclusivos',       'url' => url('/exclusivos')],
-    ['label' => 'clássicos',        'url' => url('/classicos')],
-    ['label' => 'geométricos',      'url' => url('/geometricos')],
-    ['label' => 'cores',            'url' => url('/cores')],
-    ['label' => 'sobre',            'url' => url('/sobre')],
-    ['label' => 'crie seu ladrilho','url' => url('/crie-seu-ladrilho')],
-    ['label' => 'projetos / blocos 3D', 'url' => $blocos3dUrl],
-    ['label' => 'contato',          'url' => url('/contato')],
+    ['label' => 'simulador',   'url' => url('/')],
+    ['label' => 'simulador 2', 'url' => url('/simulador2')],
   ];
 
   $currentUrl = rtrim(url()->current(), '/');

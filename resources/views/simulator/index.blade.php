@@ -301,36 +301,6 @@
 
   <div class="space-y-5">
     <!-- CONTROLES: label ao lado do input -->
-    <div class="space-y-3">
-  <div class="flex items-center gap-2">
-    <label class="text-sm text-slate-700 w-24 shrink-0">colunas:</label>
-    <input
-      type="number"
-      class="h-9 w-24 border border-[#8bbcd9] rounded-none px-3 bg-white text-slate-700 focus:outline-none focus:ring-0 focus:border-[#8bbcd9]"
-      x-model.number="cols"
-      :min="minCols"
-      :max="maxCols"
-      step="1"
-      onwheel="this.blur()"
-      @focus="$event.target.select()"
-    />
-  </div>
-
-  <div class="flex items-center gap-2">
-    <label class="text-sm text-slate-700 w-24 shrink-0">linhas:</label>
-    <input
-      type="number"
-      class="h-9 w-24 border border-[#8bbcd9] rounded-none px-3 bg-white text-slate-700 focus:outline-none focus:ring-0 focus:border-[#8bbcd9]"
-      x-model.number="rows"
-      :min="minRows"
-      :max="maxRows"
-      step="1"
-      onwheel="this.blur()"
-      @focus="$event.target.select()"
-    />
-  </div>
-</div>
-
 
     <div>
       <div class="text-sm text-slate-700 mb-2">cor do rejunte:</div>
