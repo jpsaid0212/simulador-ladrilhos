@@ -485,14 +485,18 @@ function simuladorDP(){
     /* --------- SIMULAÇÃO 3D (CSS 3D) --------- */
     rooms: [
     {
-      id: 'sala',
-      nome: 'piso',
-      overlay: "{{ asset('simulator/rooms/piso.png') }}",
-      tileSize: 35,
-      offsetY: 0,
-      perspective: true,
-      maxWidth: 800,
-      maxHeight: 600
+      id: 'piso',
+      nome: 'Piso',
+      overlay: "{{ asset('simulator/rooms/piso coz2.png') }}",
+      shadowOverlay: "{{ asset('simulator/rooms/piso coz sombra.png') }}",
+      tileSize: 200,         // aumentado significativamente para ladrilhos maiores
+      fixedTilesX: 11,      // 11 colunas de ladrilhos
+      fixedTilesY: 6,       // 6 linhas de ladrilhos
+      gridPercent: { width: 1.05, height: 0.85 }, // área expandida para mostrar toda a grade 11x6
+      offsetX: -50,           // ajuste horizontal para centralizar
+      offsetY: -60,           // ajuste vertical para posicionar melhor no piso
+      maxWidth: 900,
+      maxHeight: 800
     },
     {
       id: 'banheiro',
@@ -661,6 +665,8 @@ function simuladorDP(){
       this.tile = tpl;
       this.usedColorsRaster = [];
       if (tpl.type === 'raster') {
+        // Wait for Alpine to update the DOM before accessing the canvas
+        await this.$nextTick();
         await this.iniciarEditorRaster(tpl.src);
       } else {
         this.cores = { ...tpl.coresDefault };
@@ -723,6 +729,11 @@ function simuladorDP(){
     iniciarEditorRaster(src){
       return new Promise((resolve) => {
         this.editor.canvas = document.getElementById('editorCanvas');
+        if (!this.editor.canvas) {
+          console.error('Canvas element not found. Make sure the DOM is updated.');
+          resolve();
+          return;
+        }
         this.editor.ctx = this.editor.canvas.getContext('2d');
 
         const targetW = 600, targetH = 600;
