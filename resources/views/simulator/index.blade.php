@@ -21,7 +21,7 @@
 @endpush
 
 @section('content')
-<section class="max-w-6xl mx-auto px-4 py-12 futura-text">
+<section class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 futura-text">
 <div x-data="simuladorDP()" x-init="init()">
 
   <!-- aviso / instruções -->
@@ -83,24 +83,22 @@
   </div>
 <!-- /SELECTOR -->
 
-
-
   <!-- GRID: esquerda preview / direita paleta -->
   <div class="mt-8 grid grid-cols-1 lg:grid-cols-2 gap-8">
     <!-- ESQUERDA: preview -->
-    <div class="flex flex-col items-start">
-      <div class="relative bg-white ">
+    <div class="flex flex-col items-start w-full">
+      <div class="relative bg-white w-full flex justify-center">
         <template x-if="tile.type==='raster'">
-          <div class="flex flex-col items-center">
+          <div class="flex flex-col items-center w-full">
             <canvas id="editorCanvas"
-              class="w-[320px] h-[320px] sm:w-[380px] sm:h-[380px]"
+              class="w-full max-w-sm aspect-square"
               @click="onCanvasClick($event)">
             </canvas>
           </div>
         </template>
 
         <template x-if="tile.type==='svg' && tile.id==='flor1'">
-          <svg viewBox="0 0 100 100" class="w-[320px] h-[320px] sm:w-[380px] sm:h-[380px]">
+          <svg viewBox="0 0 100 100" class="w-full max-w-sm aspect-square">
             <rect x="0" y="0" width="100" height="100" :fill="cores.bg" @click="pintar('bg')"></rect>
             <ellipse cx="50" cy="50" rx="34" ry="18" :fill="cores.p1" @click="pintar('p1')"></ellipse>
             <ellipse cx="50" cy="50" rx="34" ry="18" transform="rotate(90,50,50)" :fill="cores.p2" @click="pintar('p2')"></ellipse>
@@ -110,7 +108,7 @@
         </template>
 
         <template x-if="tile.type==='svg' && tile.id==='geo1'">
-          <svg viewBox="0 0 100 100" class="w-[320px] h-[320px] sm:w-[380px] sm:h-[380px]">
+          <svg viewBox="0 0 100 100" class="w-full max-w-sm aspect-square">
             <rect x="0" y="0" width="100" height="100" :fill="cores.bg" opacity="0" @click="pintar('bg')"></rect>
             <rect x="20" y="20" width="60" height="60" :fill="cores.p1" @click="pintar('p1')"></rect>
             <rect x="10" y="10" width="80" height="80" transform="rotate(45 50 50)" :fill="cores.p2" @click="pintar('p2')"></rect>
@@ -120,7 +118,7 @@
         </template>
 
         <template x-if="tile.type==='svg' && tile.id==='teste-simples'">
-          <svg viewBox="0 0 100 100" class="w-[320px] h-[320px] sm:w-[380px] sm:h-[380px]">
+          <svg viewBox="0 0 100 100" class="w-full max-w-sm aspect-square">
             <rect x="0" y="0" width="100" height="100" :fill="cores.bg" opacity="0" @click="pintar('bg')"></rect>
             <rect x="20" y="20" width="60" height="60" :fill="cores.p1" @click="pintar('p1')"></rect>
             <rect x="10" y="10" width="80" height="80" transform="rotate(45 50 50)" :fill="cores.p2" @click="pintar('p2')"></rect>
@@ -129,7 +127,7 @@
           </svg>
         </template>
         <template x-if="tile.type==='svg' && tile.id==='teste-complexo'">
-          <svg viewBox="0 0 100 100" class="w-[320px] h-[320px] sm:w-[380px] sm:h-[380px]">
+          <svg viewBox="0 0 100 100" class="w-full max-w-sm aspect-square">
             <rect x="0" y="0" width="100" height="100" :fill="cores.bg" opacity="0" @click="pintar('bg')"></rect>
             <rect x="20" y="20" width="60" height="60" :fill="cores.p1" @click="pintar('p1')"></rect>
             <rect x="10" y="10" width="80" height="80" transform="rotate(45 50 50)" :fill="cores.p2" @click="pintar('p2')"></rect>
@@ -139,8 +137,8 @@
         </template>
       </div>
 
-      <div class="flex flex-col items-center">
-        <div class="w-[340px] sm:w-[420px] mx-auto">
+      <div class="flex flex-col items-center w-full">
+        <div class="w-full max-w-sm sm:max-w-md mx-auto">
           <!-- MODELO + CORES USADAS -->
           <div class="mt-6">
             <p class="uppercase tracking-[0.25em] text-[12px] text-slate-700">
@@ -148,7 +146,7 @@
               <span class="normal-case tracking-normal font-medium" x-text="tile?.nome || '—'"></span>
             </p>
 
-            <div class="mt-3 flex items-center gap-4">
+            <div class="mt-3 flex items-center gap-4 flex-wrap">
               <template x-for="c in coresUsadas()" :key="c">
                 <div class="flex flex-col items-center">
                   <span class="h-10 w-10 rounded-sm border border-slate-300" :style="`background:${c}`"></span>
@@ -159,7 +157,7 @@
           </div>
 
           <!-- BOTÕES -->
-          <div class="mt-5 flex items-center justify-between gap-4">
+          <div class="mt-5 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4">
             <button
               @click="baixarLadrilhoPDF()
               "
@@ -194,11 +192,11 @@
 
   <!-- wrapper com largura parecida com a referência -->
   <div class="bg-white py-3">
-        <style>
+    <style>
       /* grade e espaçamentos iguais ao Ladrilar */
       .palette-ladrilar {
         display: grid;
-        grid-template-columns: repeat(6, 72px); /* 6 por linha */
+        grid-template-columns: repeat(6, 72px); /* 6 por linha em telas grandes */
         justify-content: start;
         row-gap: 5px; /* pequeno espaço vertical */
       }
@@ -240,7 +238,24 @@
 
       @media (max-width: 640px) {
         .palette-ladrilar {
-          grid-template-columns: repeat(3, 72px);
+          /* preencher a tela toda */
+          grid-template-columns: repeat(auto-fill, minmax(70px, 1fr));
+          column-gap: 10px;
+          row-gap: 10px;
+        }
+
+        .swatch-wrap {
+          width: 100%;
+        }
+
+        .swatch-box {
+          width: 100%;
+          aspect-ratio: 1/1; /* mantém quadrado */
+        }
+
+        .swatch-name {
+          font-size: 11px;
+          text-align: center;
         }
       }
     </style>
@@ -533,7 +548,7 @@ function simuladorDP(){
       shadowOverlay: "{{ asset('simulator/rooms/FOGAO SOMBRA.png') }}",
       tileSize: 190,         // tamanho grande para caber apenas 3 linhas
       offsetX: 25,           // ajuste horizontal
-      offsetY: 110,           // ajuste vertical
+      offsetY: 110,          // ajuste vertical
       maxWidth: 800,
       maxHeight: 700
     },
@@ -1105,7 +1120,7 @@ function simuladorDP(){
       if(!hex) return '';
       const h = (hex || '').toLowerCase();
       const m = (this.coresLadrilar || []).find(c => (c.hex || '').toLowerCase() === h);
-      return m ? c.nome : h;
+      return m ? m.nome : h;
     },
 
     coresUsadas(){
