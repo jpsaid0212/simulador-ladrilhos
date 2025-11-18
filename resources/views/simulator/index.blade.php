@@ -84,10 +84,10 @@
 <!-- /SELECTOR -->
 
   <!-- GRID: esquerda preview / direita paleta -->
-  <div class="mt-8 grid grid-cols-1 lg:grid-cols-2 gap-8">
+  <div class="mt-8 grid grid-cols-1 lg:grid-cols-2 gap-8 mobile-reorder-container">
     <!-- ESQUERDA: preview -->
-    <div class="flex flex-col items-start w-full">
-      <div class="relative bg-white w-full flex justify-center">
+    <div class="flex flex-col items-start w-full preview-column">
+      <div class="relative bg-white w-full flex justify-center canvas-section">
         <template x-if="tile.type==='raster'">
           <div class="flex flex-col items-center w-full">
             <canvas id="editorCanvas"
@@ -138,7 +138,7 @@
       </div>
 
       <div class="flex flex-col items-center w-full">
-        <div class="w-full max-w-sm sm:max-w-md mx-auto">
+        <div class="w-full max-w-sm sm:max-w-md mx-auto model-section">
           <!-- MODELO + CORES USADAS -->
           <div class="mt-6">
             <p class="uppercase tracking-[0.25em] text-[12px] text-slate-700">
@@ -155,8 +155,12 @@
               </template>
             </div>
           </div>
+        </div>
+      </div>
 
-          <!-- BOTÕES -->
+      <!-- BOTÕES -->
+      <div class="flex flex-col items-center w-full button-section">
+        <div class="w-full max-w-sm sm:max-w-md mx-auto">
           <div class="mt-5 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4">
             <button
               @click="baixarLadrilhoPDF()
@@ -183,8 +187,8 @@
     </div>
 
 <!-- DIREITA: paleta com nomes (estilo Ladrilar) -->
-<div>
-  <div class="flex items-center justify-between mb-2">
+<div class="palette-section">
+  <div class="flex items-center justify-between mb-2 color-disclaimer">
     <p class="text-[11px] text-slate-500 italic text-right leading-tight max-w-[220px]">
       As cores podem sofrer variações.
     </p>
@@ -238,10 +242,10 @@
 
       @media (max-width: 640px) {
         .palette-ladrilar {
-          /* preencher a tela toda */
-          grid-template-columns: repeat(auto-fill, minmax(70px, 1fr));
-          column-gap: 10px;
-          row-gap: 10px;
+          /* quadrados menores e mais juntos no mobile */
+          grid-template-columns: repeat(auto-fill, minmax(40px, 1fr));
+          column-gap: 4px;
+          row-gap: 4px;
         }
 
         .swatch-wrap {
@@ -250,12 +254,45 @@
 
         .swatch-box {
           width: 100%;
-          aspect-ratio: 1/1; /* mantém quadrado */
+          height: 48px; /* altura ajustada no mobile */
         }
 
         .swatch-name {
-          font-size: 11px;
-          text-align: center;
+          display: none; /* esconder legendas no mobile */
+        }
+      }
+
+      /* Reordenar elementos no mobile: botão aparece depois da paleta de cores */
+      @media (max-width: 640px) {
+        .mobile-reorder-container {
+          display: flex !important;
+          flex-direction: column;
+          gap: 0 !important; /* remove o gap-8 do Tailwind no mobile */
+        }
+
+        .preview-column {
+          display: contents; /* Remove do fluxo, elementos filhos sobem um nível */
+        }
+
+        .canvas-section {
+          order: 1;
+        }
+
+        .model-section {
+          order: 2;
+        }
+
+        .palette-section {
+          order: 3;
+        }
+
+        .button-section {
+          order: 4;
+        }
+
+        /* Esconder disclaimer no mobile */
+        .color-disclaimer {
+          display: none;
         }
       }
     </style>
