@@ -84,12 +84,12 @@
 <!-- /SELECTOR -->
 
   <!-- GRID: esquerda preview / direita paleta -->
-  <div class="mt-8 grid grid-cols-1 lg:grid-cols-2 gap-8 mobile-reorder-container">
+  <div class="mt-12 lg:grid lg:grid-cols-[minmax(0,1fr)_400px] lg:gap-10">
     <!-- ESQUERDA: preview -->
     <div class="flex flex-col items-start w-full preview-column">
       <div class="relative bg-white w-full flex justify-center canvas-section">
         <template x-if="tile.type==='raster'">
-          <div class="flex flex-col items-center w-full">
+          <div class="flex flex-col w-full">
             <canvas id="editorCanvas"
               class="w-full max-w-sm aspect-square"
               @click="onCanvasClick($event)">
@@ -137,8 +137,8 @@
         </template>
       </div>
 
-      <div class="flex flex-col items-center w-full">
-        <div class="w-full max-w-sm sm:max-w-md mx-auto model-section">
+      <div class="flex flex-col items-start w-full">
+        <div class="w-full max-w-sm sm:max-w-md model-section">
           <!-- MODELO + CORES USADAS -->
           <div class="mt-6">
             <p class="uppercase tracking-[0.25em] text-[12px] text-slate-700">
@@ -159,8 +159,8 @@
       </div>
 
       <!-- BOTÕES -->
-      <div class="flex flex-col items-center w-full button-section">
-        <div class="w-full max-w-sm sm:max-w-md mx-auto">
+      <div class="flex flex-col items-start w-full button-section">
+        <div class="w-full max-w-sm sm:max-w-md">
           <div class="mt-5 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4">
             <button
               @click="baixarLadrilhoPDF()
