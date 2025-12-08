@@ -91,14 +91,14 @@
         <template x-if="tile.type==='raster'">
           <div class="flex flex-col w-full">
             <canvas id="editorCanvas"
-              class="w-full max-w-sm aspect-square"
+              class="w-full aspect-square"
               @click="onCanvasClick($event)">
             </canvas>
           </div>
         </template>
 
         <template x-if="tile.type==='svg' && tile.id==='flor1'">
-          <svg viewBox="0 0 100 100" class="w-full max-w-sm aspect-square">
+          <svg viewBox="0 0 100 100" class="w-full aspect-square">
             <rect x="0" y="0" width="100" height="100" :fill="cores.bg" @click="pintar('bg')"></rect>
             <ellipse cx="50" cy="50" rx="34" ry="18" :fill="cores.p1" @click="pintar('p1')"></ellipse>
             <ellipse cx="50" cy="50" rx="34" ry="18" transform="rotate(90,50,50)" :fill="cores.p2" @click="pintar('p2')"></ellipse>
@@ -108,7 +108,7 @@
         </template>
 
         <template x-if="tile.type==='svg' && tile.id==='geo1'">
-          <svg viewBox="0 0 100 100" class="w-full max-w-sm aspect-square">
+          <svg viewBox="0 0 100 100" class="w-full aspect-square">
             <rect x="0" y="0" width="100" height="100" :fill="cores.bg" opacity="0" @click="pintar('bg')"></rect>
             <rect x="20" y="20" width="60" height="60" :fill="cores.p1" @click="pintar('p1')"></rect>
             <rect x="10" y="10" width="80" height="80" transform="rotate(45 50 50)" :fill="cores.p2" @click="pintar('p2')"></rect>
@@ -118,7 +118,7 @@
         </template>
 
         <template x-if="tile.type==='svg' && tile.id==='teste-simples'">
-          <svg viewBox="0 0 100 100" class="w-full max-w-sm aspect-square">
+          <svg viewBox="0 0 100 100" class="w-full aspect-square">
             <rect x="0" y="0" width="100" height="100" :fill="cores.bg" opacity="0" @click="pintar('bg')"></rect>
             <rect x="20" y="20" width="60" height="60" :fill="cores.p1" @click="pintar('p1')"></rect>
             <rect x="10" y="10" width="80" height="80" transform="rotate(45 50 50)" :fill="cores.p2" @click="pintar('p2')"></rect>
@@ -127,7 +127,7 @@
           </svg>
         </template>
         <template x-if="tile.type==='svg' && tile.id==='teste-complexo'">
-          <svg viewBox="0 0 100 100" class="w-full max-w-sm aspect-square">
+          <svg viewBox="0 0 100 100" class="w-full aspect-square">
             <rect x="0" y="0" width="100" height="100" :fill="cores.bg" opacity="0" @click="pintar('bg')"></rect>
             <rect x="20" y="20" width="60" height="60" :fill="cores.p1" @click="pintar('p1')"></rect>
             <rect x="10" y="10" width="80" height="80" transform="rotate(45 50 50)" :fill="cores.p2" @click="pintar('p2')"></rect>
@@ -200,14 +200,14 @@
       /* grade e espaçamentos iguais ao Ladrilar */
       .palette-ladrilar {
         display: grid;
-        grid-template-columns: repeat(6, 72px); /* 6 por linha em telas grandes */
+        grid-template-columns: repeat(5, 72px); /* 5 por linha em telas grandes */
         justify-content: start;
-        row-gap: 5px; /* pequeno espaço vertical */
+        column-gap: 8px;
+        row-gap: 8px;
       }
 
       .swatch-wrap {
         width: 72px;
-        margin-right: 10px; /* simula gap negativo horizontal */
       }
 
       .swatch-box {
@@ -237,6 +237,8 @@
       @media (max-width: 1024px) {
         .palette-ladrilar {
           grid-template-columns: repeat(4, 72px);
+          column-gap: 8px;
+          row-gap: 8px;
         }
       }
 
