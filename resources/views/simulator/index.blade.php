@@ -511,7 +511,6 @@ function simuladorDP(){
       { id:'monstera', type:'raster', nome:'Monstera', categoria:'Florões', src: "{{ asset('simulator/patterns/Monstera.svg') }}" },
 
       // === ABSTRATOS ===
-      { id:'atelier-urihi', type:'raster', nome:'Atelier Urihi II', categoria:'Abstratos', src: "{{ asset('simulator/patterns/Atelier Urihi II.svg') }}" },
       { id:'classico-94', type:'raster', nome:'Clássico 94', categoria:'Abstratos', src: "{{ asset('simulator/patterns/CLASSICO 94.svg') }}" },
       { id:'colecao-abstracoes-3', type:'raster', nome:'Abstração 3', categoria:'Abstratos', src: "{{ asset('simulator/patterns/colecao-abstracoes-3.svg') }}" },
       { id:'colecao-abstracoes-4', type:'raster', nome:'Abstração 4', categoria:'Abstratos', src: "{{ asset('simulator/patterns/colecao-abstracoes-4.svg') }}" },
@@ -531,13 +530,11 @@ function simuladorDP(){
       { id:'zebra', type:'raster', nome:'Zebra', categoria:'Listras', src: "{{ asset('simulator/patterns/ZEBRA.svg') }}" },
 
       // === NÚMEROS ===
-      { id:'1-b', type:'raster', nome:'1 B', categoria:'Números', src: "{{ asset('simulator/patterns/1 B.svg') }}" },
       { id:'1-g', type:'raster', nome:'1 G', categoria:'Números', src: "{{ asset('simulator/patterns/1 G.svg') }}" },
       { id:'1-i', type:'raster', nome:'1 I', categoria:'Números', src: "{{ asset('simulator/patterns/1 I.svg') }}" },
       { id:'1-q', type:'raster', nome:'1 Q', categoria:'Números', src: "{{ asset('simulator/patterns/1 Q.svg') }}" },
       { id:'2-b', type:'raster', nome:'2 B', categoria:'Números', src: "{{ asset('simulator/patterns/2 B.svg') }}" },
       { id:'2-c', type:'raster', nome:'2 C', categoria:'Números', src: "{{ asset('simulator/patterns/2 C.svg') }}" },
-      { id:'55', type:'raster', nome:'55', categoria:'Números', src: "{{ asset('simulator/patterns/55.svg') }}" },
       { id:'2003-1', type:'raster', nome:'2003', categoria:'Números', src: "{{ asset('simulator/patterns/2003-1.svg') }}" },
       { id:'2019-1', type:'raster', nome:'2019', categoria:'Números', src: "{{ asset('simulator/patterns/2019-1.svg') }}" },
       { id:'2020-1', type:'raster', nome:'2020', categoria:'Números', src: "{{ asset('simulator/patterns/2020-1.svg') }}" },
