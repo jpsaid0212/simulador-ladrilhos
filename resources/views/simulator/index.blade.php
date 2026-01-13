@@ -533,6 +533,9 @@ function simuladorDP(){
       { id:'1-g', type:'raster', nome:'1 G', categoria:'Números', src: "{{ asset('simulator/patterns/1 G.svg') }}" },
       { id:'1-i', type:'raster', nome:'1 I', categoria:'Números', src: "{{ asset('simulator/patterns/1 I.svg') }}" },
       { id:'1-q', type:'raster', nome:'1 Q', categoria:'Números', src: "{{ asset('simulator/patterns/1 Q.svg') }}" },
+      { id:'3-a', type:'raster', nome:'3 A', categoria:'Números', src: "{{ asset('simulator/patterns/3 A.svg') }}" },
+      { id:'3c', type:'raster', nome:'3C', categoria:'Números', src: "{{ asset('simulator/patterns/3c.svg') }}" },
+      { id:'3d', type:'raster', nome:'3D', categoria:'Números', src: "{{ asset('simulator/patterns/3D.svg') }}" },
       { id:'2-b', type:'raster', nome:'2 B', categoria:'Números', src: "{{ asset('simulator/patterns/2 B.svg') }}" },
       { id:'2-c', type:'raster', nome:'2 C', categoria:'Números', src: "{{ asset('simulator/patterns/2 C.svg') }}" },
       { id:'2003-1', type:'raster', nome:'2003', categoria:'Números', src: "{{ asset('simulator/patterns/2003-1.svg') }}" },
@@ -719,6 +722,7 @@ function simuladorDP(){
 
     // NOVO: textura (dataURL) com ladrilho + rejunte para o 3D
     simTextureURL: '',
+    simTextureSize: 0, // tamanho da textura (tile + 2*grout) em pixels
 
     /* --------- init --------- */
     async init(){
@@ -795,8 +799,11 @@ function simuladorDP(){
       if(!this.tileURL) this.gerarTileURL();
 
       const baseTilePx = 512; // tamanho do tile dentro da textura
-      const gCss = this.groutPx3D();
-      const gPx = Math.max(1, Math.round(baseTilePx * (gCss / (this.sim.tileSize || 90))));
+
+      // Usar mesma proporção do tapete: 2px de rejunte para ~160px de tile = 1.25%
+      // Para textura de 512px: 512 * 0.0125 = 6.4px, arredondamos para 6px
+      const groutRatio = 0.0125; // 1.25% como no tapete
+      const gPx = Math.max(4, Math.round(baseTilePx * groutRatio)); // mínimo 4px para visibilidade
 
       const canvas = document.createElement('canvas');
       canvas.width  = baseTilePx + 2*gPx;
@@ -814,6 +821,7 @@ function simuladorDP(){
         img.onload = () => {
           ctx.drawImage(img, gPx, gPx, baseTilePx, baseTilePx);
           this.simTextureURL = canvas.toDataURL('image/png');
+          this.simTextureSize = baseTilePx + 2*gPx; // guardar tamanho total da textura
           resolve();
         };
         img.onerror = reject;
@@ -1489,7 +1497,18 @@ function simuladorDP(){
     const finalOffsetY = offsetY + ((this.sim.offsetY || 0) * scale);
 
     // Para grid fixo, forçar o tamanho exato do background para garantir o grid correto
-    let backgroundSizeStr = `${tileWithGrout}px ${tileWithGrout}px`;
+    let backgroundSizeStr;
+
+    // Se estamos usando a textura com rejunte embutido (simTextureURL),
+    // precisamos calcular o tamanho correto baseado no baseSize
+    if (this.simTextureURL && this.simTextureSize) {
+      // A textura inclui tile + rejunte. Precisamos exibir na escala certa.
+      // Se baseSize = 90px, queremos que a textura seja exibida nesse tamanho
+      backgroundSizeStr = `${baseSize * scale}px ${baseSize * scale}px`;
+    } else {
+      // Fallback para o comportamento antigo
+      backgroundSizeStr = `${tileWithGrout}px ${tileWithGrout}px`;
+    }
 
     // Se temos grid fixo, calcular o tamanho ideal para preencher exatamente o grid desejado
     if (this.sim.fixedTilesX && this.sim.fixedTilesY) {
